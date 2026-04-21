@@ -11,7 +11,7 @@
 7. [Sistema de Colores](#sistema-de-colores)
 8. [Reloj con Colores (Color Coded Clock)](#reloj-con-colores-color-coded-clock)
 9. [Sincronización NTP](#sincronización-ntp)
-10. [Integración con Google Calendar](#integración-con-google-calendar)
+10. [Integración con Google Calendar](#integración-con-google-calendar) - Ver tambien: [Guia Completa de Google Calendar](GOOGLE_CALENDAR_SETUP.md)
 11. [Interfaz Web de Configuración](#interfaz-web-de-configuración)
 12. [Funciones Avanzadas V2](#funciones-avanzadas-v2)
     - [mDNS](#mdns)
