@@ -68,6 +68,8 @@ int temp_second = -1;
 
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
+#include <ESP8266mDNS.h>
+#include <ArduinoOTA.h>
 #include <WiFiUdp.h>
 #include <Ticker.h>
 #include <EEPROM.h>
@@ -85,6 +87,8 @@ int temp_second = -1;
 #include "Page_Information.h"
 #include "Page_NetworkConfiguration.h"
 #include "Page_SetTime.h"
+#include "Page_LEDSettings.h"
+#include "Page_OTA.h"
 
 //Connect to Google script
 void connectToGoogle() {
@@ -365,12 +369,66 @@ void setup() {
 	server.on("/admin/ntpvalues", send_NTP_configuration_values_html);
 	server.on("/admin/appsscript", send_Apps_Script_Settings_values_html);
 	server.on("/admin/timevalues", send_Time_Set_values_html);
+	// LED Settings
+	server.on("/led.html", send_LED_Settings_html);
+	server.on("/admin/ledvalues", send_LED_Settings_values_html);
+	server.on("/admin/setbrightness", handle_set_brightness);
+	server.on("/admin/savebrightness", handle_save_brightness);
+	server.on("/admin/testleds", handle_test_leds);
+	server.on("/admin/refreshcalendar", handle_refresh_calendar);
+	// OTA Info
+	server.on("/ota.html", send_OTA_html);
+	server.on("/admin/otavalues", send_OTA_values_html);
 	server.onNotFound([]() {
 		Serial.println("Page Not Found");
 		server.send ( 400, "text/html", "Page not Found" );
 	});
 	server.begin();
 	Serial.println("HTTP server started");
+
+	// Setup mDNS responder
+	if (WIFI_connected == WL_CONNECTED) {
+		String mdnsName = config.DeviceName;
+		mdnsName.replace(" ", "");
+		mdnsName.toLowerCase();
+		if (MDNS.begin(mdnsName.c_str())) {
+			Serial.println("mDNS responder started: http://" + mdnsName + ".local");
+			MDNS.addService("http", "tcp", 80);
+		}
+
+		// Setup OTA Updates
+		ArduinoOTA.setHostname(mdnsName.c_str());
+		ArduinoOTA.onStart([]() {
+			Serial.println("OTA Update Starting...");
+			fill_solid(leds, NUM_LEDS, CRGB::Blue);
+			FastLED.show();
+		});
+		ArduinoOTA.onEnd([]() {
+			Serial.println("OTA Update Complete!");
+			fill_solid(leds, NUM_LEDS, CRGB::Green);
+			FastLED.show();
+		});
+		ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
+			int percent = (progress / (total / 100));
+			int ledsToLight = map(percent, 0, 100, 0, NUM_LEDS);
+			fill_solid(leds, NUM_LEDS, CRGB::Black);
+			fill_solid(leds, ledsToLight, CRGB::Purple);
+			FastLED.show();
+		});
+		ArduinoOTA.onError([](ota_error_t error) {
+			Serial.printf("OTA Error[%u]: ", error);
+			fill_solid(leds, NUM_LEDS, CRGB::Red);
+			FastLED.show();
+		});
+		ArduinoOTA.begin();
+		Serial.println("OTA ready on port 8266");
+	}
+
+	// Read brightness from EEPROM
+	byte savedBrightness = EEPROM.read(488);
+	if (savedBrightness >= 10 && savedBrightness <= 255) {
+		BRIGHTNESS = savedBrightness;
+	}
 
 	printConfig();
 
@@ -390,6 +448,8 @@ void setup() {
 
 // the loop function runs over and over again forever
 void loop() {
+	ArduinoOTA.handle();
+	MDNS.update();
 	server.handleClient();
 	if (config.Update_Time_Via_NTP_Every > 0) {
 		if (cNTP_Update > 5 && firstStart) {
