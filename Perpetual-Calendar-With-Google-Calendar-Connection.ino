@@ -37,7 +37,8 @@ byte calendar_leds[] = {68, 69, 70, 71, 72, 73, 74,
 		10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
 		9, 8, 7, 6, 5, 4, 3, 2, 1, 0};
 byte calendar_months[] = {19, 20, 21, 22, 7, 6, 5, 4, 3, 2, 1, 0};
-byte warning_led = 62; // used only for no wifi
+byte warning_led = 62; // LED for no wifi warning
+// Clock uses LEDs 63-66 for HH:MM when COLOR_CODED_CLOCK is enabled (LED 67 = separator)
 
 // https://github.com/FastLED/FastLED/wiki/FastLED-HSV-Colors - Color map: "Rainbow" vs "Spectrum"
 //also dark grey and light grey for ten color values as in instructable - https://www.instructables.com/Color-Coded-Clock-Colors-Show-the-Time/
@@ -478,50 +479,49 @@ void loop() {
 		pride();
 		FastLED.show();
 	} else if (ntp_response_ok == true or manual_time_set == true) {
+		bool needsRefresh = false;
+
 #ifdef COLOR_CODED_CLOCK
-		if (temp_second != DateTime.second) {
-			temp_second = DateTime.second;
-			timeDisplay(DateTime.hour, DateTime.minute, DateTime.second);
-			FastLED.show();
+		// Non-blocking clock update
+		if (updateClockIfNeeded(DateTime.hour, DateTime.minute, DateTime.second)) {
+			needsRefresh = true;
 		}
 #endif
+
 		if (temp_minute != DateTime.minute) {
 			temp_minute = DateTime.minute;
 			getCalendar(config.TodosScriptID);
+			yield(); // Allow other tasks to run
 			if (escriptData != calendarData) {
 				initDatesArray(Todos, calendarData);
 				escriptData = calendarData;
 				events_updated = true;
 			}
-			//			Serial.print("To-dos:");
-			//			for (int i = 0; i < 20; i++) {
-			//				Serial.print(Todos[i]); Serial.print(",");
-			//			}
-			//			Serial.println();
 		}
+
 		if ((temp_hour != DateTime.hour) or events_updated == true) {
 			temp_hour = DateTime.hour;
 			events_updated = false;
+
 			getCalendar(config.HolidaysScriptID);
+			yield();
 			initDatesArray(Holidays, calendarData);
-			//			Serial.print("Holidays:");
-			//			for (int i = 0; i < 20; i++) {
-			//				Serial.print(Holidays[i]); Serial.print(",");
-			//			}
-			//			Serial.println();
+
 			getCalendar(config.AnniversariesScriptID);
+			yield();
 			initDatesArray(Anniversaries, calendarData);
-			//			Serial.print("Anniversaries:");
-			//			for (int i = 0; i < 20; i++) {
-			//				Serial.print(Anniversaries[i]); Serial.print(",");
-			//			}
-			//			Serial.println();
+
 			CalendarDisplay(DateTime.year, DateTime.month, DateTime.day);
-			//			for (int i = 0; i < 31; i++) {
-			//				Serial.print(Days[i]); Serial.print(",");
-			//			}
-			//			Serial.println();
 			EventsDisplay();
+
+#ifdef COLOR_CODED_CLOCK
+			// Refresh clock after calendar update to prevent overwrite
+			refreshClock(DateTime.hour, DateTime.minute, DateTime.second);
+#endif
+			needsRefresh = true;
+		}
+
+		if (needsRefresh) {
 			FastLED.show();
 		}
 	}
