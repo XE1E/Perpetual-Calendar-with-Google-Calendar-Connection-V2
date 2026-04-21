@@ -17,6 +17,8 @@ const char PAGE_AdminMainPage[] PROGMEM = R"=====(
 <a href="appsscript.html" style="width:250px"  class="btn btn--m btn--grey" >Apps Script Settings</a><br>
 <a href="time.html" style="width:250px"  class="btn btn--m btn--grey" >Manual time setting</a><br>
 <a href="led.html" style="width:250px"  class="btn btn--m btn--grey" >LED Settings</a><br>
+<a href="autobrightness.html" style="width:250px"  class="btn btn--m btn--grey" >Auto Brightness</a><br>
+<a href="colors.html" style="width:250px"  class="btn btn--m btn--grey" >Color Settings</a><br>
 <a href="ota.html" style="width:250px"  class="btn btn--m btn--grey" >OTA Update</a><br>
 </body>
 <script>

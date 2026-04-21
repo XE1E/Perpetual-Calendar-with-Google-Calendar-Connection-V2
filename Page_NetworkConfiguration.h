@@ -10,11 +10,15 @@ const char PAGE_NetworkConfiguration[] PROGMEM = R"=====(
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <a href="/"  class="btn btn--s btn--grey">&#9664;</a>&nbsp;&nbsp;<strong>Network Configuration</strong>
 <hr>
-Connect to Router with these settings:<br>
+<strong>Primary Network:</strong><br>
 <form action="" method="get">
 <table border="0"  cellspacing="0" cellpadding="3" style="width:310px" >
 <tr><td align="right">SSID:</td><td><input type="text" id="ssid" name="ssid" value=""></td></tr>
 <tr><td align="right">Password:</td><td><input type="text" id="password" name="password" value=""></td></tr>
+<tr><td colspan="2"><hr><strong>Backup Network (optional):</strong></td></tr>
+<tr><td align="right">SSID 2:</td><td><input type="text" id="ssid2" name="ssid2" value=""></td></tr>
+<tr><td align="right">Password 2:</td><td><input type="text" id="password2" name="password2" value=""></td></tr>
+<tr><td colspan="2"><hr><strong>IP Settings:</strong></td></tr>
 <tr><td align="right">DHCP:</td><td><input type="checkbox" id="dhcp" name="dhcp"></td></tr>
 <tr><td align="right">IP:     </td><td><input type="text" id="ip_0" name="ip_0" size="3">.<input type="text" id="ip_1" name="ip_1" size="3">.<input type="text" id="ip_2" name="ip_2" size="3">.<input type="text" id="ip_3" name="ip_3" value="" size="3"></td></tr>
 <tr><td align="right">Netmask:</td><td><input type="text" id="nm_0" name="nm_0" size="3">.<input type="text" id="nm_1" name="nm_1" size="3">.<input type="text" id="nm_2" name="nm_2" size="3">.<input type="text" id="nm_3" name="nm_3" size="3"></td></tr>
@@ -84,6 +88,8 @@ void send_network_configuration_html()
 		for ( uint8_t i = 0; i < server.args(); i++ ) {
 			if (server.argName(i) == "ssid") config.ssid =   urldecode(server.arg(i));
 			if (server.argName(i) == "password") config.password =    urldecode(server.arg(i));
+			if (server.argName(i) == "ssid2") config.ssid2 =   urldecode(server.arg(i));
+			if (server.argName(i) == "password2") config.password2 =    urldecode(server.arg(i));
 			if (server.argName(i) == "ip_0") if (checkRange(server.arg(i))) 	config.IP[0] =  server.arg(i).toInt();
 			if (server.argName(i) == "ip_1") if (checkRange(server.arg(i))) 	config.IP[1] =  server.arg(i).toInt();
 			if (server.argName(i) == "ip_2") if (checkRange(server.arg(i))) 	config.IP[2] =  server.arg(i).toInt();
@@ -124,6 +130,8 @@ void send_network_configuration_values_html()
 
 	values += "ssid|" + (String) config.ssid + "|input\n";
 	values += "password|" +  (String) config.password + "|input\n";
+	values += "ssid2|" + (String) config.ssid2 + "|input\n";
+	values += "password2|" +  (String) config.password2 + "|input\n";
 	values += "ip_0|" +  (String) config.IP[0] + "|input\n";
 	values += "ip_1|" +  (String) config.IP[1] + "|input\n";
 	values += "ip_2|" +  (String) config.IP[2] + "|input\n";
@@ -155,7 +163,7 @@ void send_connection_state_values_html()
 	if (WiFi.status() == 0) state = "Idle";
 	else if (WiFi.status() == 1) state = "NO SSID AVAILBLE";
 	else if (WiFi.status() == 2) state = "SCAN COMPLETED";
-	else if (WiFi.status() == 3) state = "CONNECTED";
+	else if (WiFi.status() == 3) state = "CONNECTED to " + WiFi.SSID();
 	else if (WiFi.status() == 4) state = "CONNECT FAILED";
 	else if (WiFi.status() == 5) state = "CONNECTION LOST";
 	else if (WiFi.status() == 6) state = "DISCONNECTED";

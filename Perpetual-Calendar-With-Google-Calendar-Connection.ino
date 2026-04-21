@@ -90,6 +90,10 @@ int temp_second = -1;
 #include "Page_SetTime.h"
 #include "Page_LEDSettings.h"
 #include "Page_OTA.h"
+#include "AutoBrightness.h"
+#include "Page_AutoBrightness.h"
+#include "Page_ColorSettings.h"
+#include "WiFiManager.h"
 
 //Connect to Google script
 void connectToGoogle() {
@@ -286,7 +290,7 @@ void pride()
 void setup() {
 	Serial.begin(115200);
 	//**** Network Config load
-	EEPROM.begin(512); // define an EEPROM space of 512Bytes to store data
+	EEPROM.begin(640); // define an EEPROM space of 640 Bytes to store data (increased for backup WiFi network)
 	CFG_saved = ReadConfig();
 
 	//  Connect to WiFi acess point or start as Acess point
@@ -380,6 +384,16 @@ void setup() {
 	// OTA Info
 	server.on("/ota.html", send_OTA_html);
 	server.on("/admin/otavalues", send_OTA_values_html);
+	// Auto Brightness
+	server.on("/autobrightness.html", send_AutoBrightness_html);
+	server.on("/admin/autobrightvalues", send_AutoBrightness_values_html);
+	server.on("/admin/saveautobrightness", handle_save_autobrightness);
+	// Color Settings
+	server.on("/colors.html", send_Color_Settings_html);
+	server.on("/admin/colorvalues", send_Color_Settings_values_html);
+	server.on("/admin/previewcolors", handle_preview_colors);
+	server.on("/admin/savecolors", handle_save_colors);
+	server.on("/admin/resetcolors", handle_reset_colors);
 	server.onNotFound([]() {
 		Serial.println("Page Not Found");
 		server.send ( 400, "text/html", "Page not Found" );
@@ -431,6 +445,15 @@ void setup() {
 		BRIGHTNESS = savedBrightness;
 	}
 
+	// Load auto brightness settings
+	loadAutoBrightnessConfig();
+
+	// Load custom colors
+	loadCustomColors();
+
+	// Initialize WiFi manager
+	initWiFiManager();
+
 	printConfig();
 
 	// start internal time update ISR
@@ -452,6 +475,9 @@ void loop() {
 	ArduinoOTA.handle();
 	MDNS.update();
 	server.handleClient();
+
+	// Check WiFi connection and reconnect if needed
+	checkWiFiConnection();
 	if (config.Update_Time_Via_NTP_Every > 0) {
 		if (cNTP_Update > 5 && firstStart) {
 			getNTPtime();
@@ -480,6 +506,11 @@ void loop() {
 		FastLED.show();
 	} else if (ntp_response_ok == true or manual_time_set == true) {
 		bool needsRefresh = false;
+
+		// Update auto brightness based on current hour
+		if (updateAutoBrightness(DateTime.hour)) {
+			needsRefresh = true;
+		}
 
 #ifdef COLOR_CODED_CLOCK
 		// Non-blocking clock update

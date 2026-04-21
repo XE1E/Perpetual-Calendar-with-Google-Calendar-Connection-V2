@@ -30,11 +30,14 @@ struct strConfig {
   String password;                      // up to 32 Byte - EEPROM 96
   String ntpServerName;                 // up to 32 Byte - EEPROM 128
   String DeviceName;                    // up to 32 Byte - EEPROM 160
-  // Application Settings here... from EEPROM 192 up to 511 (0 - 511)
+  // Application Settings here... from EEPROM 192 up to 639
   String FirstWeekDay;
   String HolidaysScriptID;
   String AnniversariesScriptID;
   String TodosScriptID;
+  // Backup WiFi network - EEPROM 520-583
+  String ssid2;                         // up to 32 Byte - EEPROM 520
+  String password2;                     // up to 32 Byte - EEPROM 552
 } config;
 
 
@@ -173,6 +176,9 @@ void WriteConfig(){
   WriteStringToEEPROM(200, config.HolidaysScriptID);
   WriteStringToEEPROM(296, config.AnniversariesScriptID);
   WriteStringToEEPROM(392, config.TodosScriptID);
+  // Backup WiFi network
+  WriteStringToEEPROM(520, config.ssid2);
+  WriteStringToEEPROM(552, config.password2);
   EEPROM.commit();
 }
 
@@ -206,6 +212,9 @@ boolean ReadConfig(){
     config.HolidaysScriptID = ReadLongStringFromEEPROM(200);
     config.AnniversariesScriptID = ReadLongStringFromEEPROM(296);
     config.TodosScriptID = ReadLongStringFromEEPROM(392);
+    // Backup WiFi network
+    config.ssid2 = ReadStringFromEEPROM(520);
+    config.password2 = ReadStringFromEEPROM(552);
     return true;
   }
   else

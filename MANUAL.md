@@ -9,12 +9,20 @@
 5. [Funcionamiento Detallado](#funcionamiento-detallado)
 6. [Mapeo de LEDs](#mapeo-de-leds)
 7. [Sistema de Colores](#sistema-de-colores)
-8. [Sincronización NTP](#sincronización-ntp)
-9. [Integración con Google Calendar](#integración-con-google-calendar)
-10. [Interfaz Web de Configuración](#interfaz-web-de-configuración)
-11. [Almacenamiento en EEPROM](#almacenamiento-en-eeprom)
-12. [Instalación y Configuración Inicial](#instalación-y-configuración-inicial)
-13. [Resolución de Problemas](#resolución-de-problemas)
+8. [Reloj con Colores (Color Coded Clock)](#reloj-con-colores-color-coded-clock)
+9. [Sincronización NTP](#sincronización-ntp)
+10. [Integración con Google Calendar](#integración-con-google-calendar)
+11. [Interfaz Web de Configuración](#interfaz-web-de-configuración)
+12. [Funciones Avanzadas V2](#funciones-avanzadas-v2)
+    - [mDNS](#mdns)
+    - [Actualizaciones OTA](#actualizaciones-ota)
+    - [Control de Brillo](#control-de-brillo)
+    - [Auto-Brillo por Hora](#auto-brillo-por-hora)
+    - [Colores Personalizables](#colores-personalizables)
+    - [WiFi Multi-Red](#wifi-multi-red)
+13. [Almacenamiento en EEPROM](#almacenamiento-en-eeprom)
+14. [Instalación y Configuración Inicial](#instalación-y-configuración-inicial)
+15. [Resolución de Problemas](#resolución-de-problemas)
 
 ---
 
@@ -27,6 +35,12 @@ Este proyecto implementa un **calendario perpetuo físico** utilizando un microc
 - Se conecta a Google Calendar para mostrar eventos
 - Diferencia visualmente fines de semana, días festivos, aniversarios y tareas
 - Se configura mediante una interfaz web integrada
+- **Modo reloj opcional** con colores para mostrar la hora (HH:MM)
+- **Acceso fácil** mediante mDNS (http://perpetualcalendar.local)
+- **Actualizaciones OTA** sin necesidad de cable USB
+- **Brillo ajustable** manualmente o automático según hora del día
+- **Colores personalizables** vía interfaz web
+- **Soporte multi-red WiFi** con red de respaldo
 
 ### Diagrama de Arquitectura
 
@@ -92,16 +106,24 @@ Perpetual-Calendar-with-Google-Calendar-Connection/
 ├── ColorCodedClock.h           # Modo reloj con colores (opcional)
 ├── DebugMacros.h               # Macros de depuración
 │
+├── WiFiManager.h               # Gestión WiFi multi-red y reconexión automática
+├── AutoBrightness.h            # Control de brillo automático por hora
+│
 ├── Page_Admin.h                # Página principal de administración
-├── Page_NetworkConfiguration.h # Configuración de red WiFi
+├── Page_NetworkConfiguration.h # Configuración de red WiFi (principal + respaldo)
 ├── Page_NTPSettings.h          # Configuración del servidor NTP
 ├── Page_AppsScriptSettings.h   # Configuración de Google Apps Script
 ├── Page_SetTime.h              # Configuración manual de hora
 ├── Page_Information.h          # Información del dispositivo
+├── Page_LEDSettings.h          # Control de brillo de LEDs
+├── Page_AutoBrightness.h       # Configuración de auto-brillo
+├── Page_ColorSettings.h        # Personalización de colores
+├── Page_OTA.h                  # Información de actualizaciones OTA
 ├── Page_Style.css.h            # Estilos CSS de la interfaz web
 ├── Page_Script.js.h            # JavaScript de la interfaz web
 │
-└── README.md                   # Documentación básica
+├── README.md                   # Documentación básica
+└── MANUAL.md                   # Este manual
 ```
 
 ### Descripción de Cada Archivo
@@ -112,6 +134,9 @@ Perpetual-Calendar-with-Google-Calendar-Connection/
 | `global.h` | Define la estructura de configuración, funciones EEPROM, servidor web |
 | `NTP.h` | Obtiene hora UTC, calcula zona horaria, horario de verano, día de semana |
 | `HTTPSRedirect.*` | Maneja conexiones HTTPS con redirección para Google Apps Script |
+| `WiFiManager.h` | Gestión de múltiples redes WiFi con ESP8266WiFiMulti |
+| `AutoBrightness.h` | Lógica de brillo automático día/noche |
+| `ColorCodedClock.h` | Display de hora usando colores en LEDs |
 | `Page_*.h` | Páginas HTML embebidas para la interfaz de configuración web |
 
 ---
@@ -272,6 +297,69 @@ Cuando un día tiene múltiples eventos, el color final sigue esta prioridad (el
 5. Tareas (Todos) ← Mayor prioridad visual
 ```
 
+### Colores de Fin de Semana
+
+El color de fin de semana (`weekend_color`) aplica tanto a **sábados como domingos**. Ambos días usan el mismo color (rojo por defecto) para mantener consistencia visual.
+
+---
+
+## Reloj con Colores (Color Coded Clock)
+
+### Activación
+
+El modo reloj está **desactivado por defecto**. Para activarlo, descomentar la línea 10 del archivo `.ino`:
+
+```cpp
+#define COLOR_CODED_CLOCK  // Descomentar para activar
+```
+
+### Layout del Reloj (5 LEDs)
+
+```
+LED 63   LED 64   LED 65   LED 66   LED 67
+ ┌──┐    ┌──┐     ┌──┐     ┌──┐     ┌──┐
+ │H1│    │H2│     │: │     │M1│     │M2│
+ └──┘    └──┘     └──┘     └──┘     └──┘
+  ↓       ↓        ↓        ↓        ↓
+Decena  Unidad  Separador Decena  Unidad
+ Hora    Hora   (parpadea) Minuto  Minuto
+```
+
+### Codificación de Colores por Dígito
+
+| Dígito | Color | HSV |
+|--------|-------|-----|
+| 0 | Gris oscuro | (0, 0, 64) |
+| 1 | Rojo | (0, 255, 192) |
+| 2 | Naranja | (32, 255, 255) |
+| 3 | Amarillo | (64, 255, 255) |
+| 4 | Verde | (96, 255, 255) |
+| 5 | Cian | (138, 255, 255) |
+| 6 | Azul | (160, 255, 255) |
+| 7 | Púrpura | (180, 255, 255) |
+| 8 | Magenta | (214, 255, 255) |
+| 9 | Gris claro | (0, 0, 192) |
+
+### Ejemplo: Hora 14:35
+
+```
+LED 63 = 1 → Rojo
+LED 64 = 4 → Verde
+LED 65 = : → Parpadea cada segundo (blanco/apagado)
+LED 66 = 3 → Amarillo
+LED 67 = 5 → Cian
+```
+
+### Separación de LEDs
+
+```
+LED 62:     Indicador de advertencia (sin WiFi) - INDEPENDIENTE
+LEDs 63-67: Reloj HH:MM con separador parpadeante
+LEDs 68-74: Primera fila del calendario
+```
+
+> **Nota:** El reloj se actualiza automáticamente cada segundo y se redibuja después de cada actualización del calendario para evitar sobrescrituras.
+
 ---
 
 ## Sincronización NTP
@@ -399,11 +487,15 @@ void initDatesArray(int (&Dates)[20], String calendarString) {
 | URL | Descripción |
 |-----|-------------|
 | `/` | Página principal de administración |
-| `/config.html` | Configuración de red WiFi |
+| `/config.html` | Configuración de red WiFi (principal + respaldo) |
 | `/ntp.html` | Configuración del servidor NTP |
 | `/appsscript.html` | IDs de Google Apps Script |
 | `/time.html` | Configuración manual de hora |
 | `/info.html` | Información del dispositivo |
+| `/led.html` | Control de brillo de LEDs |
+| `/autobrightness.html` | Configuración de auto-brillo |
+| `/colors.html` | Personalización de colores |
+| `/ota.html` | Información de actualizaciones OTA |
 
 ### Endpoints de API
 
@@ -415,12 +507,194 @@ void initDatesArray(int (&Dates)[20], String calendarString) {
 | `/admin/ntpvalues` | GET | Configuración NTP |
 | `/admin/appsscript` | GET | IDs de scripts |
 | `/admin/timevalues` | GET | Hora actual |
+| `/admin/ledvalues` | GET | Valor actual de brillo |
+| `/admin/setbrightness` | GET | Ajustar brillo (temporal) |
+| `/admin/savebrightness` | GET | Guardar brillo en EEPROM |
+| `/admin/autobrightvalues` | GET | Configuración auto-brillo |
+| `/admin/saveautobrightness` | GET | Guardar auto-brillo |
+| `/admin/colorvalues` | GET | Colores actuales |
+| `/admin/previewcolors` | GET | Preview de colores |
+| `/admin/savecolors` | GET | Guardar colores |
+| `/admin/resetcolors` | GET | Restaurar colores por defecto |
+| `/admin/otavalues` | GET | Información OTA |
+| `/admin/testleds` | GET | Probar todos los LEDs |
+| `/admin/refreshcalendar` | GET | Forzar actualización calendario |
+
+---
+
+## Funciones Avanzadas V2
+
+### mDNS
+
+El dispositivo es accesible mediante un nombre de dominio local, sin necesidad de conocer la IP.
+
+**Acceso:** `http://perpetualcalendar.local`
+
+```cpp
+// El nombre se deriva de config.DeviceName
+// "Perpetual Calendar" → "perpetualcalendar.local"
+```
+
+**Funcionamiento:**
+- Se activa automáticamente al conectar a WiFi
+- Se reinicia automáticamente tras reconexión WiFi
+- Compatible con Windows, macOS, Linux e iOS
+- Android requiere app adicional (Bonjour Browser)
+
+---
+
+### Actualizaciones OTA
+
+Permite actualizar el firmware sin conexión USB, directamente desde Arduino IDE.
+
+**Puerto:** 8266
+
+**Indicadores LED durante actualización:**
+| Estado | Color LEDs |
+|--------|------------|
+| Iniciando | Azul |
+| Progreso | Púrpura (barra de progreso) |
+| Completado | Verde |
+| Error | Rojo |
+
+**Pasos para actualizar:**
+1. Abrir Arduino IDE
+2. Ir a `Herramientas > Puerto`
+3. Seleccionar el puerto de red: `perpetualcalendar at [IP]`
+4. Subir el sketch normalmente
+
+> **Nota:** La primera carga debe hacerse por USB. Las siguientes pueden ser OTA.
+
+---
+
+### Control de Brillo
+
+**Página:** `/led.html`
+
+**Características:**
+- Slider de brillo: 10-255
+- Cambio en tiempo real (preview)
+- Guardado permanente en EEPROM
+- Botón "Test LEDs" para verificar funcionamiento
+- Botón "Refresh" para forzar actualización del calendario
+
+**EEPROM:** Dirección 488
+
+---
+
+### Auto-Brillo por Hora
+
+**Página:** `/autobrightness.html`
+
+Ajusta automáticamente el brillo según la hora del día.
+
+**Configuración:**
+
+| Parámetro | Descripción | Rango |
+|-----------|-------------|-------|
+| Brillo día | Brillo durante horas diurnas | 10-255 |
+| Brillo noche | Brillo durante horas nocturnas | 10-255 |
+| Hora inicio día | Hora a la que comienza modo día | 0-23 |
+| Hora inicio noche | Hora a la que comienza modo noche | 0-23 |
+
+**Ejemplo de configuración:**
+```
+Brillo día: 150
+Brillo noche: 30
+Inicio día: 07:00
+Inicio noche: 22:00
+```
+
+**EEPROM:** Direcciones 489-493
+
+---
+
+### Colores Personalizables
+
+**Página:** `/colors.html`
+
+Permite cambiar los colores de cada tipo de día mediante selectores visuales.
+
+**Colores configurables:**
+
+| Elemento | Color por defecto | Descripción |
+|----------|-------------------|-------------|
+| Días laborables | Verde | Lunes a viernes |
+| Fines de semana | Rojo | Sábados y domingos |
+| Día actual | Azul | Día de hoy |
+| Festivos | Púrpura | Eventos del calendario Holidays |
+| Aniversarios | Cian | Eventos del calendario Anniversaries |
+| Tareas | Naranja | Eventos del calendario Todos |
+
+**Funciones:**
+- **Preview:** Ver cambios en tiempo real sin guardar
+- **Save:** Guardar colores permanentemente
+- **Reset to Defaults:** Restaurar colores originales
+
+**EEPROM:** Direcciones 494-511
+
+**Formato de almacenamiento:** HSV (Hue, Saturation, Value) - 3 bytes por color
+
+---
+
+### WiFi Multi-Red
+
+**Página:** `/config.html`
+
+Permite configurar dos redes WiFi. El dispositivo se conecta automáticamente a la mejor señal disponible.
+
+**Configuración:**
+
+```
+┌─────────────────────────────────────┐
+│ Red Principal (obligatoria)         │
+│ SSID:     [___________________]     │
+│ Password: [___________________]     │
+├─────────────────────────────────────┤
+│ Red de Respaldo (opcional)          │
+│ SSID 2:     [___________________]   │
+│ Password 2: [___________________]   │
+└─────────────────────────────────────┘
+```
+
+**Comportamiento:**
+1. Al iniciar, intenta conectar a cualquiera de las dos redes
+2. Selecciona automáticamente la de mejor señal
+3. Si pierde conexión, intenta reconectar cada 30 segundos
+4. Alterna entre ambas redes buscando conexión
+5. Después de 3 intentos fallidos, espera 5 minutos
+
+**Estado de conexión:**
+- La página muestra a qué red está conectado actualmente
+- Ejemplo: `CONNECTED to MiRedWiFi`
+
+**EEPROM:** Direcciones 520-583 (SSID2 + Password2)
+
+---
+
+### Reconexión WiFi Automática
+
+El sistema monitorea constantemente la conexión WiFi y reconecta automáticamente si se pierde.
+
+**Parámetros:**
+
+| Parámetro | Valor | Descripción |
+|-----------|-------|-------------|
+| Intervalo de verificación | 30 seg | Tiempo entre verificaciones |
+| Máximo reintentos | 3 | Intentos antes de pausa larga |
+| Pausa después de fallos | 5 min | Tiempo de espera tras 3 fallos |
+| Timeout de conexión | 10 seg | Tiempo máximo por intento |
+
+**Acciones automáticas tras reconexión:**
+- Reiniciar servicio mDNS
+- Continuar actualización NTP
+- Reanudar consultas a Google Calendar
 
 ---
 
 ## Almacenamiento en EEPROM
 
-### Mapa de Memoria EEPROM (512 bytes)
+### Mapa de Memoria EEPROM (640 bytes)
 
 | Dirección | Tamaño | Contenido |
 |-----------|--------|-----------|
@@ -432,14 +706,29 @@ void initDatesArray(int (&Dates)[20], String calendarString) {
 | 32-35 | 4 bytes | Dirección IP |
 | 36-39 | 4 bytes | Máscara de red |
 | 40-43 | 4 bytes | Gateway |
-| 64-95 | 32 bytes | SSID WiFi |
-| 96-127 | 32 bytes | Contraseña WiFi |
+| 64-95 | 32 bytes | SSID WiFi (red principal) |
+| 96-127 | 32 bytes | Contraseña WiFi (red principal) |
 | 128-159 | 32 bytes | Servidor NTP |
 | 160-191 | 32 bytes | Nombre del dispositivo |
 | 192-199 | 8 bytes | Primer día de la semana |
 | 200-295 | 96 bytes | HolidaysScriptID |
 | 296-391 | 96 bytes | AnniversariesScriptID |
 | 392-487 | 96 bytes | TodosScriptID |
+| **488** | **1 byte** | **Brillo manual** |
+| **489** | **1 byte** | **Auto-brillo habilitado** |
+| **490** | **1 byte** | **Brillo día** |
+| **491** | **1 byte** | **Brillo noche** |
+| **492** | **1 byte** | **Hora inicio día** |
+| **493** | **1 byte** | **Hora inicio noche** |
+| **494** | **1 byte** | **Colores personalizados habilitado** |
+| **495-497** | **3 bytes** | **Color días laborables (HSV)** |
+| **498-500** | **3 bytes** | **Color fines de semana (HSV)** |
+| **501-503** | **3 bytes** | **Color día actual (HSV)** |
+| **504-506** | **3 bytes** | **Color festivos (HSV)** |
+| **507-509** | **3 bytes** | **Color aniversarios (HSV)** |
+| **510-511** | **2 bytes** | **Color tareas (HS)** |
+| **520-551** | **32 bytes** | **SSID WiFi (red respaldo)** |
+| **552-583** | **32 bytes** | **Contraseña WiFi (red respaldo)** |
 
 ### Funciones de EEPROM
 
@@ -464,7 +753,7 @@ String ReadLongStringFromEEPROM(int beginaddress);  // Máx 96 chars
 
 ### Paso 1: Preparar el Entorno Arduino
 
-1. Instalar Arduino IDE
+1. Instalar Arduino IDE (1.8.x o 2.x)
 2. Añadir soporte para ESP8266:
    - Ir a `Archivo > Preferencias`
    - En "URLs adicionales de gestor de placas" añadir:
@@ -472,7 +761,17 @@ String ReadLongStringFromEEPROM(int beginaddress);  // Máx 96 chars
      http://arduino.esp8266.com/stable/package_esp8266com_index.json
      ```
 3. Instalar placa ESP8266 desde el gestor de placas
-4. Instalar librería FastLED desde el gestor de librerías
+4. Instalar librerías requeridas desde el gestor de librerías:
+   - **FastLED** - Control de LEDs WS2811/WS2812
+
+**Librerías incluidas en ESP8266 Core (no requieren instalación):**
+- ESP8266WiFi
+- ESP8266WebServer
+- ESP8266mDNS
+- ESP8266WiFiMulti
+- ArduinoOTA
+- EEPROM
+- Ticker
 
 ### Paso 2: Cargar el Firmware
 
@@ -485,11 +784,24 @@ String ReadLongStringFromEEPROM(int beginaddress);  // Máx 96 chars
 1. El ESP8266 creará una red WiFi: `PerpetualCalendar-XXXX`
 2. Conectarse con contraseña: `admin1234`
 3. Abrir navegador en: `http://192.168.4.1`
-4. Configurar:
-   - Red WiFi (SSID y contraseña)
-   - Servidor NTP (ej: `pool.ntp.org`)
-   - Zona horaria
-   - IDs de Google Apps Script
+4. Configurar en orden:
+   - **Red WiFi principal** (SSID y contraseña)
+   - **Red WiFi respaldo** (opcional, recomendado)
+   - **Servidor NTP** (ej: `pool.ntp.org`)
+   - **Zona horaria**
+   - **IDs de Google Apps Script**
+5. Configuración opcional avanzada:
+   - **Brillo de LEDs** (`/led.html`)
+   - **Auto-brillo** (`/autobrightness.html`)
+   - **Colores personalizados** (`/colors.html`)
+
+### Paso 4: Acceso Normal
+
+Una vez configurado, acceder mediante:
+- **mDNS:** `http://perpetualcalendar.local`
+- **IP directa:** `http://[IP_asignada]/`
+
+> **Tip:** La IP se muestra en el Serial Monitor (115200 baud) al iniciar.
 
 ### Paso 4: Crear Google Apps Scripts
 
@@ -569,6 +881,56 @@ function doGet() {
 2. Verificar estabilidad del WiFi
 3. Revisar logs por Serial (115200 baud)
 
+### No Funciona mDNS
+
+**Problema:** No se puede acceder via `http://perpetualcalendar.local`
+
+**Soluciones:**
+1. Verificar que el dispositivo esté conectado a WiFi
+2. En Windows: instalar Bonjour (viene con iTunes)
+3. En Android: usar la IP directamente o instalar app Bonjour Browser
+4. Esperar 30 segundos después de reinicio
+5. Probar con otro navegador
+
+### OTA No Aparece en Arduino IDE
+
+**Problema:** El puerto de red no aparece en Herramientas > Puerto
+
+**Soluciones:**
+1. Verificar que Arduino IDE y ESP8266 estén en la misma red
+2. Desactivar firewall temporalmente
+3. Reiniciar Arduino IDE
+4. Verificar que mDNS funcione (probar acceso web)
+
+### Brillo No Se Guarda
+
+**Problema:** El brillo vuelve al valor anterior tras reinicio
+
+**Soluciones:**
+1. Usar botón "Save" en lugar de solo mover el slider
+2. Verificar que EEPROM no esté llena
+3. Reiniciar el dispositivo para verificar
+
+### WiFi Se Desconecta Frecuentemente
+
+**Problema:** El dispositivo pierde conexión WiFi constantemente
+
+**Soluciones:**
+1. Configurar red de respaldo en `/config.html`
+2. Acercar el dispositivo al router
+3. Verificar que no haya interferencias en canal WiFi
+4. Revisar logs por Serial para ver patrón de desconexiones
+
+### Reloj No Se Actualiza
+
+**Problema:** El reloj (Color Coded Clock) no cambia o parpadea incorrectamente
+
+**Soluciones:**
+1. Verificar que `#define COLOR_CODED_CLOCK` esté descomentado
+2. Verificar que NTP esté funcionando (hora correcta)
+3. Los LEDs del reloj (63-67) no deben estar dañados
+4. Reiniciar el dispositivo
+
 ---
 
 ## Especificaciones Técnicas
@@ -578,13 +940,21 @@ function doGet() {
 | Microcontrolador | ESP8266 |
 | Frecuencia CPU | 80/160 MHz |
 | Memoria Flash | 4 MB |
-| EEPROM emulada | 512 bytes |
+| EEPROM emulada | 640 bytes |
 | LEDs soportados | 75 (WS2811/WS2812) |
+| LEDs calendario | 68 (días) + 12 (meses) |
+| LEDs reloj | 5 (HH:MM + separador) |
+| LED advertencia | 1 (sin WiFi) |
 | Brillo por defecto | 100/255 |
+| Brillo mínimo | 10/255 |
 | Puerto web | 80 |
+| Puerto OTA | 8266 |
 | Puerto NTP | 2390 (cliente) |
 | Watchdog timeout | 30 segundos |
+| WiFi reconexión | 30 segundos |
 | Velocidad Serial | 115200 baud |
+| mDNS | perpetualcalendar.local |
+| Redes WiFi soportadas | 2 (principal + respaldo) |
 
 ---
 
@@ -592,9 +962,35 @@ function doGet() {
 
 - [Instructables - Perpetual Calendar With Google Calendar Connection](https://www.instructables.com/Perpetual-Calendar-With-Google-Calendar-Connection/)
 - [FastLED Library](https://github.com/FastLED/FastLED)
+- [FastLED HSV Colors](https://github.com/FastLED/FastLED/wiki/FastLED-HSV-Colors)
 - [ESP8266 Arduino Core](https://github.com/esp8266/Arduino)
+- [ESP8266 WiFiMulti](https://arduino-esp8266.readthedocs.io/en/latest/esp8266wifi/station-class.html)
+- [ArduinoOTA](https://arduino-esp8266.readthedocs.io/en/latest/ota_updates/readme.html)
+- [mDNS/Bonjour](https://arduino-esp8266.readthedocs.io/en/latest/esp8266mdns.html)
 - [Google Apps Script](https://developers.google.com/apps-script)
 
 ---
 
-*Manual generado para el proyecto Perpetual Calendar with Google Calendar Connection*
+## Historial de Versiones
+
+### Versión 2.0
+- Añadido soporte mDNS (acceso via .local)
+- Añadido actualizaciones OTA
+- Añadido control de brillo via web
+- Añadido auto-brillo por hora del día
+- Añadido personalización de colores via web
+- Añadido soporte WiFi multi-red (principal + respaldo)
+- Añadido reconexión WiFi automática
+- Corregido display del reloj con colores
+- Optimizado uso de memoria EEPROM (640 bytes)
+
+### Versión 1.0
+- Versión inicial
+- Display de calendario con LEDs
+- Integración con Google Calendar
+- Configuración via interfaz web
+- Sincronización NTP
+
+---
+
+*Manual generado para el proyecto Perpetual Calendar with Google Calendar Connection v2.0*
