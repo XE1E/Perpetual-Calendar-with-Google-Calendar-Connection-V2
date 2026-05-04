@@ -28,7 +28,8 @@
 
 ## Descripción General
 
-Este proyecto implementa un **calendario perpetuo físico** utilizando un microcontrolador ESP8266 y una tira de 75 LEDs WS2811. El calendario:
+Este proyecto implementa un **calendario perpetuo físico** utilizando un microcontrolador ESP8266 y una tira de 75 LEDs WS2811. 
+El calendario:
 
 - Muestra visualmente todos los días del mes actual
 - Se sincroniza automáticamente con la hora vía NTP
