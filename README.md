@@ -1,46 +1,49 @@
-# Perpetual Calendar with Google Calendar Connection
+# Calendario Perpetuo con Conexión a Google Calendar
 
-![Perpetual Calendar](docs/perpetual_calendar.jpg)
+[![English](https://img.shields.io/badge/lang-English-blue.svg)](README.en.md)
+[![Español](https://img.shields.io/badge/lang-Español-green.svg)](README.md)
 
-A physical LED perpetual calendar powered by ESP8266 that syncs with Google Calendar to display holidays, anniversaries, and to-dos using color-coded LEDs.
+![Calendario Perpetuo](docs/perpetual_calendar.jpg)
 
-## Quick Install (Web Flasher)
+Un calendario perpetuo físico con LEDs, basado en ESP8266, que se sincroniza con Google Calendar para mostrar festivos, aniversarios y tareas usando colores.
 
-**No software installation required!** Flash the firmware directly from your browser:
+## Instalación Rápida (Web Flasher)
 
-1. Connect your ESP8266 (D1 Mini) via USB
-2. Visit the [Web Flasher](https://XE1E.github.io/Perpetual-Calendar-with-Google-Calendar-Connection-V2/)
-3. Click "Install" and select your device
-4. Done!
+**No requiere instalar software!** Flashea el firmware directamente desde tu navegador:
 
-## Features
+1. Conecta tu ESP8266 (D1 Mini) por USB
+2. Visita el [Web Flasher](https://XE1E.github.io/Perpetual-Calendar-with-Google-Calendar-Connection-V2/)
+3. Haz clic en "Install" y selecciona tu dispositivo
+4. Listo!
 
-- 75 WS2811 addressable LEDs
-- Google Calendar integration (holidays, anniversaries, to-dos)
-- Auto brightness based on time of day
-- WiFi configuration via web interface
-- OTA (Over-The-Air) updates
-- Optional color-coded clock display
+## Características
 
-## Build from Source
+- 75 LEDs direccionables WS2811
+- Integración con Google Calendar (festivos, aniversarios, tareas)
+- Brillo automático según hora del día
+- Configuración WiFi via interfaz web
+- Actualizaciones OTA (Over-The-Air)
+- Reloj con colores opcional
 
-### Using Arduino IDE
-See the [Instructables guide](https://www.instructables.com/Perpetual-Calendar-With-Google-Calendar-Connection/)
+## Compilar desde Código Fuente
 
-### Using PlatformIO
+### Usando Arduino IDE
+Ver la [guía en Instructables](https://www.instructables.com/Perpetual-Calendar-With-Google-Calendar-Connection/)
+
+### Usando PlatformIO
 ```bash
-# Standard version
+# Versión estándar
 pio run -e standard
 
-# With color coded clock
+# Con reloj de colores
 pio run -e color_coded_clock
 
-# Upload
+# Subir al dispositivo
 pio run -e standard -t upload
 ```
 
-## Documentation
+## Documentación
 
-- [Instructables Guide](https://www.instructables.com/Perpetual-Calendar-With-Google-Calendar-Connection/)
-- [Google Calendar Setup](GOOGLE_CALENDAR_SETUP.md)
-- [Manual](MANUAL.md)
+- [Guía en Instructables](https://www.instructables.com/Perpetual-Calendar-With-Google-Calendar-Connection/)
+- [Configuración de Google Calendar](GOOGLE_CALENDAR_SETUP.md)
+- [Manual Completo](MANUAL.md)
