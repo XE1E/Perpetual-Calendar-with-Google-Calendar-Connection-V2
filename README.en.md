@@ -47,3 +47,11 @@ pio run -e standard -t upload
 - [Instructables Guide](https://www.instructables.com/Perpetual-Calendar-With-Google-Calendar-Connection/)
 - [Google Calendar Setup](GOOGLE_CALENDAR_SETUP.md)
 - [Manual](MANUAL.md)
+
+## License
+
+This project is licensed under [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)](https://creativecommons.org/licenses/by-nc-sa/4.0/).
+
+[![CC BY-NC-SA 4.0](https://licensebuttons.net/l/by-nc-sa/4.0/88x31.png)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
+
+Based on the original project from [Instructables](https://www.instructables.com/Perpetual-Calendar-With-Google-Calendar-Connection/).
