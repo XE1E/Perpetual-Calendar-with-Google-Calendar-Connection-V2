@@ -752,7 +752,36 @@ String ReadLongStringFromEEPROM(int beginaddress);  // Máx 96 chars
 
 ## Instalación y Configuración Inicial
 
-### Paso 1: Preparar el Entorno Arduino
+### Opción A: Web Flasher (Recomendado)
+
+La forma más fácil de instalar el firmware es usando el **Web Flasher** directamente desde el navegador. No requiere instalar ningún software.
+
+**Requisitos:**
+- Navegador Chrome, Edge u Opera (Firefox y Safari no soportan Web Serial)
+- Cable USB para conectar el ESP8266
+- Ningún otro programa usando el puerto serial (cerrar Arduino IDE si está abierto)
+
+**Pasos:**
+
+1. Conectar el ESP8266 (D1 Mini o compatible) al computador via USB
+2. Abrir el Web Flasher: **https://XE1E.github.io/Perpetual-Calendar-with-Google-Calendar-Connection-V2/**
+3. Seleccionar la versión a instalar:
+   - **Standard** - Calendario básico
+   - **Color Coded Clock** - Incluye reloj con colores en LEDs 63-67
+4. Hacer clic en "Install"
+5. Seleccionar el puerto serial cuando el navegador lo solicite
+6. Esperar ~30 segundos a que termine la instalación
+7. Continuar con el **Paso 3: Configuración Inicial** (más abajo)
+
+> **Nota:** Si el botón "Install" no aparece o muestra error, verificar que el navegador sea compatible y que el cable USB soporte datos (no solo carga).
+
+---
+
+### Opción B: Arduino IDE (Manual)
+
+Si prefieres compilar el código tú mismo o necesitas hacer modificaciones:
+
+#### Paso 1: Preparar el Entorno Arduino
 
 1. Instalar Arduino IDE (1.8.x o 2.x)
 2. Añadir soporte para ESP8266:
@@ -774,13 +803,15 @@ String ReadLongStringFromEEPROM(int beginaddress);  // Máx 96 chars
 - EEPROM
 - Ticker
 
-### Paso 2: Cargar el Firmware
+#### Paso 2: Cargar el Firmware
 
 1. Seleccionar placa: `Herramientas > Placa > NodeMCU 1.0`
 2. Seleccionar puerto COM correcto
 3. Cargar el sketch
 
-### Paso 3: Configuración Inicial
+---
+
+### Paso 3: Configuración Inicial (Ambas opciones)
 
 1. El ESP8266 creará una red WiFi: `PerpetualCalendar-XXXX`
 2. Conectarse con contraseña: `admin1234`
@@ -804,7 +835,7 @@ Una vez configurado, acceder mediante:
 
 > **Tip:** La IP se muestra en el Serial Monitor (115200 baud) al iniciar.
 
-### Paso 4: Crear Google Apps Scripts
+### Paso 5: Crear Google Apps Scripts
 
 Para cada calendario (Holidays, Anniversaries, Todos), crear un script que:
 
@@ -961,6 +992,7 @@ function doGet() {
 
 ## Referencias
 
+- [Web Flasher - Instalación desde navegador](https://XE1E.github.io/Perpetual-Calendar-with-Google-Calendar-Connection-V2/)
 - [Instructables - Perpetual Calendar With Google Calendar Connection](https://www.instructables.com/Perpetual-Calendar-With-Google-Calendar-Connection/)
 - [FastLED Library](https://github.com/FastLED/FastLED)
 - [FastLED HSV Colors](https://github.com/FastLED/FastLED/wiki/FastLED-HSV-Colors)
