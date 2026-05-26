@@ -1,10 +1,12 @@
 # Perpetual Calendar with Google Calendar Connection
 
-A LED perpetual calendar that syncs with Google Calendar to display holidays, anniversaries, and to-dos.
+![Perpetual Calendar](docs/perpetual_calendar.jpg)
+
+A physical LED perpetual calendar powered by ESP8266 that syncs with Google Calendar to display holidays, anniversaries, and to-dos using color-coded LEDs.
 
 ## Quick Install (Web Flasher)
 
-**No software installation required!** Flash directly from your browser:
+**No software installation required!** Flash the firmware directly from your browser:
 
 1. Connect your ESP8266 (D1 Mini) via USB
 2. Visit the [Web Flasher](https://XE1E.github.io/Perpetual-Calendar-with-Google-Calendar-Connection-V2/)
