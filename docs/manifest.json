@@ -1,0 +1,15 @@
+{
+  "name": "Perpetual Calendar",
+  "version": "2.0",
+  "builds": [
+    {
+      "chipFamily": "ESP8266",
+      "parts": [
+        {
+          "path": "firmware/perpetual-calendar-standard.bin",
+          "offset": 0
+        }
+      ]
+    }
+  ]
+}

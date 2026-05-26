@@ -1,0 +1,12 @@
+# PlatformIO
+.pio/
+.pioenvs/
+.pioprojects/
+.vscode/
+
+# Compiled files (except docs/firmware)
+*.elf
+
+# OS files
+.DS_Store
+Thumbs.db

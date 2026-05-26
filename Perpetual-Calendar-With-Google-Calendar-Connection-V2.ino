@@ -4,9 +4,12 @@
  * BVB_WebConfig_OTA_V7 from Andreas Spiess https://github.com/SensorsIot/Internet-of-Things-with-ESP8266
  *
  */
+#ifndef FASTLED_INTERRUPT_RETRY_COUNT
 #define FASTLED_INTERRUPT_RETRY_COUNT 0
-#include "FastLED.h"
+#endif
+#include <FastLED.h>
 #include "HTTPSRedirect.h"
+// COLOR_CODED_CLOCK can be enabled via build flags or uncomment below
 //#define COLOR_CODED_CLOCK
 
 //Calendar connection Settings

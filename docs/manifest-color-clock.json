@@ -1,0 +1,15 @@
+{
+  "name": "Perpetual Calendar (Color Coded Clock)",
+  "version": "2.0",
+  "builds": [
+    {
+      "chipFamily": "ESP8266",
+      "parts": [
+        {
+          "path": "firmware/perpetual-calendar-color-clock.bin",
+          "offset": 0
+        }
+      ]
+    }
+  ]
+}
