@@ -26,11 +26,8 @@ jobs:
           python -m pip install --upgrade pip
           pip install platformio
 
-      - name: Build Standard Firmware
-        run: pio run -e standard
-
-      - name: Build Color Coded Clock Firmware
-        run: pio run -e color_coded_clock
+      - name: Build All Firmware Variants
+        run: pio run
 
       - name: Prepare firmware files
         run: |
