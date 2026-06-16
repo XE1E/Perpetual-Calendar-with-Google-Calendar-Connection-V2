@@ -9,16 +9,21 @@ const char PAGE_Information[] PROGMEM = R"=====(
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <link rel="stylesheet" href="style.css" type="text/css" />
-<script src="microajax.js"></script> 
-<a href="/"  class="btn btn--s btn--grey">&#9664;</a>&nbsp;&nbsp;<strong>Network Information</strong>
+<script src="microajax.js"></script>
+<div style="display:flex;justify-content:space-between;align-items:center">
+<strong data-i18n="network_info">Informacion de Red</strong>
+<button id="langBtn" onclick="toggleLang()" class="btn btn--s btn--blue">EN</button>
+</div>
 <hr>
-<table border="0"  cellspacing="0" cellpadding="3" style="width:310px" >
-<tr><td align="right">SSID :</td><td><span id="x_ssid"></span></td></tr>
-<tr><td align="right">IP :</td><td><span id="x_ip"></span></td></tr>
-<tr><td align="right">Netmask :</td><td><span id="x_netmask"></span></td></tr>
-<tr><td align="right">Gateway :</td><td><span id="x_gateway"></span></td></tr>
-<tr><td align="right">Mac :</td><td><span id="x_mac"></span></td></tr>
+<table border="0" cellspacing="0" cellpadding="3" style="width:310px">
+<tr><td align="right">SSID:</td><td><span id="x_ssid"></span></td></tr>
+<tr><td align="right">IP:</td><td><span id="x_ip"></span></td></tr>
+<tr><td align="right" data-i18n="netmask">Mascara:</td><td><span id="x_netmask"></span></td></tr>
+<tr><td align="right" data-i18n="gateway">Puerta de Enlace:</td><td><span id="x_gateway"></span></td></tr>
+<tr><td align="right">MAC:</td><td><span id="x_mac"></span></td></tr>
 </table>
+<hr>
+<a href="/" style="width:250px" class="btn btn--m btn--grey"><span data-i18n="back">Volver</span></a>
 <script>
 
 function GetState()
@@ -28,10 +33,11 @@ function GetState()
 
 window.onload = function ()
 {
-  load("style.css","css", function() 
+  load("style.css","css", function()
   {
-    load("microajax.js","js", function() 
+    load("microajax.js","js", function()
     {
+        initLang();
         GetState();
     });
   });

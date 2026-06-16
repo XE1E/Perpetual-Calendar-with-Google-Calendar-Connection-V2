@@ -4,36 +4,40 @@
 const char PAGE_AutoBrightness[] PROGMEM = R"=====(
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <body>
-<strong>Auto Brightness Settings</strong>
+<div style="display:flex;justify-content:space-between;align-items:center">
+<strong data-i18n="auto_brightness">Brillo Automatico</strong>
+<button id="langBtn" onclick="toggleLang()" class="btn btn--s btn--blue">EN</button>
+</div>
 <hr>
 <form id="autoBrightnessForm">
 <table style="width:310px">
-<tr><td colspan="2"><input type="checkbox" id="enabled" onchange="toggleFields()"> Enable auto brightness</td></tr>
+<tr><td colspan="2"><input type="checkbox" id="enabled" onchange="toggleFields()"> <span data-i18n="enable_auto">Activar brillo automatico</span></td></tr>
 <tr><td colspan="2"><hr></td></tr>
-<tr><td style="width:150px">Day brightness:</td><td><input type="range" id="dayBright" min="5" max="255" value="150" oninput="showVal('dayBright','dayVal')"><span id="dayVal">150</span></td></tr>
-<tr><td>Night brightness:</td><td><input type="range" id="nightBright" min="0" max="255" value="30" oninput="showNightVal()"><span id="nightVal">30</span></td></tr>
+<tr><td style="width:150px" data-i18n="day_brightness">Brillo de dia:</td><td><input type="range" id="dayBright" min="5" max="255" value="150" oninput="showVal('dayBright','dayVal')"><span id="dayVal">150</span></td></tr>
+<tr><td data-i18n="night_brightness">Brillo de noche:</td><td><input type="range" id="nightBright" min="0" max="255" value="30" oninput="showNightVal()"><span id="nightVal">30</span></td></tr>
 <tr><td colspan="2"><hr></td></tr>
-<tr><td>Day starts at:</td><td><select id="dayStart"></select> hours</td></tr>
-<tr><td>Night starts at:</td><td><select id="nightStart"></select> hours</td></tr>
+<tr><td data-i18n="day_starts">Dia inicia a las:</td><td><select id="dayStart"></select> <span data-i18n="hours">horas</span></td></tr>
+<tr><td data-i18n="night_starts">Noche inicia a las:</td><td><select id="nightStart"></select> <span data-i18n="hours">horas</span></td></tr>
 <tr><td colspan="2" style="padding-top:10px">
-<input type="button" style="width:150px" class="btn btn--m btn--grey" value="Save" onclick="saveSettings()">
+<input type="button" id="saveBtn" style="width:150px" class="btn btn--m btn--grey" value="Guardar" onclick="saveSettings()">
 </td></tr>
 </table>
 </form>
 <hr>
-<strong>Current Status</strong>
+<strong data-i18n="current_status">Estado Actual</strong>
 <table style="width:310px">
-<tr><td style="width:150px">Current hour:</td><td><span id="currentHour">-</span></td></tr>
-<tr><td>Current mode:</td><td><span id="currentMode">-</span></td></tr>
-<tr><td>Current brightness:</td><td><span id="currentBrightness">-</span></td></tr>
+<tr><td style="width:150px" data-i18n="current_hour">Hora actual:</td><td><span id="currentHour">-</span></td></tr>
+<tr><td data-i18n="current_mode">Modo actual:</td><td><span id="currentMode">-</span></td></tr>
+<tr><td data-i18n="current_bright">Brillo actual:</td><td><span id="currentBrightness">-</span></td></tr>
 </table>
 <hr>
-<a href="/" style="width:250px" class="btn btn--m btn--grey">Back</a>
+<a href="/" style="width:250px" class="btn btn--m btn--grey"><span data-i18n="back">Volver</span></a>
 </body>
 <script>
 window.onload = function() {
     load("style.css","css", function() {
         load("microajax.js","js", function() {
+            initLang();
             initSelects();
             loadSettings();
         });
@@ -82,8 +86,9 @@ function loadSettings() {
         document.getElementById("dayStart").value = data.dayStart;
         document.getElementById("nightStart").value = data.nightStart;
         document.getElementById("currentHour").innerHTML = data.currentHour + ":00";
-        document.getElementById("currentMode").innerHTML = data.isDay == "1" ? "Day" : "Night";
+        document.getElementById("currentMode").innerHTML = data.isDay == "1" ? t("day") : t("night");
         document.getElementById("currentBrightness").innerHTML = data.currentBrightness;
+        document.getElementById("saveBtn").value = t("save");
         toggleFields();
     });
 }

@@ -4,30 +4,34 @@
 const char PAGE_OTA[] PROGMEM = R"=====(
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <body>
-<strong>OTA Update</strong>
+<div style="display:flex;justify-content:space-between;align-items:center">
+<strong data-i18n="ota_update">Actualizacion OTA</strong>
+<button id="langBtn" onclick="toggleLang()" class="btn btn--s btn--blue">EN</button>
+</div>
 <hr>
-<p>Over-The-Air updates are enabled.</p>
+<p data-i18n="ota_enabled">Actualizaciones OTA habilitadas.</p>
 <table style="width:310px">
 <tr><td style="width:150px">Hostname:</td><td><span id="hostname">-</span></td></tr>
-<tr><td>IP Address:</td><td><span id="ip">-</span></td></tr>
-<tr><td>Port:</td><td>8266</td></tr>
-<tr><td>Status:</td><td><span id="status" style="color:green">Ready</span></td></tr>
+<tr><td data-i18n="ip_address">Direccion IP:</td><td><span id="ip">-</span></td></tr>
+<tr><td data-i18n="port">Puerto:</td><td>8266</td></tr>
+<tr><td data-i18n="status">Estado:</td><td><span id="status" style="color:green" data-i18n="ready">Listo</span></td></tr>
 </table>
 <hr>
-<strong>Instructions</strong>
+<strong data-i18n="instructions">Instrucciones</strong>
 <ol>
-<li>Open Arduino IDE</li>
-<li>Go to Tools > Port</li>
-<li>Select the network port (calendario.local)</li>
-<li>Upload your sketch normally</li>
+<li data-i18n="ota_step1">Abrir Arduino IDE o PlatformIO</li>
+<li data-i18n="ota_step2">Ir a Tools > Port</li>
+<li data-i18n="ota_step3">Seleccionar el puerto de red</li>
+<li data-i18n="ota_step4">Subir el sketch normalmente</li>
 </ol>
 <hr>
-<a href="/" style="width:250px" class="btn btn--m btn--grey">Back</a>
+<a href="/" style="width:250px" class="btn btn--m btn--grey"><span data-i18n="back">Volver</span></a>
 </body>
 <script>
 window.onload = function() {
     load("style.css","css", function() {
         load("microajax.js","js", function() {
+            initLang();
             loadOTAInfo();
         });
     });

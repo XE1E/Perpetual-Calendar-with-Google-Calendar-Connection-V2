@@ -67,6 +67,17 @@ hr {
     background-color: #A7A88A;
     border-color: #A7A88A;
 }
+.btn--blue:link, .btn--blue:visited, .btn--blue {
+    color: #fff;
+    background-color: #3498db;
+    border-color: #3498db;
+    cursor: pointer;
+}
+.btn--blue:hover, .btn--blue:focus {
+    color: #fff !important;
+    background-color: #2980b9;
+    border-color: #2980b9;
+}
 @media screen and (min-width: 32em) {
     .btn--full {
         max-width: 16em !important;

@@ -20,10 +20,34 @@ A physical LED perpetual calendar powered by ESP8266 that syncs with Google Cale
 
 - 75 WS2811 addressable LEDs
 - Google Calendar integration (holidays, anniversaries, to-dos)
-- Auto brightness based on time of day
+- **Color-coded clock** displaying HH:MM:SS (6 LEDs)
+- **Auto brightness** with night mode (can turn off LEDs completely)
 - WiFi configuration via web interface
 - OTA (Over-The-Air) updates
-- Optional color-coded clock display
+- mDNS support (access via `http://perpetualcalendar.local`)
+
+### Color Coded Clock
+
+When enabled, 6 LEDs display the time using color-coded digits:
+
+| Digit | Color |
+|-------|-------|
+| 0 | Dark gray |
+| 1 | Red |
+| 2 | Orange |
+| 3 | Yellow |
+| 4 | Green |
+| 5 | Cyan |
+| 6 | Blue |
+| 7 | Purple |
+| 8 | Magenta |
+| 9 | Light gray |
+
+### Night Mode
+
+Configure auto-brightness to automatically dim or turn off LEDs at night:
+- Day brightness: 5-255
+- Night brightness: 0-255 (0 = completely off)
 
 ## Build from Source
 

@@ -8,33 +8,37 @@
 const char PAGE_NetworkConfiguration[] PROGMEM = R"=====(
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<a href="/"  class="btn btn--s btn--grey">&#9664;</a>&nbsp;&nbsp;<strong>Network Configuration</strong>
+<div style="display:flex;justify-content:space-between;align-items:center">
+<strong data-i18n="network_config">Configuracion de Red</strong>
+<button id="langBtn" onclick="toggleLang()" class="btn btn--s btn--blue">EN</button>
+</div>
 <hr>
-<strong>Primary Network:</strong><br>
+<strong data-i18n="primary_network">Red Principal:</strong><br>
 <form action="" method="get">
-<table border="0"  cellspacing="0" cellpadding="3" style="width:310px" >
+<table border="0" cellspacing="0" cellpadding="3" style="width:310px">
 <tr><td align="right">SSID:</td><td><input type="text" id="ssid" name="ssid" value=""></td></tr>
-<tr><td align="right">Password:</td><td><input type="text" id="password" name="password" value=""></td></tr>
-<tr><td colspan="2"><hr><strong>Backup Network (optional):</strong></td></tr>
+<tr><td align="right" data-i18n="password">Contrasena:</td><td><input type="text" id="password" name="password" value=""></td></tr>
+<tr><td colspan="2"><hr><strong data-i18n="backup_network">Red de Respaldo (opcional):</strong></td></tr>
 <tr><td align="right">SSID 2:</td><td><input type="text" id="ssid2" name="ssid2" value=""></td></tr>
-<tr><td align="right">Password 2:</td><td><input type="text" id="password2" name="password2" value=""></td></tr>
-<tr><td colspan="2"><hr><strong>IP Settings:</strong></td></tr>
+<tr><td align="right" data-i18n="password">Contrasena 2:</td><td><input type="text" id="password2" name="password2" value=""></td></tr>
+<tr><td colspan="2"><hr><strong data-i18n="ip_settings">Config IP:</strong></td></tr>
 <tr><td align="right">DHCP:</td><td><input type="checkbox" id="dhcp" name="dhcp"></td></tr>
-<tr><td align="right">IP:     </td><td><input type="text" id="ip_0" name="ip_0" size="3">.<input type="text" id="ip_1" name="ip_1" size="3">.<input type="text" id="ip_2" name="ip_2" size="3">.<input type="text" id="ip_3" name="ip_3" value="" size="3"></td></tr>
-<tr><td align="right">Netmask:</td><td><input type="text" id="nm_0" name="nm_0" size="3">.<input type="text" id="nm_1" name="nm_1" size="3">.<input type="text" id="nm_2" name="nm_2" size="3">.<input type="text" id="nm_3" name="nm_3" size="3"></td></tr>
-<tr><td align="right">Gateway:</td><td><input type="text" id="gw_0" name="gw_0" size="3">.<input type="text" id="gw_1" name="gw_1" size="3">.<input type="text" id="gw_2" name="gw_2" size="3">.<input type="text" id="gw_3" name="gw_3" size="3"></td></tr>
-<tr><td colspan="2" align="center"><input type="submit" style="width:150px" class="btn btn--m btn--grey" value="Save"></td></tr>
+<tr><td align="right">IP:</td><td><input type="text" id="ip_0" name="ip_0" size="3">.<input type="text" id="ip_1" name="ip_1" size="3">.<input type="text" id="ip_2" name="ip_2" size="3">.<input type="text" id="ip_3" name="ip_3" value="" size="3"></td></tr>
+<tr><td align="right" data-i18n="netmask">Mascara:</td><td><input type="text" id="nm_0" name="nm_0" size="3">.<input type="text" id="nm_1" name="nm_1" size="3">.<input type="text" id="nm_2" name="nm_2" size="3">.<input type="text" id="nm_3" name="nm_3" size="3"></td></tr>
+<tr><td align="right" data-i18n="gateway">Puerta Enlace:</td><td><input type="text" id="gw_0" name="gw_0" size="3">.<input type="text" id="gw_1" name="gw_1" size="3">.<input type="text" id="gw_2" name="gw_2" size="3">.<input type="text" id="gw_3" name="gw_3" size="3"></td></tr>
+<tr><td colspan="2" align="center"><input type="submit" id="saveBtn" style="width:150px" class="btn btn--m btn--grey" value="Guardar"></td></tr>
 </table>
 </form>
 <hr>
-<strong>Connection State:</strong><div id="connectionstate">N/A</div>
+<strong data-i18n="connection_state">Estado Conexion:</strong><div id="connectionstate">N/A</div>
 <hr>
-<strong>Networks:</strong><br>
-<table border="0"  cellspacing="3" style="width:310px" >
-<tr><td><div id="networks">Scanning...</div></td></tr>
-<tr><td align="center"><a href="javascript:GetState()" style="width:150px" class="btn btn--m btn--grey">Refresh</a></td></tr>
+<strong data-i18n="networks">Redes:</strong><br>
+<table border="0" cellspacing="3" style="width:310px">
+<tr><td><div id="networks">Buscando...</div></td></tr>
+<tr><td align="center"><a href="javascript:GetState()" id="refreshBtn" style="width:150px" class="btn btn--m btn--grey">Actualizar</a></td></tr>
 </table>
-
+<hr>
+<a href="/" style="width:250px" class="btn btn--m btn--grey"><span data-i18n="back">Volver</span></a>
 
 <script>
 
@@ -44,18 +48,21 @@ function GetState()
 }
 function selssid(value)
 {
-	document.getElementById("ssid").value = value; 
+	document.getElementById("ssid").value = value;
 }
 
 
 window.onload = function ()
 {
-	load("style.css","css", function() 
+	load("style.css","css", function()
 	{
-		load("microajax.js","js", function() 
+		load("microajax.js","js", function()
 		{
-					setValues("/admin/values");
-					setTimeout(GetState,3000);
+			initLang();
+			setValues("/admin/values");
+			setTimeout(GetState,3000);
+			document.getElementById("saveBtn").value = t("save");
+			document.getElementById("refreshBtn").innerHTML = t("refresh");
 		});
 	});
 }

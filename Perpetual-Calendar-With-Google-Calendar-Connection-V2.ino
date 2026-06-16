@@ -331,7 +331,7 @@ void setup() {
 		config.Gateway[2] = 1;
 		config.Gateway[3] = 254;
 		config.DeviceName = "Perpetual Calendar";
-		config.ntpServerName = "0.europe.pool.ntp.org"; // to be adjusted to PT ntp.ist.utl.pt
+		config.ntpServerName = "time.cloudflare.com";
 		config.Update_Time_Via_NTP_Every = 3;
 		config.timeZone = 20;
 		config.isDayLightSaving = true;

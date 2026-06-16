@@ -9,26 +9,29 @@
 const char PAGE_AdminMainPage[] PROGMEM = R"=====(
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <body>
-<strong>Perpetual Calendar</strong>
+<div style="display:flex;justify-content:space-between;align-items:center">
+<strong data-i18n="title">Calendario Perpetuo</strong>
+<button id="langBtn" onclick="toggleLang()" class="btn btn--s btn--blue">EN</button>
+</div>
 <hr>
-<a href="config.html" style="width:250px" class="btn btn--m btn--grey" >Network Configuration</a><br>
-<a href="info.html" style="width:250px"  class="btn btn--m btn--grey" >Network Information</a><br>
-<a href="ntp.html" style="width:250px"  class="btn btn--m btn--grey" >NTP Settings</a><br>
-<a href="appsscript.html" style="width:250px"  class="btn btn--m btn--grey" >Apps Script Settings</a><br>
-<a href="time.html" style="width:250px"  class="btn btn--m btn--grey" >Manual time setting</a><br>
-<a href="led.html" style="width:250px"  class="btn btn--m btn--grey" >LED Settings</a><br>
-<a href="autobrightness.html" style="width:250px"  class="btn btn--m btn--grey" >Auto Brightness</a><br>
-<a href="colors.html" style="width:250px"  class="btn btn--m btn--grey" >Color Settings</a><br>
-<a href="ota.html" style="width:250px"  class="btn btn--m btn--grey" >OTA Update</a><br>
+<a href="config.html" style="width:250px" class="btn btn--m btn--grey"><span data-i18n="network_config">Configuracion de Red</span></a><br>
+<a href="info.html" style="width:250px" class="btn btn--m btn--grey"><span data-i18n="network_info">Informacion de Red</span></a><br>
+<a href="ntp.html" style="width:250px" class="btn btn--m btn--grey"><span data-i18n="ntp_settings">Configuracion NTP</span></a><br>
+<a href="appsscript.html" style="width:250px" class="btn btn--m btn--grey"><span data-i18n="apps_script">Apps Script Config</span></a><br>
+<a href="time.html" style="width:250px" class="btn btn--m btn--grey"><span data-i18n="manual_time">Ajuste Manual de Hora</span></a><br>
+<a href="led.html" style="width:250px" class="btn btn--m btn--grey"><span data-i18n="led_settings">Configuracion LEDs</span></a><br>
+<a href="autobrightness.html" style="width:250px" class="btn btn--m btn--grey"><span data-i18n="auto_brightness">Brillo Automatico</span></a><br>
+<a href="colors.html" style="width:250px" class="btn btn--m btn--grey"><span data-i18n="color_settings">Configuracion Colores</span></a><br>
+<a href="ota.html" style="width:250px" class="btn btn--m btn--grey"><span data-i18n="ota_update">Actualizacion OTA</span></a><br>
 </body>
 <script>
 window.onload = function ()
 {
-	load("style.css","css", function() 
+	load("style.css","css", function()
 	{
-		load("microajax.js","js", function() 
+		load("microajax.js","js", function()
 		{
-				// Do something after load...
+			initLang();
 		});
 	});
 }

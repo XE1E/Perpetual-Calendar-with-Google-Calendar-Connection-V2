@@ -85,34 +85,41 @@ void saveCustomColors() {
 const char PAGE_ColorSettings[] PROGMEM = R"=====(
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <body>
-<strong>Color Settings</strong>
+<div style="display:flex;justify-content:space-between;align-items:center">
+<strong data-i18n="color_settings">Configuracion Colores</strong>
+<button id="langBtn" onclick="toggleLang()" class="btn btn--s btn--blue">EN</button>
+</div>
 <hr>
 <form id="colorForm">
 <table style="width:310px">
-<tr><td colspan="2"><input type="checkbox" id="enabled" onchange="toggleColors()"> Enable custom colors</td></tr>
-<tr><td style="width:120px">Weekdays:</td><td><input type="color" id="weekday" value="#00ff00"></td></tr>
-<tr><td>Weekends:</td><td><input type="color" id="weekend" value="#ff0000"></td></tr>
-<tr><td>Today:</td><td><input type="color" id="today" value="#0000ff"></td></tr>
-<tr><td>Holidays:</td><td><input type="color" id="holiday" value="#ff00ff"></td></tr>
-<tr><td>Anniversaries:</td><td><input type="color" id="anniversary" value="#00ffff"></td></tr>
-<tr><td>Todos:</td><td><input type="color" id="todo" value="#ffa500"></td></tr>
+<tr><td colspan="2"><input type="checkbox" id="enabled" onchange="toggleColors()"> <span data-i18n="custom_colors">Activar colores personalizados</span></td></tr>
+<tr><td style="width:120px" data-i18n="weekday_color">Dias laborales:</td><td><input type="color" id="weekday" value="#00ff00"></td></tr>
+<tr><td data-i18n="weekend_color">Fin de semana:</td><td><input type="color" id="weekend" value="#ff0000"></td></tr>
+<tr><td data-i18n="today_color">Dia actual:</td><td><input type="color" id="today" value="#0000ff"></td></tr>
+<tr><td data-i18n="holiday_color">Festivos:</td><td><input type="color" id="holiday" value="#ff00ff"></td></tr>
+<tr><td data-i18n="anniversary_color">Aniversarios:</td><td><input type="color" id="anniversary" value="#00ffff"></td></tr>
+<tr><td data-i18n="todo_color">Tareas:</td><td><input type="color" id="todo" value="#ffa500"></td></tr>
 <tr><td colspan="2" style="padding-top:10px">
-<input type="button" style="width:100px" class="btn btn--m btn--grey" value="Preview" onclick="previewColors()">
-<input type="button" style="width:100px" class="btn btn--m btn--grey" value="Save" onclick="saveColors()">
+<input type="button" id="previewBtn" style="width:120px" class="btn btn--m btn--grey" value="Vista Previa" onclick="previewColors()">
+<input type="button" id="saveBtn" style="width:100px" class="btn btn--m btn--grey" value="Guardar" onclick="saveColors()">
 </td></tr>
 <tr><td colspan="2">
-<input type="button" style="width:210px" class="btn btn--s btn--grey" value="Reset to Defaults" onclick="resetColors()">
+<input type="button" id="resetBtn" style="width:210px" class="btn btn--s btn--grey" value="Restablecer" onclick="resetColors()">
 </td></tr>
 </table>
 </form>
 <hr>
-<a href="/" style="width:250px" class="btn btn--m btn--grey">Back</a>
+<a href="/" style="width:250px" class="btn btn--m btn--grey"><span data-i18n="back">Volver</span></a>
 </body>
 <script>
 window.onload = function() {
     load("style.css","css", function() {
         load("microajax.js","js", function() {
+            initLang();
             loadColors();
+            document.getElementById("previewBtn").value = t("preview");
+            document.getElementById("saveBtn").value = t("save");
+            document.getElementById("resetBtn").value = t("reset_colors");
         });
     });
 }
