@@ -280,7 +280,7 @@ byte calendar_months[] = {19, 20, 21, 22, 7, 6, 5, 4, 3, 2, 1, 0};
 CHSV weekday_color     = rainbow_colors[4];  // Verde - días laborables
 CHSV actualday_color   = rainbow_colors[6];  // Azul - día actual
 CHSV weekend_color     = rainbow_colors[1];  // Rojo - fines de semana
-CRGB month_color       = rainbow_colors[9];  // Gris - indicador de mes
+CHSV month_color       = rainbow_colors[9];  // Gris - indicador de mes
 CHSV holidays_color    = rainbow_colors[7];  // Púrpura - festivos
 CHSV anniversaries_color = rainbow_colors[5]; // Cian - aniversarios
 CHSV todos_color       = rainbow_colors[2];  // Naranja - tareas
@@ -487,6 +487,10 @@ void initDatesArray(int (&Dates)[20], String calendarString) {
   - SSID: `PerpetualCalendar-XXXX` (XXXX = ID del chip)
   - Password: `admin1234`
 
+### Interfaz Bilingüe
+
+La interfaz web está disponible en **español** (por defecto) e **inglés**. En cada página hay un botón **ES/EN** para cambiar el idioma. La preferencia se guarda en el navegador (localStorage).
+
 ### Páginas Disponibles
 
 | URL | Descripción |
@@ -629,16 +633,17 @@ Permite cambiar los colores de cada tipo de día mediante selectores visuales.
 | Días laborables | Verde | Lunes a viernes |
 | Fines de semana | Rojo | Sábados y domingos |
 | Día actual | Azul | Día de hoy |
+| Mes actual | Gris claro | Indicador del mes actual |
 | Festivos | Púrpura | Eventos del calendario Holidays |
 | Aniversarios | Cian | Eventos del calendario Anniversaries |
 | Tareas | Naranja | Eventos del calendario Todos |
 
 **Funciones:**
-- **Preview:** Ver cambios en tiempo real sin guardar
-- **Save:** Guardar colores permanentemente
-- **Reset to Defaults:** Restaurar colores originales
+- **Vista Previa:** Ver cambios en tiempo real sin guardar
+- **Guardar:** Guardar colores permanentemente
+- **Restablecer:** Restaurar colores originales
 
-**EEPROM:** Direcciones 494-511
+**EEPROM:** Direcciones 494-515
 
 **Formato de almacenamiento:** HSV (Hue, Saturation, Value) - 3 bytes por color
 
@@ -733,7 +738,8 @@ El sistema monitorea constantemente la conexión WiFi y reconecta automáticamen
 | **501-503** | **3 bytes** | **Color día actual (HSV)** |
 | **504-506** | **3 bytes** | **Color festivos (HSV)** |
 | **507-509** | **3 bytes** | **Color aniversarios (HSV)** |
-| **510-511** | **2 bytes** | **Color tareas (HS)** |
+| **510-512** | **3 bytes** | **Color tareas (HSV)** |
+| **513-515** | **3 bytes** | **Color mes actual (HSV)** |
 | **520-551** | **32 bytes** | **SSID WiFi (red respaldo)** |
 | **552-583** | **32 bytes** | **Contraseña WiFi (red respaldo)** |
 

@@ -111,11 +111,24 @@ var i18n = {
 		"weekday_color": "Weekdays",
 		"weekend_color": "Weekends",
 		"today_color": "Today",
+		"month_color": "Current Month",
 		"holiday_color": "Holidays",
 		"anniversary_color": "Anniversaries",
 		"todo_color": "To-Dos",
 		"reset_colors": "Reset to Default",
-		"preview": "Preview"
+		"preview": "Preview",
+		// Gamma
+		"gamma_correction": "Gamma Correction",
+		"color_profile": "Color Profile",
+		"color_temp": "Temperature",
+		"no_correction": "No correction",
+		"typical_led": "TypicalLEDStrip",
+		"typical_smd": "TypicalSMD5050",
+		"no_adjustment": "No adjustment",
+		"direct_sun": "DirectSunlight",
+		"tungsten": "Tungsten100W",
+		"clear_sky": "ClearBlueSky",
+		"save_gamma": "Save Gamma"
 	},
 	es: {
 		// Menu principal
@@ -198,12 +211,25 @@ var i18n = {
 		"custom_colors": "Activar colores personalizados",
 		"weekday_color": "Dias laborales",
 		"weekend_color": "Fin de semana",
-		"today_color": "Color dia actual",
-		"holiday_color": "Color festivos",
-		"anniversary_color": "Color aniversarios",
-		"todo_color": "Color tareas",
+		"today_color": "Dia actual",
+		"month_color": "Mes actual",
+		"holiday_color": "Festivos",
+		"anniversary_color": "Aniversarios",
+		"todo_color": "Tareas",
 		"reset_colors": "Restablecer",
-		"preview": "Vista Previa"
+		"preview": "Vista Previa",
+		// Gamma
+		"gamma_correction": "Correccion Gamma",
+		"color_profile": "Perfil color",
+		"color_temp": "Temperatura",
+		"no_correction": "Sin correccion",
+		"typical_led": "TypicalLEDStrip",
+		"typical_smd": "TypicalSMD5050",
+		"no_adjustment": "Sin ajuste",
+		"direct_sun": "DirectSunlight",
+		"tungsten": "Tungsten100W",
+		"clear_sky": "ClearBlueSky",
+		"save_gamma": "Guardar Gamma"
 	}
 };
 

@@ -1,14 +1,21 @@
 #ifndef PAGE_COLORSETTINGS_H
 #define PAGE_COLORSETTINGS_H
 
-// EEPROM addresses for custom colors (494-511)
+// EEPROM addresses for custom colors (494-517)
 #define EEPROM_CUSTOM_COLORS_ENABLED 494
 #define EEPROM_COLOR_WEEKDAY 495      // 3 bytes (H, S, V)
 #define EEPROM_COLOR_WEEKEND 498      // 3 bytes
 #define EEPROM_COLOR_TODAY 501        // 3 bytes
 #define EEPROM_COLOR_HOLIDAY 504      // 3 bytes
 #define EEPROM_COLOR_ANNIVERSARY 507  // 3 bytes
-#define EEPROM_COLOR_TODO 510         // 3 bytes (uses 510, 511, and we need one more)
+#define EEPROM_COLOR_TODO 510         // 3 bytes
+#define EEPROM_COLOR_MONTH 513        // 3 bytes
+#define EEPROM_COLOR_CORRECTION 516   // 1 byte (0=none, 1=TypicalLEDStrip, 2=TypicalSMD5050)
+#define EEPROM_COLOR_TEMPERATURE 517  // 1 byte (0=none, 1=DirectSunlight, 2=Tungsten100W, 3=ClearBlueSky)
+
+// Color correction settings
+uint8_t colorCorrectionMode = 1;  // Default: TypicalLEDStrip
+uint8_t colorTemperatureMode = 1; // Default: DirectSunlight
 
 struct CustomColors {
     bool enabled;
@@ -18,6 +25,7 @@ struct CustomColors {
     CHSV holiday;
     CHSV anniversary;
     CHSV todo;
+    CHSV month;
 } customColors;
 
 void loadCustomColors() {
@@ -41,7 +49,10 @@ void loadCustomColors() {
                                          EEPROM.read(EEPROM_COLOR_ANNIVERSARY + 2));
         customColors.todo = CHSV(EEPROM.read(EEPROM_COLOR_TODO),
                                   EEPROM.read(EEPROM_COLOR_TODO + 1),
-                                  192); // Default value for V since we're out of EEPROM space
+                                  EEPROM.read(EEPROM_COLOR_TODO + 2));
+        customColors.month = CHSV(EEPROM.read(EEPROM_COLOR_MONTH),
+                                   EEPROM.read(EEPROM_COLOR_MONTH + 1),
+                                   EEPROM.read(EEPROM_COLOR_MONTH + 2));
 
         // Apply custom colors
         weekday_color = customColors.weekday;
@@ -50,6 +61,7 @@ void loadCustomColors() {
         holidays_color = customColors.holiday;
         anniversaries_color = customColors.anniversary;
         todos_color = customColors.todo;
+        month_color = customColors.month;
     }
 }
 
@@ -78,7 +90,48 @@ void saveCustomColors() {
 
     EEPROM.write(EEPROM_COLOR_TODO, customColors.todo.h);
     EEPROM.write(EEPROM_COLOR_TODO + 1, customColors.todo.s);
+    EEPROM.write(EEPROM_COLOR_TODO + 2, customColors.todo.v);
 
+    EEPROM.write(EEPROM_COLOR_MONTH, customColors.month.h);
+    EEPROM.write(EEPROM_COLOR_MONTH + 1, customColors.month.s);
+    EEPROM.write(EEPROM_COLOR_MONTH + 2, customColors.month.v);
+
+    EEPROM.commit();
+}
+
+void applyColorCorrection() {
+    // Apply color correction
+    switch (colorCorrectionMode) {
+        case 0: FastLED.setCorrection(UncorrectedColor); break;
+        case 1: FastLED.setCorrection(TypicalLEDStrip); break;
+        case 2: FastLED.setCorrection(TypicalSMD5050); break;
+        default: FastLED.setCorrection(TypicalLEDStrip); break;
+    }
+
+    // Apply color temperature
+    switch (colorTemperatureMode) {
+        case 0: FastLED.setTemperature(UncorrectedTemperature); break;
+        case 1: FastLED.setTemperature(DirectSunlight); break;
+        case 2: FastLED.setTemperature(Tungsten100W); break;
+        case 3: FastLED.setTemperature(ClearBlueSky); break;
+        default: FastLED.setTemperature(DirectSunlight); break;
+    }
+}
+
+void loadColorCorrection() {
+    uint8_t corr = EEPROM.read(EEPROM_COLOR_CORRECTION);
+    uint8_t temp = EEPROM.read(EEPROM_COLOR_TEMPERATURE);
+
+    // Validate values (255 = uninitialized EEPROM)
+    colorCorrectionMode = (corr <= 2) ? corr : 1;
+    colorTemperatureMode = (temp <= 3) ? temp : 1;
+
+    applyColorCorrection();
+}
+
+void saveColorCorrection() {
+    EEPROM.write(EEPROM_COLOR_CORRECTION, colorCorrectionMode);
+    EEPROM.write(EEPROM_COLOR_TEMPERATURE, colorTemperatureMode);
     EEPROM.commit();
 }
 
@@ -96,18 +149,41 @@ const char PAGE_ColorSettings[] PROGMEM = R"=====(
 <tr><td style="width:120px" data-i18n="weekday_color">Dias laborales:</td><td><input type="color" id="weekday" value="#00ff00"></td></tr>
 <tr><td data-i18n="weekend_color">Fin de semana:</td><td><input type="color" id="weekend" value="#ff0000"></td></tr>
 <tr><td data-i18n="today_color">Dia actual:</td><td><input type="color" id="today" value="#0000ff"></td></tr>
+<tr><td data-i18n="month_color">Mes actual:</td><td><input type="color" id="month" value="#c0c0c0"></td></tr>
 <tr><td data-i18n="holiday_color">Festivos:</td><td><input type="color" id="holiday" value="#ff00ff"></td></tr>
 <tr><td data-i18n="anniversary_color">Aniversarios:</td><td><input type="color" id="anniversary" value="#00ffff"></td></tr>
 <tr><td data-i18n="todo_color">Tareas:</td><td><input type="color" id="todo" value="#ffa500"></td></tr>
 <tr><td colspan="2" style="padding-top:10px">
-<input type="button" id="previewBtn" style="width:120px" class="btn btn--m btn--grey" value="Vista Previa" onclick="previewColors()">
-<input type="button" id="saveBtn" style="width:100px" class="btn btn--m btn--grey" value="Guardar" onclick="saveColors()">
+<input type="button" id="previewBtn" style="width:100px" class="btn btn--s btn--grey" value="Vista Previa" onclick="previewColors()">
+<input type="button" id="saveBtn" style="width:80px" class="btn btn--s btn--grey" value="Guardar" onclick="saveColors()">
 </td></tr>
 <tr><td colspan="2">
 <input type="button" id="resetBtn" style="width:210px" class="btn btn--s btn--grey" value="Restablecer" onclick="resetColors()">
 </td></tr>
 </table>
 </form>
+<hr>
+<strong data-i18n="gamma_correction">Correccion Gamma</strong>
+<table style="width:310px">
+<tr><td style="width:120px" data-i18n="color_profile">Perfil color:</td><td>
+<select id="correction" onchange="previewGamma()">
+<option value="0" data-i18n="no_correction">Sin correccion</option>
+<option value="1" data-i18n="typical_led">TypicalLEDStrip</option>
+<option value="2" data-i18n="typical_smd">TypicalSMD5050</option>
+</select>
+</td></tr>
+<tr><td data-i18n="color_temp">Temperatura:</td><td>
+<select id="temperature" onchange="previewGamma()">
+<option value="0" data-i18n="no_adjustment">Sin ajuste</option>
+<option value="1" data-i18n="direct_sun">DirectSunlight</option>
+<option value="2" data-i18n="tungsten">Tungsten100W</option>
+<option value="3" data-i18n="clear_sky">ClearBlueSky</option>
+</select>
+</td></tr>
+<tr><td colspan="2" style="padding-top:10px">
+<input type="button" id="saveGammaBtn" style="width:210px" class="btn btn--s btn--grey" value="Guardar Gamma" onclick="saveGamma()">
+</td></tr>
+</table>
 <hr>
 <a href="/" style="width:250px" class="btn btn--m btn--grey"><span data-i18n="back">Volver</span></a>
 </body>
@@ -117,9 +193,11 @@ window.onload = function() {
         load("microajax.js","js", function() {
             initLang();
             loadColors();
+            loadGamma();
             document.getElementById("previewBtn").value = t("preview");
             document.getElementById("saveBtn").value = t("save");
             document.getElementById("resetBtn").value = t("reset_colors");
+            document.getElementById("saveGammaBtn").value = t("save_gamma");
         });
     });
 }
@@ -172,6 +250,7 @@ function loadColors() {
         document.getElementById("weekday").value = hsvToHex(parseInt(data.weekday_h), parseInt(data.weekday_s), parseInt(data.weekday_v));
         document.getElementById("weekend").value = hsvToHex(parseInt(data.weekend_h), parseInt(data.weekend_s), parseInt(data.weekend_v));
         document.getElementById("today").value = hsvToHex(parseInt(data.today_h), parseInt(data.today_s), parseInt(data.today_v));
+        document.getElementById("month").value = hsvToHex(parseInt(data.month_h), parseInt(data.month_s), parseInt(data.month_v));
         document.getElementById("holiday").value = hsvToHex(parseInt(data.holiday_h), parseInt(data.holiday_s), parseInt(data.holiday_v));
         document.getElementById("anniversary").value = hsvToHex(parseInt(data.anniversary_h), parseInt(data.anniversary_s), parseInt(data.anniversary_v));
         document.getElementById("todo").value = hsvToHex(parseInt(data.todo_h), parseInt(data.todo_s), parseInt(data.todo_v));
@@ -204,6 +283,7 @@ function resetColors() {
     document.getElementById("weekday").value = "#00ff00";
     document.getElementById("weekend").value = "#ff0000";
     document.getElementById("today").value = "#0000ff";
+    document.getElementById("month").value = "#c0c0c0";
     document.getElementById("holiday").value = "#ff00ff";
     document.getElementById("anniversary").value = "#00ffff";
     document.getElementById("todo").value = "#ffa500";
@@ -218,6 +298,7 @@ function buildColorParams() {
     var weekday = hexToHsv(document.getElementById("weekday").value);
     var weekend = hexToHsv(document.getElementById("weekend").value);
     var today = hexToHsv(document.getElementById("today").value);
+    var month = hexToHsv(document.getElementById("month").value);
     var holiday = hexToHsv(document.getElementById("holiday").value);
     var anniversary = hexToHsv(document.getElementById("anniversary").value);
     var todo = hexToHsv(document.getElementById("todo").value);
@@ -226,9 +307,32 @@ function buildColorParams() {
         "&wdh=" + weekday.h + "&wds=" + weekday.s + "&wdv=" + weekday.v +
         "&weh=" + weekend.h + "&wes=" + weekend.s + "&wev=" + weekend.v +
         "&tdh=" + today.h + "&tds=" + today.s + "&tdv=" + today.v +
+        "&moh=" + month.h + "&mos=" + month.s + "&mov=" + month.v +
         "&hoh=" + holiday.h + "&hos=" + holiday.s + "&hov=" + holiday.v +
         "&anh=" + anniversary.h + "&ans=" + anniversary.s + "&anv=" + anniversary.v +
         "&toh=" + todo.h + "&tos=" + todo.s + "&tov=" + todo.v;
+}
+
+function loadGamma() {
+    microAjax("/admin/gammavalues", function(res) {
+        var data = JSON.parse(res);
+        document.getElementById("correction").value = data.correction;
+        document.getElementById("temperature").value = data.temperature;
+    });
+}
+
+function previewGamma() {
+    var corr = document.getElementById("correction").value;
+    var temp = document.getElementById("temperature").value;
+    microAjax("/admin/previewgamma?corr=" + corr + "&temp=" + temp, function(res) {});
+}
+
+function saveGamma() {
+    var corr = document.getElementById("correction").value;
+    var temp = document.getElementById("temperature").value;
+    microAjax("/admin/savegamma?corr=" + corr + "&temp=" + temp, function(res) {
+        alert("Gamma saved!");
+    });
 }
 </script>
 )=====";
@@ -249,6 +353,9 @@ void send_Color_Settings_values_html() {
     response += "\"today_h\":\"" + String(actualday_color.h) + "\",";
     response += "\"today_s\":\"" + String(actualday_color.s) + "\",";
     response += "\"today_v\":\"" + String(actualday_color.v) + "\",";
+    response += "\"month_h\":\"" + String(month_color.h) + "\",";
+    response += "\"month_s\":\"" + String(month_color.s) + "\",";
+    response += "\"month_v\":\"" + String(month_color.v) + "\",";
     response += "\"holiday_h\":\"" + String(holidays_color.h) + "\",";
     response += "\"holiday_s\":\"" + String(holidays_color.s) + "\",";
     response += "\"holiday_v\":\"" + String(holidays_color.v) + "\",";
@@ -277,6 +384,10 @@ void applyColorsFromArgs() {
     if (server.hasArg("tdh")) {
         actualday_color = CHSV(server.arg("tdh").toInt(), server.arg("tds").toInt(), server.arg("tdv").toInt());
         customColors.today = actualday_color;
+    }
+    if (server.hasArg("moh")) {
+        month_color = CHSV(server.arg("moh").toInt(), server.arg("mos").toInt(), server.arg("mov").toInt());
+        customColors.month = month_color;
     }
     if (server.hasArg("hoh")) {
         holidays_color = CHSV(server.arg("hoh").toInt(), server.arg("hos").toInt(), server.arg("hov").toInt());
@@ -311,10 +422,44 @@ void handle_reset_colors() {
     weekday_color = rainbow_colors[4];
     weekend_color = rainbow_colors[1];
     actualday_color = rainbow_colors[6];
+    month_color = rainbow_colors[9];
     holidays_color = rainbow_colors[7];
     anniversaries_color = rainbow_colors[5];
     todos_color = rainbow_colors[2];
     saveCustomColors();
+    temp_hour = -1;
+    server.send(200, "text/plain", "OK");
+}
+
+void send_gamma_values_html() {
+    String response = "{";
+    response += "\"correction\":\"" + String(colorCorrectionMode) + "\",";
+    response += "\"temperature\":\"" + String(colorTemperatureMode) + "\"";
+    response += "}";
+    server.send(200, "application/json", response);
+}
+
+void handle_preview_gamma() {
+    if (server.hasArg("corr")) {
+        colorCorrectionMode = server.arg("corr").toInt();
+    }
+    if (server.hasArg("temp")) {
+        colorTemperatureMode = server.arg("temp").toInt();
+    }
+    applyColorCorrection();
+    temp_hour = -1;
+    server.send(200, "text/plain", "OK");
+}
+
+void handle_save_gamma() {
+    if (server.hasArg("corr")) {
+        colorCorrectionMode = server.arg("corr").toInt();
+    }
+    if (server.hasArg("temp")) {
+        colorTemperatureMode = server.arg("temp").toInt();
+    }
+    applyColorCorrection();
+    saveColorCorrection();
     temp_hour = -1;
     server.send(200, "text/plain", "OK");
 }

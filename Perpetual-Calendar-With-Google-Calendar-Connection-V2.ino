@@ -54,7 +54,7 @@ CHSV actualday_color = rainbow_colors[6];
 //CHSV weekend_color = CHSV(0, 255, 128);
 CHSV weekend_color = rainbow_colors[1];
 //CRGB month_color = CRGB(128, 128, 128);
-CRGB month_color = rainbow_colors[9];
+CHSV month_color = rainbow_colors[9];
 //CHSV holidays_color = CHSV(192, 255,255);
 CHSV holidays_color = rainbow_colors[7];
 //CHSV anniversaries_color = CHSV(128, 255, 255);
@@ -397,6 +397,9 @@ void setup() {
 	server.on("/admin/previewcolors", handle_preview_colors);
 	server.on("/admin/savecolors", handle_save_colors);
 	server.on("/admin/resetcolors", handle_reset_colors);
+	server.on("/admin/gammavalues", send_gamma_values_html);
+	server.on("/admin/previewgamma", handle_preview_gamma);
+	server.on("/admin/savegamma", handle_save_gamma);
 	server.onNotFound([]() {
 		Serial.println("Page Not Found");
 		server.send ( 400, "text/html", "Page not Found" );
@@ -463,7 +466,8 @@ void setup() {
 	tkSecond.attach(1, ISRsecondTick);
 
 	// tell FastLED about the LED strip configuration
-	FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalSMD5050);
+	FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS);
+	loadColorCorrection();  // Load correction/temperature from EEPROM
 	FastLED.setBrightness(BRIGHTNESS);
 	Serial.println("FastLed Setup done");
 
