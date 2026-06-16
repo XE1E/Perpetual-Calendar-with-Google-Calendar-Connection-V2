@@ -40,8 +40,8 @@ byte calendar_leds[] = {68, 69, 70, 71, 72, 73, 74,
 		10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
 		9, 8, 7, 6, 5, 4, 3, 2, 1, 0};
 byte calendar_months[] = {19, 20, 21, 22, 7, 6, 5, 4, 3, 2, 1, 0};
-byte warning_led = 62; // LED for no wifi warning
-// Clock uses LEDs 63-66 for HH:MM when COLOR_CODED_CLOCK is enabled (LED 67 = separator)
+// Clock uses LEDs 62-67 for HH:MM:SS when COLOR_CODED_CLOCK is enabled
+// WiFi warning: clock LEDs blink red when no connection
 
 // https://github.com/FastLED/FastLED/wiki/FastLED-HSV-Colors - Color map: "Rainbow" vs "Spectrum"
 //also dark grey and light grey for ten color values as in instructable - https://www.instructables.com/Color-Coded-Clock-Colors-Show-the-Time/
@@ -499,8 +499,22 @@ void loop() {
 	//============================
 	if (WIFI_connected != WL_CONNECTED and manual_time_set == false) {
 		config.Update_Time_Via_NTP_Every = 0;
-		//display_led_no_wifi
-		leds[warning_led] = rainbow_colors[1];
+#ifdef COLOR_CODED_CLOCK
+		// Blink clock LEDs red when no WiFi
+		static unsigned long lastWifiBlink = 0;
+		static bool wifiBlinkState = false;
+		if (millis() - lastWifiBlink > 500) {
+			lastWifiBlink = millis();
+			wifiBlinkState = !wifiBlinkState;
+			CRGB wifiColor = wifiBlinkState ? CRGB(255, 0, 0) : CRGB(0, 0, 0);
+			for (int i = 62; i <= 67; i++) {
+				leds[i] = wifiColor;
+			}
+		}
+#else
+		// Show red on first calendar LED when no WiFi
+		leds[calendar_leds[0]] = CRGB(255, 0, 0);
+#endif
 		FastLED.show();
 	} else if (ntp_response_ok == false and manual_time_set == false) {
 		config.Update_Time_Via_NTP_Every = 1;
@@ -525,7 +539,10 @@ void loop() {
 		if (temp_minute != DateTime.minute) {
 			temp_minute = DateTime.minute;
 			getCalendar(config.TodosScriptID);
-			yield(); // Allow other tasks to run
+			yield();
+#ifdef COLOR_CODED_CLOCK
+			updateClockIfNeeded(DateTime.hour, DateTime.minute, DateTime.second);
+#endif
 			if (escriptData != calendarData) {
 				initDatesArray(Todos, calendarData);
 				escriptData = calendarData;
@@ -539,10 +556,16 @@ void loop() {
 
 			getCalendar(config.HolidaysScriptID);
 			yield();
+#ifdef COLOR_CODED_CLOCK
+			updateClockIfNeeded(DateTime.hour, DateTime.minute, DateTime.second);
+#endif
 			initDatesArray(Holidays, calendarData);
 
 			getCalendar(config.AnniversariesScriptID);
 			yield();
+#ifdef COLOR_CODED_CLOCK
+			updateClockIfNeeded(DateTime.hour, DateTime.minute, DateTime.second);
+#endif
 			initDatesArray(Anniversaries, calendarData);
 
 			CalendarDisplay(DateTime.year, DateTime.month, DateTime.day);
