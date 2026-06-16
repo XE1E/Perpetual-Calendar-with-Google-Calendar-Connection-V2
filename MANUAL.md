@@ -314,16 +314,16 @@ El modo reloj está **desactivado por defecto**. Para activarlo, descomentar la 
 #define COLOR_CODED_CLOCK  // Descomentar para activar
 ```
 
-### Layout del Reloj (5 LEDs)
+### Layout del Reloj (6 LEDs)
 
 ```
-LED 63   LED 64   LED 65   LED 66   LED 67
- ┌──┐    ┌──┐     ┌──┐     ┌──┐     ┌──┐
- │H1│    │H2│     │: │     │M1│     │M2│
- └──┘    └──┘     └──┘     └──┘     └──┘
-  ↓       ↓        ↓        ↓        ↓
-Decena  Unidad  Separador Decena  Unidad
- Hora    Hora   (parpadea) Minuto  Minuto
+LED 62   LED 63   LED 64   LED 65   LED 66   LED 67
+ ┌──┐    ┌──┐     ┌──┐     ┌──┐     ┌──┐     ┌──┐
+ │H1│    │H2│     │M1│     │M2│     │S1│     │S2│
+ └──┘    └──┘     └──┘     └──┘     └──┘     └──┘
+  ↓       ↓        ↓        ↓        ↓        ↓
+Decena  Unidad  Decena   Unidad   Decena   Unidad
+ Hora    Hora   Minuto   Minuto   Segundo  Segundo
 ```
 
 ### Codificación de Colores por Dígito
@@ -341,23 +341,27 @@ Decena  Unidad  Separador Decena  Unidad
 | 8 | Magenta | (214, 255, 255) |
 | 9 | Gris claro | (0, 0, 192) |
 
-### Ejemplo: Hora 14:35
+### Ejemplo: Hora 14:35:27
 
 ```
-LED 63 = 1 → Rojo
-LED 64 = 4 → Verde
-LED 65 = : → Parpadea cada segundo (blanco/apagado)
-LED 66 = 3 → Amarillo
-LED 67 = 5 → Cian
+LED 62 = 1 → Rojo      (decena hora)
+LED 63 = 4 → Verde     (unidad hora)
+LED 64 = 3 → Amarillo  (decena minuto)
+LED 65 = 5 → Cian      (unidad minuto)
+LED 66 = 2 → Naranja   (decena segundo)
+LED 67 = 7 → Púrpura   (unidad segundo)
 ```
 
 ### Separación de LEDs
 
 ```
-LED 62:     Indicador de advertencia (sin WiFi) - INDEPENDIENTE
-LEDs 63-67: Reloj HH:MM con separador parpadeante
+LEDs 62-67: Reloj HH:MM:SS (6 dígitos)
 LEDs 68-74: Primera fila del calendario
 ```
+
+### Indicador de WiFi
+
+Cuando no hay conexión WiFi, los 6 LEDs del reloj **parpadean en rojo** como indicador visual.
 
 > **Nota:** El reloj se actualiza automáticamente cada segundo y se redibuja después de cada actualización del calendario para evitar sobrescrituras.
 
@@ -573,7 +577,7 @@ Permite actualizar el firmware sin conexión USB, directamente desde Arduino IDE
 **Página:** `/led.html`
 
 **Características:**
-- Slider de brillo: 10-255
+- Slider de brillo: 5-255
 - Cambio en tiempo real (preview)
 - Guardado permanente en EEPROM
 - Botón "Test LEDs" para verificar funcionamiento
@@ -583,28 +587,30 @@ Permite actualizar el firmware sin conexión USB, directamente desde Arduino IDE
 
 ---
 
-### Auto-Brillo por Hora
+### Auto-Brillo por Hora (Modo Nocturno)
 
 **Página:** `/autobrightness.html`
 
-Ajusta automáticamente el brillo según la hora del día.
+Ajusta automáticamente el brillo según la hora del día. Permite configurar un modo nocturno con brillo reducido o LEDs completamente apagados.
 
 **Configuración:**
 
 | Parámetro | Descripción | Rango |
 |-----------|-------------|-------|
-| Brillo día | Brillo durante horas diurnas | 10-255 |
-| Brillo noche | Brillo durante horas nocturnas | 10-255 |
+| Brillo día | Brillo durante horas diurnas | 5-255 |
+| Brillo noche | Brillo durante horas nocturnas | 0-255 (0 = OFF) |
 | Hora inicio día | Hora a la que comienza modo día | 0-23 |
 | Hora inicio noche | Hora a la que comienza modo noche | 0-23 |
 
 **Ejemplo de configuración:**
 ```
 Brillo día: 150
-Brillo noche: 30
+Brillo noche: 15 (o 0 para apagar completamente)
 Inicio día: 07:00
 Inicio noche: 22:00
 ```
+
+> **Tip:** Configura brillo noche en **0** para apagar completamente los LEDs durante la noche.
 
 **EEPROM:** Direcciones 489-493
 
@@ -975,10 +981,10 @@ function doGet() {
 | EEPROM emulada | 640 bytes |
 | LEDs soportados | 75 (WS2811/WS2812) |
 | LEDs calendario | 68 (días) + 12 (meses) |
-| LEDs reloj | 5 (HH:MM + separador) |
-| LED advertencia | 1 (sin WiFi) |
+| LEDs reloj | 6 (HH:MM:SS) |
+| Indicador WiFi | Reloj parpadea rojo |
 | Brillo por defecto | 100/255 |
-| Brillo mínimo | 10/255 |
+| Brillo mínimo | 5/255 (0 = apagado en modo noche) |
 | Puerto web | 80 |
 | Puerto OTA | 8266 |
 | Puerto NTP | 2390 (cliente) |
