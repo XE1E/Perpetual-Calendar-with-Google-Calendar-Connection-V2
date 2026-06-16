@@ -11,7 +11,7 @@ const char PAGE_AutoBrightness[] PROGMEM = R"=====(
 <tr><td colspan="2"><input type="checkbox" id="enabled" onchange="toggleFields()"> Enable auto brightness</td></tr>
 <tr><td colspan="2"><hr></td></tr>
 <tr><td style="width:150px">Day brightness:</td><td><input type="range" id="dayBright" min="5" max="255" value="150" oninput="showVal('dayBright','dayVal')"><span id="dayVal">150</span></td></tr>
-<tr><td>Night brightness:</td><td><input type="range" id="nightBright" min="5" max="255" value="30" oninput="showVal('nightBright','nightVal')"><span id="nightVal">30</span></td></tr>
+<tr><td>Night brightness:</td><td><input type="range" id="nightBright" min="0" max="255" value="30" oninput="showNightVal()"><span id="nightVal">30</span></td></tr>
 <tr><td colspan="2"><hr></td></tr>
 <tr><td>Day starts at:</td><td><select id="dayStart"></select> hours</td></tr>
 <tr><td>Night starts at:</td><td><select id="nightStart"></select> hours</td></tr>
@@ -58,6 +58,11 @@ function showVal(inputId, spanId) {
     document.getElementById(spanId).innerHTML = document.getElementById(inputId).value;
 }
 
+function showNightVal() {
+    var val = document.getElementById("nightBright").value;
+    document.getElementById("nightVal").innerHTML = val == 0 ? "OFF" : val;
+}
+
 function toggleFields() {
     var enabled = document.getElementById("enabled").checked;
     document.getElementById("dayBright").disabled = !enabled;
@@ -73,7 +78,7 @@ function loadSettings() {
         document.getElementById("dayBright").value = data.dayBrightness;
         document.getElementById("dayVal").innerHTML = data.dayBrightness;
         document.getElementById("nightBright").value = data.nightBrightness;
-        document.getElementById("nightVal").innerHTML = data.nightBrightness;
+        document.getElementById("nightVal").innerHTML = data.nightBrightness == 0 ? "OFF" : data.nightBrightness;
         document.getElementById("dayStart").value = data.dayStart;
         document.getElementById("nightStart").value = data.nightStart;
         document.getElementById("currentHour").innerHTML = data.currentHour + ":00";
