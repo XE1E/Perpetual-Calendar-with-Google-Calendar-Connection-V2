@@ -8,7 +8,7 @@ const char PAGE_LEDSettings[] PROGMEM = R"=====(
 <hr>
 <form action="">
 <table style="width:310px">
-<tr><td style="width:150px">Brightness:</td><td><input type="range" id="brightness" name="brightness" min="10" max="255" value="100" oninput="updateBrightness(this.value)"><span id="brightnessVal">100</span></td></tr>
+<tr><td style="width:150px">Brightness:</td><td><input type="range" id="brightness" name="brightness" min="5" max="255" value="100" oninput="updateBrightness(this.value)"><span id="brightnessVal">100</span></td></tr>
 <tr><td colspan="2" style="padding-top:10px"><input type="button" style="width:150px" class="btn btn--m btn--grey" value="Save" onclick="saveBrightness()"></td></tr>
 </table>
 </form>
@@ -73,7 +73,7 @@ void send_LED_Settings_values_html() {
 void handle_set_brightness() {
     if (server.hasArg("val")) {
         BRIGHTNESS = server.arg("val").toInt();
-        if (BRIGHTNESS < 10) BRIGHTNESS = 10;
+        if (BRIGHTNESS < 5) BRIGHTNESS = 5;
         if (BRIGHTNESS > 255) BRIGHTNESS = 255;
         FastLED.setBrightness(BRIGHTNESS);
         FastLED.show();
@@ -84,7 +84,7 @@ void handle_set_brightness() {
 void handle_save_brightness() {
     if (server.hasArg("val")) {
         BRIGHTNESS = server.arg("val").toInt();
-        if (BRIGHTNESS < 10) BRIGHTNESS = 10;
+        if (BRIGHTNESS < 5) BRIGHTNESS = 5;
         if (BRIGHTNESS > 255) BRIGHTNESS = 255;
         EEPROM.write(488, BRIGHTNESS);
         EEPROM.commit();

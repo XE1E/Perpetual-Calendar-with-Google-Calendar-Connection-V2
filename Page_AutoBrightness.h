@@ -10,8 +10,8 @@ const char PAGE_AutoBrightness[] PROGMEM = R"=====(
 <table style="width:310px">
 <tr><td colspan="2"><input type="checkbox" id="enabled" onchange="toggleFields()"> Enable auto brightness</td></tr>
 <tr><td colspan="2"><hr></td></tr>
-<tr><td style="width:150px">Day brightness:</td><td><input type="range" id="dayBright" min="10" max="255" value="150" oninput="showVal('dayBright','dayVal')"><span id="dayVal">150</span></td></tr>
-<tr><td>Night brightness:</td><td><input type="range" id="nightBright" min="10" max="255" value="30" oninput="showVal('nightBright','nightVal')"><span id="nightVal">30</span></td></tr>
+<tr><td style="width:150px">Day brightness:</td><td><input type="range" id="dayBright" min="5" max="255" value="150" oninput="showVal('dayBright','dayVal')"><span id="dayVal">150</span></td></tr>
+<tr><td>Night brightness:</td><td><input type="range" id="nightBright" min="5" max="255" value="30" oninput="showVal('nightBright','nightVal')"><span id="nightVal">30</span></td></tr>
 <tr><td colspan="2"><hr></td></tr>
 <tr><td>Day starts at:</td><td><select id="dayStart"></select> hours</td></tr>
 <tr><td>Night starts at:</td><td><select id="nightStart"></select> hours</td></tr>

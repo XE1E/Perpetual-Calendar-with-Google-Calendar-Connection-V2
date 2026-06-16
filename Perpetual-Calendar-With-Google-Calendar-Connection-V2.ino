@@ -444,7 +444,7 @@ void setup() {
 
 	// Read brightness from EEPROM
 	byte savedBrightness = EEPROM.read(488);
-	if (savedBrightness >= 10 && savedBrightness <= 255) {
+	if (savedBrightness >= 5 && savedBrightness <= 255) {
 		BRIGHTNESS = savedBrightness;
 	}
 
