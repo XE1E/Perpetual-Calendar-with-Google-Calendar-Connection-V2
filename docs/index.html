@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Perpetual Calendar - Web Flasher</title>
+  <title>Calendario Perpetuo - Web Flasher</title>
   <script type="module" src="https://unpkg.com/esp-web-tools@10/dist/web/install-button.js?module"></script>
   <style>
     :root {
@@ -37,6 +37,37 @@
     header {
       text-align: center;
       margin-bottom: 3rem;
+      position: relative;
+    }
+
+    .lang-toggle {
+      position: absolute;
+      top: 0;
+      right: 0;
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .lang-btn {
+      background: var(--card-bg);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: var(--text-muted);
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+
+    .lang-btn:hover {
+      background: rgba(255,255,255,0.1);
+    }
+
+    .lang-btn.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
     }
 
     h1 {
@@ -176,69 +207,183 @@
 <body>
   <div class="container">
     <header>
-      <h1>Perpetual Calendar</h1>
-      <p class="subtitle">LED Calendar with Google Calendar Integration</p>
+      <div class="lang-toggle">
+        <button class="lang-btn active" data-lang="es">ES</button>
+        <button class="lang-btn" data-lang="en">EN</button>
+      </div>
+      <h1 data-i18n="title">Calendario Perpetuo</h1>
+      <p class="subtitle" data-i18n="subtitle">Calendario LED con Integración de Google Calendar</p>
     </header>
 
     <div class="cards">
       <div class="card">
-        <span class="badge">Recommended</span>
-        <h2>Standard Version</h2>
-        <p>The classic perpetual calendar displaying the current month with Google Calendar events.</p>
+        <span class="badge" data-i18n="badge_recommended">Recomendado</span>
+        <h2 data-i18n="standard_title">Versión Estándar</h2>
+        <p data-i18n="standard_desc">El calendario perpetuo clásico que muestra el mes actual con eventos de Google Calendar.</p>
         <ul>
-          <li>75 WS2811 LEDs</li>
-          <li>Google Calendar sync</li>
-          <li>Holidays, anniversaries, todos</li>
-          <li>Auto brightness</li>
-          <li>OTA updates</li>
+          <li data-i18n="standard_f1">75 LEDs WS2811</li>
+          <li data-i18n="standard_f2">Sincronización con Google Calendar</li>
+          <li data-i18n="standard_f3">Festivos, aniversarios, tareas</li>
+          <li data-i18n="standard_f4">Brillo automático</li>
+          <li data-i18n="standard_f5">Actualizaciones OTA</li>
         </ul>
         <esp-web-install-button manifest="manifest.json">
-          <button slot="activate">Install Standard</button>
-          <span slot="unsupported">Your browser doesn't support Web Serial. Use Chrome or Edge.</span>
-          <span slot="not-allowed">Installation not allowed. Connect via HTTPS.</span>
+          <button slot="activate" data-i18n="install_standard">Instalar Estándar</button>
+          <span slot="unsupported" data-i18n="unsupported">Tu navegador no soporta Web Serial. Usa Chrome o Edge.</span>
+          <span slot="not-allowed" data-i18n="not_allowed">Instalación no permitida. Conecta vía HTTPS.</span>
         </esp-web-install-button>
       </div>
 
       <div class="card">
-        <span class="badge">Extended</span>
-        <h2>Color Coded Clock</h2>
-        <p>Includes everything from Standard plus a color-coded clock display using LEDs 63-67.</p>
+        <span class="badge" data-i18n="badge_extended">Extendido</span>
+        <h2 data-i18n="clock_title">Reloj de Colores</h2>
+        <p data-i18n="clock_desc">Incluye todo lo de la versión Estándar más un reloj con código de colores usando los LEDs 62-67.</p>
         <ul>
-          <li>All standard features</li>
-          <li>Color coded time display</li>
-          <li>Uses LEDs 63-66 for HH:MM</li>
-          <li>LED 67 as separator</li>
+          <li data-i18n="clock_f1">Todas las funciones estándar</li>
+          <li data-i18n="clock_f2">Muestra HH:MM:SS con colores</li>
+          <li data-i18n="clock_f3">LEDs 62-63 para horas</li>
+          <li data-i18n="clock_f4">LEDs 64-65 para minutos, 66-67 para segundos</li>
         </ul>
         <esp-web-install-button manifest="manifest-color-clock.json">
-          <button slot="activate">Install Color Clock</button>
-          <span slot="unsupported">Your browser doesn't support Web Serial. Use Chrome or Edge.</span>
-          <span slot="not-allowed">Installation not allowed. Connect via HTTPS.</span>
+          <button slot="activate" data-i18n="install_clock">Instalar Reloj de Colores</button>
+          <span slot="unsupported" data-i18n="unsupported">Tu navegador no soporta Web Serial. Usa Chrome o Edge.</span>
+          <span slot="not-allowed" data-i18n="not_allowed">Instalación no permitida. Conecta vía HTTPS.</span>
         </esp-web-install-button>
       </div>
     </div>
 
     <div class="instructions">
-      <h2>How to Install</h2>
+      <h2 data-i18n="how_to_install">Cómo Instalar</h2>
       <ol>
-        <li><strong>Connect your ESP8266</strong> (D1 Mini or compatible) to your computer via USB.</li>
-        <li><strong>Click the Install button</strong> for your preferred version above.</li>
-        <li><strong>Select the serial port</strong> when prompted by your browser.</li>
-        <li><strong>Wait for the installation</strong> to complete (about 30 seconds).</li>
-        <li><strong>Connect to WiFi:</strong> After flashing, connect to the "PerpetualCalendar-XXXX" WiFi network (password: admin1234).</li>
-        <li><strong>Configure:</strong> Open http://192.168.4.1 in your browser to set up WiFi and Google Calendar.</li>
+        <li><strong data-i18n="step1_title">Conecta tu ESP8266</strong> <span data-i18n="step1_desc">(D1 Mini o compatible) a tu computadora vía USB.</span></li>
+        <li><strong data-i18n="step2_title">Haz clic en el botón Instalar</strong> <span data-i18n="step2_desc">de la versión que prefieras arriba.</span></li>
+        <li><strong data-i18n="step3_title">Selecciona el puerto serial</strong> <span data-i18n="step3_desc">cuando tu navegador lo solicite.</span></li>
+        <li><strong data-i18n="step4_title">Espera a que la instalación</strong> <span data-i18n="step4_desc">se complete (aproximadamente 30 segundos).</span></li>
+        <li><strong data-i18n="step5_title">Conéctate al WiFi:</strong> <span data-i18n="step5_desc">Después de flashear, conéctate a la red WiFi "PerpetualCalendar-XXXX" (contraseña: admin1234).</span></li>
+        <li><strong data-i18n="step6_title">Configura:</strong> <span data-i18n="step6_desc">Abre http://192.168.4.1 en tu navegador para configurar WiFi y Google Calendar.</span></li>
       </ol>
 
       <div class="warning">
-        <strong>Note:</strong> This requires Chrome, Edge, or Opera browser. Firefox and Safari do not support Web Serial API. Make sure no other program (like Arduino IDE) is using the serial port.
+        <strong data-i18n="note">Nota:</strong> <span data-i18n="warning_text">Esto requiere navegador Chrome, Edge u Opera. Firefox y Safari no soportan la API Web Serial. Asegúrate de que ningún otro programa (como Arduino IDE) esté usando el puerto serial.</span>
       </div>
     </div>
 
     <footer>
       <p>
-        <a href="https://github.com/XE1E/Perpetual-Calendar-with-Google-Calendar-Connection-V2">GitHub Repository</a> |
-        <a href="https://www.instructables.com/Perpetual-Calendar-With-Google-Calendar-Connection/">Instructables Guide</a>
+        <a href="https://github.com/XE1E/Perpetual-Calendar-with-Google-Calendar-Connection-V2" data-i18n="github">Repositorio en GitHub</a> |
+        <a href="https://www.instructables.com/Perpetual-Calendar-With-Google-Calendar-Connection/" data-i18n="instructables">Guía en Instructables</a>
       </p>
     </footer>
   </div>
+
+  <script>
+    const translations = {
+      es: {
+        title: "Calendario Perpetuo",
+        subtitle: "Calendario LED con Integración de Google Calendar",
+        badge_recommended: "Recomendado",
+        badge_extended: "Extendido",
+        standard_title: "Versión Estándar",
+        standard_desc: "El calendario perpetuo clásico que muestra el mes actual con eventos de Google Calendar.",
+        standard_f1: "75 LEDs WS2811",
+        standard_f2: "Sincronización con Google Calendar",
+        standard_f3: "Festivos, aniversarios, tareas",
+        standard_f4: "Brillo automático",
+        standard_f5: "Actualizaciones OTA",
+        install_standard: "Instalar Estándar",
+        clock_title: "Reloj de Colores",
+        clock_desc: "Incluye todo lo de la versión Estándar más un reloj con código de colores usando los LEDs 62-67.",
+        clock_f1: "Todas las funciones estándar",
+        clock_f2: "Muestra HH:MM:SS con colores",
+        clock_f3: "LEDs 62-63 para horas",
+        clock_f4: "LEDs 64-65 para minutos, 66-67 para segundos",
+        install_clock: "Instalar Reloj de Colores",
+        unsupported: "Tu navegador no soporta Web Serial. Usa Chrome o Edge.",
+        not_allowed: "Instalación no permitida. Conecta vía HTTPS.",
+        how_to_install: "Cómo Instalar",
+        step1_title: "Conecta tu ESP8266",
+        step1_desc: "(D1 Mini o compatible) a tu computadora vía USB.",
+        step2_title: "Haz clic en el botón Instalar",
+        step2_desc: "de la versión que prefieras arriba.",
+        step3_title: "Selecciona el puerto serial",
+        step3_desc: "cuando tu navegador lo solicite.",
+        step4_title: "Espera a que la instalación",
+        step4_desc: "se complete (aproximadamente 30 segundos).",
+        step5_title: "Conéctate al WiFi:",
+        step5_desc: 'Después de flashear, conéctate a la red WiFi "PerpetualCalendar-XXXX" (contraseña: admin1234).',
+        step6_title: "Configura:",
+        step6_desc: "Abre http://192.168.4.1 en tu navegador para configurar WiFi y Google Calendar.",
+        note: "Nota:",
+        warning_text: "Esto requiere navegador Chrome, Edge u Opera. Firefox y Safari no soportan la API Web Serial. Asegúrate de que ningún otro programa (como Arduino IDE) esté usando el puerto serial.",
+        github: "Repositorio en GitHub",
+        instructables: "Guía en Instructables"
+      },
+      en: {
+        title: "Perpetual Calendar",
+        subtitle: "LED Calendar with Google Calendar Integration",
+        badge_recommended: "Recommended",
+        badge_extended: "Extended",
+        standard_title: "Standard Version",
+        standard_desc: "The classic perpetual calendar displaying the current month with Google Calendar events.",
+        standard_f1: "75 WS2811 LEDs",
+        standard_f2: "Google Calendar sync",
+        standard_f3: "Holidays, anniversaries, todos",
+        standard_f4: "Auto brightness",
+        standard_f5: "OTA updates",
+        install_standard: "Install Standard",
+        clock_title: "Color Coded Clock",
+        clock_desc: "Includes everything from Standard plus a color-coded clock display using LEDs 62-67.",
+        clock_f1: "All standard features",
+        clock_f2: "Displays HH:MM:SS with colors",
+        clock_f3: "LEDs 62-63 for hours",
+        clock_f4: "LEDs 64-65 for minutes, 66-67 for seconds",
+        install_clock: "Install Color Clock",
+        unsupported: "Your browser doesn't support Web Serial. Use Chrome or Edge.",
+        not_allowed: "Installation not allowed. Connect via HTTPS.",
+        how_to_install: "How to Install",
+        step1_title: "Connect your ESP8266",
+        step1_desc: "(D1 Mini or compatible) to your computer via USB.",
+        step2_title: "Click the Install button",
+        step2_desc: "for your preferred version above.",
+        step3_title: "Select the serial port",
+        step3_desc: "when prompted by your browser.",
+        step4_title: "Wait for the installation",
+        step4_desc: "to complete (about 30 seconds).",
+        step5_title: "Connect to WiFi:",
+        step5_desc: 'After flashing, connect to the "PerpetualCalendar-XXXX" WiFi network (password: admin1234).',
+        step6_title: "Configure:",
+        step6_desc: "Open http://192.168.4.1 in your browser to set up WiFi and Google Calendar.",
+        note: "Note:",
+        warning_text: "This requires Chrome, Edge, or Opera browser. Firefox and Safari do not support Web Serial API. Make sure no other program (like Arduino IDE) is using the serial port.",
+        github: "GitHub Repository",
+        instructables: "Instructables Guide"
+      }
+    };
+
+    function setLanguage(lang) {
+      document.documentElement.lang = lang;
+      document.title = lang === 'es' ? 'Calendario Perpetuo - Web Flasher' : 'Perpetual Calendar - Web Flasher';
+
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (translations[lang][key]) {
+          el.textContent = translations[lang][key];
+        }
+      });
+
+      document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.lang === lang);
+      });
+
+      localStorage.setItem('lang', lang);
+    }
+
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+      btn.addEventListener('click', () => setLanguage(btn.dataset.lang));
+    });
+
+    const savedLang = localStorage.getItem('lang') || 'es';
+    setLanguage(savedLang);
+  </script>
 </body>
 </html>

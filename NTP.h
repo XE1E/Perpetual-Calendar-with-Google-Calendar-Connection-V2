@@ -57,7 +57,6 @@ void getNTPtime() {
 		} else {
 			Serial.print("NTP packet received, length=");
 			Serial.println(cb);
-			config.Update_Time_Via_NTP_Every = 30;
 			UDPNTPClient.read(packetBuffer, NTP_PACKET_SIZE); // read the packet into the buffer
 			unsigned long highWord = word(packetBuffer[40], packetBuffer[41]);
 			unsigned long lowWord = word(packetBuffer[42], packetBuffer[43]);

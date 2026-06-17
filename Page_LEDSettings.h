@@ -105,6 +105,8 @@ void handle_save_brightness() {
 }
 
 void handle_test_leds() {
+    uint8_t originalBrightness = BRIGHTNESS;
+    FastLED.setBrightness(128);
     for (int i = 0; i < NUM_LEDS; i++) {
         leds[i] = CRGB::White;
     }
@@ -113,6 +115,7 @@ void handle_test_leds() {
     for (int i = 0; i < NUM_LEDS; i++) {
         leds[i] = CRGB::Black;
     }
+    FastLED.setBrightness(originalBrightness);
     FastLED.show();
     server.send(200, "text/plain", "OK");
 }
