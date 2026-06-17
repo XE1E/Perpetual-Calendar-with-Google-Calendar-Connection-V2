@@ -3,13 +3,13 @@
 
 
 ESP8266WebServer server(80);							// The Webserver
-boolean firstStart = true;								// On firststart = true, NTP will try to get a valid time
-boolean ntp_response_ok = false;
-boolean manual_time_set = false;;
+bool firstStart = true;								// On firststart = true, NTP will try to get a valid time
+bool ntp_response_ok = false;
+bool manual_time_set = false;
 String chipID;
-int WIFI_connected = false;
+uint8_t WIFI_connected = WL_DISCONNECTED;
 bool CFG_saved = false;
-int AdminTimeOutCounter = 0;							// Counter for Disabling the AdminMode
+uint16_t AdminTimeOutCounter = 0;							// Counter for Disabling the AdminMode
 WiFiUDP UDPNTPClient;											// NTP Client
 volatile unsigned long UnixTimestamp = 0;	// GLOBALTIME  ( Will be set by NTP)
 int cNTP_Update = 0;											// Counter for Updating the time via NTP
@@ -82,7 +82,7 @@ boolean checkRange(String Value){
 void WriteStringToEEPROM(int beginaddress, String string){
   char  charBuf[string.length() + 1];
   string.toCharArray(charBuf, string.length() + 1);
-  for (int t =  0; t < sizeof(charBuf); t++)
+  for (size_t t = 0; t < sizeof(charBuf); t++)
   {
     EEPROM.write(beginaddress + t, charBuf[t]);
   }
@@ -128,9 +128,14 @@ void ConfigureWifi(){
   Serial.println("Configuring Wifi");
   WiFi.begin (config.ssid.c_str(), config.password.c_str());
 
-  while (WiFi.status() != WL_CONNECTED) {
+  int timeout = 0;
+  while (WiFi.status() != WL_CONNECTED && timeout < 40) {
     Serial.println("WiFi not connected");
     delay(500);
+    timeout++;
+  }
+  if (timeout >= 40) {
+    Serial.println("WiFi connection timeout - continuing anyway");
   }
   if (!config.dhcp)
   {

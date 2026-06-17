@@ -101,6 +101,10 @@ int temp_second = -1;
 //Connect to Google script
 void connectToGoogle() {
 	// Use HTTPSRedirect class to create a new TLS connection
+	if (client != nullptr) {
+		delete client;
+		client = nullptr;
+	}
 	client = new HTTPSRedirect(httpsPort);
 	client->setInsecure();
 	client->setPrintResponseBody(true);
@@ -472,9 +476,6 @@ void setup() {
 	Serial.println("FastLed Setup done");
 
 	connectToGoogle();
-
-	// start internal time update ISR
-	tkSecond.attach(1, ISRsecondTick);
 }
 
 // the loop function runs over and over again forever
