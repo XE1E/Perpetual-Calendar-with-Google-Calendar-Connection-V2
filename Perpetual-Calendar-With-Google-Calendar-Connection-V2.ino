@@ -21,10 +21,11 @@ HTTPSRedirect* client = nullptr;
 String calendarData = "";
 String escriptData = "";
 bool events_updated = false;
-int Days[31];
-int Holidays[20];
-int Anniversaries[20];
-int Todos[20];
+uint8_t Days[31];
+uint8_t Holidays[20];
+uint8_t Anniversaries[20];
+uint8_t Todos[20];
+bool isMondayFirst = false;  // Cached from config.FirstWeekDay
 
 #define LED_TYPE WS2811
 #define COLOR_ORDER GRB
@@ -135,29 +136,11 @@ void connectToGoogle() {
 	//Serial.println("Connected to Google");
 }
 
-void getCalendar(String GScriptId) {
-	//  Serial.println("Start Request");
-	// HTTPSRedirect client(httpsPort);
-
-	// Try to connect for a maximum of 5 times
-	bool flag = false;
-	for (int i = 0; i < 3; i++) {
-		int retval = client->connect(host, httpsPort);
-		if (retval == 1) {
-			flag = true;
-			break;
-		}
-		else
-			Serial.println("Connection failed. Retrying...");
-		yield();
-		server.handleClient();
+void getCalendar(const String& GScriptId) {
+	if (client == nullptr || !client->connected()) {
+		connectToGoogle();
+		if (client == nullptr) return;
 	}
-	if (!flag) {
-		Serial.print("Could not connect to server: ");
-		Serial.println(host);
-		Serial.println("Exiting...");
-	}
-	//Fetch Google Calendar events
 	Serial.print("Calendar Data---> ");
 	String url = String("/macros/s/") + GScriptId + "/exec";
 	client->GET(url, host);
@@ -166,90 +149,57 @@ void getCalendar(String GScriptId) {
 	server.handleClient();
 }
 
-void initDatesArray(int (&Dates)[20], String calendarString) {
-	int index;
-	for (index = 0; index < 20; index++) {
-		Dates[index] = 0;
-	}
-	index = 0;
-	while(calendarString.indexOf("-")!=-1){
-		Dates[index] = calendarString.substring(0,calendarString.indexOf("-")).toInt();
-		index++;
-		calendarString = calendarString.substring(calendarString.indexOf("-")+1);
+void initDatesArray(uint8_t (&Dates)[20], const String& calendarString) {
+	memset(Dates, 0, 20);
+	uint8_t index = 0;
+	uint8_t num = 0;
+	for (size_t i = 0; i <= calendarString.length() && index < 20; i++) {
+		char c = (i < calendarString.length()) ? calendarString[i] : '-';
+		if (c >= '0' && c <= '9') {
+			num = num * 10 + (c - '0');
+		} else if (c == '-' && num > 0) {
+			Dates[index++] = num;
+			num = 0;
+		}
 	}
 }
 
 void CalendarDisplay(int y, byte m, byte d) {
-	//erase all leds
-	fill_solid( leds, NUM_LEDS, CRGB(0,0,0));
-	byte mdays = daysInMonth(y, m); // number of days from the current month
-	int i = 0;
-	for (int k = 1; k <= mdays; k++) {
-		int z = DayOfTheWeek(y, m, k); // sunday-0 saturday-6
-		//Serial.print(z);Serial.print("--");Serial.print(k);Serial.print("--");Serial.print(i);Serial.print("--");Serial.println(calendar_leds[i]);
+	fill_solid(leds, NUM_LEDS, CRGB(0,0,0));
+	byte mdays = daysInMonth(y, m);
+	uint8_t i = 0;
+	for (byte k = 1; k <= mdays; k++) {
+		int z = DayOfTheWeek(y, m, k);
+		CHSV color = (d == k) ? actualday_color : ((z == 0 || z == 6) ? weekend_color : weekday_color);
+		leds[calendar_leds[i]] = color;
+		Days[k - 1] = calendar_leds[i];
 		if (z == 6) {
-			if (d == k) {
-				leds[calendar_leds[i]] = actualday_color;
-				Days[k - 1] = calendar_leds[i];
-			}
-			else {
-				leds[calendar_leds[i]] = weekend_color;
-				Days[k - 1] = calendar_leds[i];
-			}
-			if (config.FirstWeekDay == "Monday") {
-				i = i + 1 ;
-			}
-			else {
-				i = i + 7; //because saturday is the last day in the week
-			}
-		}
-		else if (z == 0) {
-			if (d == k) {
-				leds[calendar_leds[i]] = actualday_color;
-				Days[k - 1] = calendar_leds[i];
-			}
-			else {
-				leds[calendar_leds[i]] = weekend_color;
-				Days[k - 1] = calendar_leds[i];
-			}
-			if (config.FirstWeekDay == "Monday") {
-				i = i + 7 ; //because sunday is the last day in the week
-			}
-			else {
-				i = i + 1;
-			}
-		}
-		else {
-			if (d == k) {
-				leds[calendar_leds[i]] = actualday_color;
-				Days[k - 1] = calendar_leds[i];
-			}
-			else {
-				leds[calendar_leds[i]] = weekday_color;
-				Days[k - 1] = calendar_leds[i];
-			}
-			i = i + 1;
-		}
-		if (i == d) {
-			leds[calendar_leds[i]] = actualday_color;
-			Days[k - 1] = calendar_leds[i];
+			i += isMondayFirst ? 1 : 7;
+		} else if (z == 0) {
+			i += isMondayFirst ? 7 : 1;
+		} else {
+			i++;
 		}
 	}
 	leds[calendar_months[m - 1]] = month_color;
 }
 
 void EventsDisplay() {
-	// display days from calendars
-	for (int i = 1; i <= 31; i++) {
-		for (int j = 0; j < 20; j++) {
-			if (Holidays[j] == i) { leds[Days[i - 1]] = holidays_color; }
-		}
-		for (int j = 0; j < 20; j++) {
-			if (Anniversaries[j] == i) { leds[Days[i - 1]] = anniversaries_color; }
-		}
-		for (int j = 0; j < 20; j++) {
-			if (Todos[j] == i) { leds[Days[i - 1]] = todos_color; }
-		}
+	// Optimized: iterate events directly instead of nested loops
+	// Holidays (lowest priority)
+	for (int j = 0; j < 20 && Holidays[j] != 0; j++) {
+		int day = Holidays[j];
+		if (day >= 1 && day <= 31) leds[Days[day - 1]] = holidays_color;
+	}
+	// Anniversaries (medium priority - overwrites holidays)
+	for (int j = 0; j < 20 && Anniversaries[j] != 0; j++) {
+		int day = Anniversaries[j];
+		if (day >= 1 && day <= 31) leds[Days[day - 1]] = anniversaries_color;
+	}
+	// Todos (highest priority - overwrites others)
+	for (int j = 0; j < 20 && Todos[j] != 0; j++) {
+		int day = Todos[j];
+		if (day >= 1 && day <= 31) leds[Days[day - 1]] = todos_color;
 	}
 }
 
@@ -299,6 +249,7 @@ void setup() {
 	//**** Network Config load
 	EEPROM.begin(640); // define an EEPROM space of 640 Bytes to store data (increased for backup WiFi network)
 	CFG_saved = ReadConfig();
+	isMondayFirst = (config.FirstWeekDay == "Monday");
 
 	//  Connect to WiFi acess point or start as Acess point
 	if (CFG_saved)  //if no configuration yet saved, load defaults
@@ -340,6 +291,7 @@ void setup() {
 		config.timeZone = 20;
 		config.isDayLightSaving = true;
 		config.FirstWeekDay = "Sunday";
+		isMondayFirst = false;
 		//WriteConfig();
 		WiFi.mode(WIFI_AP);
 		WiFi.softAP(config.ssid.c_str(),"admin1234");
@@ -530,7 +482,7 @@ void loop() {
 		bool needsRefresh = false;
 
 		// Update auto brightness based on current hour
-		if (updateAutoBrightness(DateTime.hour)) {
+		if (updateAutoBrightness(DateTime.hour, DateTime.minute)) {
 			needsRefresh = true;
 		}
 

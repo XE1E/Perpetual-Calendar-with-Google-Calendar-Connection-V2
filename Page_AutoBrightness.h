@@ -16,8 +16,8 @@ const char PAGE_AutoBrightness[] PROGMEM = R"=====(
 <tr><td style="width:150px" data-i18n="day_brightness">Brillo de dia:</td><td><input type="range" id="dayBright" min="5" max="255" value="150" oninput="showVal('dayBright','dayVal')"><span id="dayVal">150</span></td></tr>
 <tr><td data-i18n="night_brightness">Brillo de noche:</td><td><input type="range" id="nightBright" min="0" max="255" value="30" oninput="showNightVal()"><span id="nightVal">30</span></td></tr>
 <tr><td colspan="2"><hr></td></tr>
-<tr><td data-i18n="day_starts">Dia inicia a las:</td><td><select id="dayStart"></select> <span data-i18n="hours">horas</span></td></tr>
-<tr><td data-i18n="night_starts">Noche inicia a las:</td><td><select id="nightStart"></select> <span data-i18n="hours">horas</span></td></tr>
+<tr><td data-i18n="day_starts">Dia inicia a las:</td><td><select id="dayStartH"></select>:<select id="dayStartM"></select></td></tr>
+<tr><td data-i18n="night_starts">Noche inicia a las:</td><td><select id="nightStartH"></select>:<select id="nightStartM"></select></td></tr>
 <tr><td colspan="2" style="padding-top:10px">
 <input type="button" id="saveBtn" style="width:150px" class="btn btn--m btn--grey" value="Guardar" onclick="saveSettings()">
 </td></tr>
@@ -46,15 +46,23 @@ window.onload = function() {
 function load(e,t,n){if("js"==t){var a=document.createElement("script");a.src=e,a.type="text/javascript",a.async=!1,a.onload=function(){n()},document.getElementsByTagName("head")[0].appendChild(a)}else if("css"==t){var a=document.createElement("link");a.href=e,a.rel="stylesheet",a.type="text/css",a.async=!1,a.onload=function(){n()},document.getElementsByTagName("head")[0].appendChild(a)}}
 
 function initSelects() {
-    var daySelect = document.getElementById("dayStart");
-    var nightSelect = document.getElementById("nightStart");
+    var hSelects = [document.getElementById("dayStartH"), document.getElementById("nightStartH")];
+    var mSelects = [document.getElementById("dayStartM"), document.getElementById("nightStartM")];
     for (var i = 0; i < 24; i++) {
-        var opt1 = document.createElement("option");
-        var opt2 = document.createElement("option");
-        opt1.value = opt2.value = i;
-        opt1.text = opt2.text = (i < 10 ? "0" : "") + i + ":00";
-        daySelect.appendChild(opt1);
-        nightSelect.appendChild(opt2);
+        hSelects.forEach(function(s) {
+            var opt = document.createElement("option");
+            opt.value = i;
+            opt.text = (i < 10 ? "0" : "") + i;
+            s.appendChild(opt);
+        });
+    }
+    for (var i = 0; i < 60; i += 5) {
+        mSelects.forEach(function(s) {
+            var opt = document.createElement("option");
+            opt.value = i;
+            opt.text = (i < 10 ? "0" : "") + i;
+            s.appendChild(opt);
+        });
     }
 }
 
@@ -71,8 +79,10 @@ function toggleFields() {
     var enabled = document.getElementById("enabled").checked;
     document.getElementById("dayBright").disabled = !enabled;
     document.getElementById("nightBright").disabled = !enabled;
-    document.getElementById("dayStart").disabled = !enabled;
-    document.getElementById("nightStart").disabled = !enabled;
+    document.getElementById("dayStartH").disabled = !enabled;
+    document.getElementById("dayStartM").disabled = !enabled;
+    document.getElementById("nightStartH").disabled = !enabled;
+    document.getElementById("nightStartM").disabled = !enabled;
 }
 
 function loadSettings() {
@@ -83,9 +93,12 @@ function loadSettings() {
         document.getElementById("dayVal").innerHTML = data.dayBrightness;
         document.getElementById("nightBright").value = data.nightBrightness;
         document.getElementById("nightVal").innerHTML = data.nightBrightness == 0 ? "OFF" : data.nightBrightness;
-        document.getElementById("dayStart").value = data.dayStart;
-        document.getElementById("nightStart").value = data.nightStart;
-        document.getElementById("currentHour").innerHTML = data.currentHour + ":00";
+        document.getElementById("dayStartH").value = data.dayStartH;
+        document.getElementById("dayStartM").value = data.dayStartM;
+        document.getElementById("nightStartH").value = data.nightStartH;
+        document.getElementById("nightStartM").value = data.nightStartM;
+        var h = data.currentHour, m = data.currentMinute;
+        document.getElementById("currentHour").innerHTML = (h<10?"0":"")+h+":"+(m<10?"0":"")+m;
         document.getElementById("currentMode").innerHTML = data.isDay == "1" ? t("day") : t("night");
         document.getElementById("currentBrightness").innerHTML = data.currentBrightness;
         document.getElementById("saveBtn").value = t("save");
@@ -97,14 +110,16 @@ function saveSettings() {
     var enabled = document.getElementById("enabled").checked ? 1 : 0;
     var dayBright = document.getElementById("dayBright").value;
     var nightBright = document.getElementById("nightBright").value;
-    var dayStart = document.getElementById("dayStart").value;
-    var nightStart = document.getElementById("nightStart").value;
+    var dayStartH = document.getElementById("dayStartH").value;
+    var dayStartM = document.getElementById("dayStartM").value;
+    var nightStartH = document.getElementById("nightStartH").value;
+    var nightStartM = document.getElementById("nightStartM").value;
 
     var params = "enabled=" + enabled +
         "&dayBright=" + dayBright +
         "&nightBright=" + nightBright +
-        "&dayStart=" + dayStart +
-        "&nightStart=" + nightStart;
+        "&dayStartH=" + dayStartH + "&dayStartM=" + dayStartM +
+        "&nightStartH=" + nightStartH + "&nightStartM=" + nightStartM;
 
     microAjax("/admin/saveautobrightness?" + params, function(res) {
         alert("Settings saved!");
@@ -119,22 +134,23 @@ void send_AutoBrightness_html() {
 }
 
 void send_AutoBrightness_values_html() {
-    bool isDay = false;
-    if (autoBrightness.dayStartHour < autoBrightness.nightStartHour) {
-        isDay = (DateTime.hour >= autoBrightness.dayStartHour &&
-                 DateTime.hour < autoBrightness.nightStartHour);
-    } else {
-        isDay = (DateTime.hour >= autoBrightness.dayStartHour ||
-                 DateTime.hour < autoBrightness.nightStartHour);
-    }
+    uint16_t currentTime = DateTime.hour * 60 + DateTime.minute;
+    uint16_t dayStart = autoBrightness.dayStartHour * 60 + autoBrightness.dayStartMinute;
+    uint16_t nightStart = autoBrightness.nightStartHour * 60 + autoBrightness.nightStartMinute;
+    bool isDay = (dayStart < nightStart)
+        ? (currentTime >= dayStart && currentTime < nightStart)
+        : (currentTime >= dayStart || currentTime < nightStart);
 
     String response = "{";
     response += "\"enabled\":\"" + String(autoBrightness.enabled ? 1 : 0) + "\",";
     response += "\"dayBrightness\":\"" + String(autoBrightness.dayBrightness) + "\",";
     response += "\"nightBrightness\":\"" + String(autoBrightness.nightBrightness) + "\",";
-    response += "\"dayStart\":\"" + String(autoBrightness.dayStartHour) + "\",";
-    response += "\"nightStart\":\"" + String(autoBrightness.nightStartHour) + "\",";
+    response += "\"dayStartH\":\"" + String(autoBrightness.dayStartHour) + "\",";
+    response += "\"dayStartM\":\"" + String(autoBrightness.dayStartMinute) + "\",";
+    response += "\"nightStartH\":\"" + String(autoBrightness.nightStartHour) + "\",";
+    response += "\"nightStartM\":\"" + String(autoBrightness.nightStartMinute) + "\",";
     response += "\"currentHour\":\"" + String(DateTime.hour) + "\",";
+    response += "\"currentMinute\":\"" + String(DateTime.minute) + "\",";
     response += "\"isDay\":\"" + String(isDay ? 1 : 0) + "\",";
     response += "\"currentBrightness\":\"" + String(BRIGHTNESS) + "\"";
     response += "}";
@@ -151,17 +167,23 @@ void handle_save_autobrightness() {
     if (server.hasArg("nightBright")) {
         autoBrightness.nightBrightness = server.arg("nightBright").toInt();
     }
-    if (server.hasArg("dayStart")) {
-        autoBrightness.dayStartHour = server.arg("dayStart").toInt();
+    if (server.hasArg("dayStartH")) {
+        autoBrightness.dayStartHour = server.arg("dayStartH").toInt();
     }
-    if (server.hasArg("nightStart")) {
-        autoBrightness.nightStartHour = server.arg("nightStart").toInt();
+    if (server.hasArg("dayStartM")) {
+        autoBrightness.dayStartMinute = server.arg("dayStartM").toInt();
+    }
+    if (server.hasArg("nightStartH")) {
+        autoBrightness.nightStartHour = server.arg("nightStartH").toInt();
+    }
+    if (server.hasArg("nightStartM")) {
+        autoBrightness.nightStartMinute = server.arg("nightStartM").toInt();
     }
 
     saveAutoBrightnessConfig();
 
     // Apply immediately
-    updateAutoBrightness(DateTime.hour);
+    updateAutoBrightness(DateTime.hour, DateTime.minute);
     FastLED.show();
 
     server.send(200, "text/plain", "OK");

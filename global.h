@@ -88,36 +88,28 @@ void WriteStringToEEPROM(int beginaddress, String string){
   }
 }
 
-String  ReadStringFromEEPROM(int beginaddress){
-  volatile byte counter = 0;
-  char rChar;
-  String retString = "";
-  while (1)
-  {
-    rChar = EEPROM.read(beginaddress + counter);
-    if (rChar == 0) break;
-    if (counter > 31) break;
-    counter++;
-    retString.concat(rChar);
-
+String ReadStringFromEEPROM(int beginaddress) {
+  char buffer[33];
+  byte counter = 0;
+  while (counter < 32) {
+    char c = EEPROM.read(beginaddress + counter);
+    if (c == 0) break;
+    buffer[counter++] = c;
   }
-  return retString;
+  buffer[counter] = '\0';
+  return String(buffer);
 }
 
-String  ReadLongStringFromEEPROM(int beginaddress){
-  volatile byte counter = 0;
-  char rChar;
-  String retString = "";
-  while (1)
-  {
-    rChar = EEPROM.read(beginaddress + counter);
-    if (rChar == 0) break;
-    if (counter > 96) break;
-    counter++;
-    retString.concat(rChar);
-
+String ReadLongStringFromEEPROM(int beginaddress) {
+  char buffer[97];
+  byte counter = 0;
+  while (counter < 96) {
+    char c = EEPROM.read(beginaddress + counter);
+    if (c == 0) break;
+    buffer[counter++] = c;
   }
-  return retString;
+  buffer[counter] = '\0';
+  return String(buffer);
 }
 /*
 **
@@ -285,28 +277,23 @@ unsigned char h2int(char c){
   return (0);
 }
 
-String urldecode(String input) // (based on https://code.google.com/p/avr-netino/)
-{
-  char c;
-  String ret = "";
-
-  for (byte t = 0; t < input.length(); t++)
-  {
-    c = input[t];
+String urldecode(String input) {
+  size_t len = input.length();
+  char* buffer = new char[len + 1];
+  size_t j = 0;
+  for (size_t t = 0; t < len; t++) {
+    char c = input[t];
     if (c == '+') c = ' ';
-    if (c == '%') {
-
-
-      t++;
-      c = input[t];
-      t++;
-      c = (h2int(c) << 4) | h2int(input[t]);
+    else if (c == '%' && t + 2 < len) {
+      c = (h2int(input[t + 1]) << 4) | h2int(input[t + 2]);
+      t += 2;
     }
-
-    ret.concat(c);
+    buffer[j++] = c;
   }
+  buffer[j] = '\0';
+  String ret(buffer);
+  delete[] buffer;
   return ret;
-
 }
 
 #endif
