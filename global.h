@@ -3,13 +3,13 @@
 
 
 ESP8266WebServer server(80);							// The Webserver
-bool firstStart = true;								// On firststart = true, NTP will try to get a valid time
-bool ntp_response_ok = false;
-bool manual_time_set = false;
+boolean firstStart = true;								// On firststart = true, NTP will try to get a valid time
+boolean ntp_response_ok = false;
+boolean manual_time_set = false;;
 String chipID;
-uint8_t WIFI_connected = WL_DISCONNECTED;
+int WIFI_connected = false;
 bool CFG_saved = false;
-uint16_t AdminTimeOutCounter = 0;							// Counter for Disabling the AdminMode
+int AdminTimeOutCounter = 0;							// Counter for Disabling the AdminMode
 WiFiUDP UDPNTPClient;											// NTP Client
 volatile unsigned long UnixTimestamp = 0;	// GLOBALTIME  ( Will be set by NTP)
 int cNTP_Update = 0;											// Counter for Updating the time via NTP
@@ -82,34 +82,42 @@ boolean checkRange(String Value){
 void WriteStringToEEPROM(int beginaddress, String string){
   char  charBuf[string.length() + 1];
   string.toCharArray(charBuf, string.length() + 1);
-  for (size_t t = 0; t < sizeof(charBuf); t++)
+  for (int t =  0; t < sizeof(charBuf); t++)
   {
     EEPROM.write(beginaddress + t, charBuf[t]);
   }
 }
 
-String ReadStringFromEEPROM(int beginaddress) {
-  char buffer[33];
-  byte counter = 0;
-  while (counter < 32) {
-    char c = EEPROM.read(beginaddress + counter);
-    if (c == 0) break;
-    buffer[counter++] = c;
+String  ReadStringFromEEPROM(int beginaddress){
+  volatile byte counter = 0;
+  char rChar;
+  String retString = "";
+  while (1)
+  {
+    rChar = EEPROM.read(beginaddress + counter);
+    if (rChar == 0) break;
+    if (counter > 31) break;
+    counter++;
+    retString.concat(rChar);
+
   }
-  buffer[counter] = '\0';
-  return String(buffer);
+  return retString;
 }
 
-String ReadLongStringFromEEPROM(int beginaddress) {
-  char buffer[97];
-  byte counter = 0;
-  while (counter < 96) {
-    char c = EEPROM.read(beginaddress + counter);
-    if (c == 0) break;
-    buffer[counter++] = c;
+String  ReadLongStringFromEEPROM(int beginaddress){
+  volatile byte counter = 0;
+  char rChar;
+  String retString = "";
+  while (1)
+  {
+    rChar = EEPROM.read(beginaddress + counter);
+    if (rChar == 0) break;
+    if (counter > 96) break;
+    counter++;
+    retString.concat(rChar);
+
   }
-  buffer[counter] = '\0';
-  return String(buffer);
+  return retString;
 }
 /*
 **
@@ -120,14 +128,9 @@ void ConfigureWifi(){
   Serial.println("Configuring Wifi");
   WiFi.begin (config.ssid.c_str(), config.password.c_str());
 
-  int timeout = 0;
-  while (WiFi.status() != WL_CONNECTED && timeout < 40) {
+  while (WiFi.status() != WL_CONNECTED) {
     Serial.println("WiFi not connected");
     delay(500);
-    timeout++;
-  }
-  if (timeout >= 40) {
-    Serial.println("WiFi connection timeout - continuing anyway");
   }
   if (!config.dhcp)
   {
@@ -277,23 +280,28 @@ unsigned char h2int(char c){
   return (0);
 }
 
-String urldecode(String input) {
-  size_t len = input.length();
-  char* buffer = new char[len + 1];
-  size_t j = 0;
-  for (size_t t = 0; t < len; t++) {
-    char c = input[t];
+String urldecode(String input) // (based on https://code.google.com/p/avr-netino/)
+{
+  char c;
+  String ret = "";
+
+  for (byte t = 0; t < input.length(); t++)
+  {
+    c = input[t];
     if (c == '+') c = ' ';
-    else if (c == '%' && t + 2 < len) {
-      c = (h2int(input[t + 1]) << 4) | h2int(input[t + 2]);
-      t += 2;
+    if (c == '%') {
+
+
+      t++;
+      c = input[t];
+      t++;
+      c = (h2int(c) << 4) | h2int(input[t]);
     }
-    buffer[j++] = c;
+
+    ret.concat(c);
   }
-  buffer[j] = '\0';
-  String ret(buffer);
-  delete[] buffer;
   return ret;
+
 }
 
 #endif

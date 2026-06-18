@@ -105,17 +105,16 @@ void handle_save_brightness() {
 }
 
 void handle_test_leds() {
-    // Feature disabled - causes timing issues with ESP8266 WiFi
+    for (int i = 0; i < NUM_LEDS; i++) {
+        leds[i] = CRGB::White;
+    }
+    FastLED.show();
+    delay(500);
+    for (int i = 0; i < NUM_LEDS; i++) {
+        leds[i] = CRGB::Black;
+    }
+    FastLED.show();
     server.send(200, "text/plain", "OK");
-    Serial.println("LED test disabled");
-}
-
-void executeTestLeds() {
-    // Empty - feature disabled
-}
-
-bool isTestLedsActive() {
-    return false;
 }
 
 void handle_refresh_calendar() {

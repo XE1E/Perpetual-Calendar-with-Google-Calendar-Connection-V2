@@ -57,6 +57,7 @@ void getNTPtime() {
 		} else {
 			Serial.print("NTP packet received, length=");
 			Serial.println(cb);
+			config.Update_Time_Via_NTP_Every = 30;
 			UDPNTPClient.read(packetBuffer, NTP_PACKET_SIZE); // read the packet into the buffer
 			unsigned long highWord = word(packetBuffer[40], packetBuffer[41]);
 			unsigned long lowWord = word(packetBuffer[42], packetBuffer[43]);
@@ -138,18 +139,24 @@ boolean summerTime(unsigned long _timeStamp) {
 		return false; // keine Sommerzeit in Jan, Feb, Nov, Dez
 	if (_tempDateTime.month > 3 && _tempDateTime.month < 10)
 		return true; // Sommerzeit in Apr, Mai, Jun, Jul, Aug, Sep
-	if ((_tempDateTime.month == 3
+	if (_tempDateTime.month == 3
 			&& (_tempDateTime.hour + 24 * _tempDateTime.day)
-					>= (3 + 24 * (31 - (5 * _tempDateTime.year / 4 + 4) % 7)))
-			|| (_tempDateTime.month == 10
+					>= (3 + 24 * (31 - (5 * _tempDateTime.year / 4 + 4) % 7))
+			|| _tempDateTime.month == 10
 					&& (_tempDateTime.hour + 24 * _tempDateTime.day)
-							< (3 + 24 * (31 - (5 * _tempDateTime.year / 4 + 1) % 7))))
+							< (3
+									+ 24
+											* (31
+													- (5 * _tempDateTime.year
+															/ 4 + 1) % 7)))
 		return true;
-	return false;
+	else
+		return false;
 }
 
 unsigned long adjustTimeZone(unsigned long _timeStamp, int _timeZone,
 		bool _isDayLightSavingSaving) {
+	strDateTime _tempDateTime;
 	_timeStamp += _timeZone * 360; // adjust timezone
 	// printTime("Innerhalb adjustTimeZone ", ConvertUnixTimeStamp(_timeStamp));
 	if (_isDayLightSavingSaving && summerTime(_timeStamp))
@@ -158,13 +165,18 @@ unsigned long adjustTimeZone(unsigned long _timeStamp, int _timeZone,
 }
 
 bool isLeapYear(int yr) {
-	return ((yr % 4 == 0 && yr % 100 != 0) || yr % 400 == 0);
+	if (yr % 4 == 0 && yr % 100 != 0 || yr % 400 == 0)
+		return true;
+	else
+		return false;
 }
 
 byte daysInMonth(int yr, int m) {
+	byte days[12] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 	if (m == 2 && isLeapYear(yr))
 		return 29;
-	return monthDays[m - 1];
+	else
+		return days[m - 1];
 }
 
 long ConvertDate(int year, byte month, byte day, byte hour, byte minute,
@@ -196,6 +208,7 @@ int DayOfTheWeek(int year, int month, int day) {
 }
 
 void ISRsecondTick() {
+	strDateTime _tempDateTime;
 	AdminTimeOutCounter++;
 	cNTP_Update++;
 	UnixTimestamp++;
