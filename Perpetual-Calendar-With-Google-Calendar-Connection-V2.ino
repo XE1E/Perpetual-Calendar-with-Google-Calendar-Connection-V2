@@ -1,4 +1,6 @@
-// Version funcional con configuracion web
+// Perpetual Calendar with Google Calendar Connection V2
+// Full web interface version
+
 #define FASTLED_INTERRUPT_RETRY_COUNT 0
 #include <FastLED.h>
 #include <ESP8266WiFi.h>
@@ -7,6 +9,7 @@
 #include <WiFiUdp.h>
 #include <Ticker.h>
 #include <EEPROM.h>
+#include <ArduinoOTA.h>
 #include "HTTPSRedirect.h"
 
 #define LED_TYPE WS2811
@@ -15,9 +18,54 @@
 #define NUM_LEDS 75
 CRGB leds[NUM_LEDS];
 
+// Global brightness variable (required before Page includes)
+uint8_t BRIGHTNESS = 150;
+int temp_hour = -1;
+int temp_minute = -1;
+
+// Rainbow colors for color-coded clock and color reset defaults
+CHSV rainbow_colors[10] = {
+    CHSV(0, 0, 0),       // 0 - Black/off
+    CHSV(0, 255, 192),   // 1 - Red
+    CHSV(32, 255, 192),  // 2 - Orange
+    CHSV(64, 255, 192),  // 3 - Yellow
+    CHSV(96, 255, 192),  // 4 - Green
+    CHSV(128, 255, 192), // 5 - Cyan
+    CHSV(160, 255, 192), // 6 - Blue
+    CHSV(192, 255, 192), // 7 - Purple
+    CHSV(224, 255, 192), // 8 - Pink
+    CHSV(0, 0, 192)      // 9 - White/Gray
+};
+
+// Calendar colors (defaults, can be overridden by custom colors)
+CHSV weekday_color = CHSV(96, 255, 192);
+CHSV actualday_color = CHSV(160, 255, 192);
+CHSV weekend_color = CHSV(0, 255, 128);
+CHSV month_color = CHSV(0, 0, 192);
+CHSV holidays_color = CHSV(192, 255, 255);
+CHSV anniversaries_color = CHSV(128, 255, 255);
+CHSV todos_color = CHSV(32, 255, 192);
+
 #include "global.h"
 #include "NTP.h"
+#include "AutoBrightness.h"
+#include "ColorCodedClock.h"
 
+// Include web pages (must come after global variables are defined)
+#include "Page_Style.css.h"
+#include "Page_Script.js.h"
+#include "Page_Admin.h"
+#include "Page_NetworkConfiguration.h"
+#include "Page_Information.h"
+#include "Page_NTPSettings.h"
+#include "Page_AppsScriptSettings.h"
+#include "Page_SetTime.h"
+#include "Page_LEDSettings.h"
+#include "Page_AutoBrightness.h"
+#include "Page_ColorSettings.h"
+#include "Page_OTA.h"
+
+// Calendar LED mapping
 byte calendar_leds[] = {68, 69, 70, 71, 72, 73, 74,
     61, 60, 59, 58, 57, 56, 55, 54, 53, 52, 51, 50, 49,
     36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48,
@@ -26,21 +74,12 @@ byte calendar_leds[] = {68, 69, 70, 71, 72, 73, 74,
     9, 8, 7, 6, 5, 4, 3, 2, 1, 0};
 byte calendar_months[] = {19, 20, 21, 22, 7, 6, 5, 4, 3, 2, 1, 0};
 
-CHSV weekday_color = CHSV(96, 255, 192);
-CHSV actualday_color = CHSV(160, 255, 192);
-CHSV weekend_color = CHSV(0, 255, 128);
-CRGB month_color = CRGB(192, 192, 192);
-CHSV holidays_color = CHSV(192, 255, 255);
-CHSV anniversaries_color = CHSV(128, 255, 255);
-CHSV todos_color = CHSV(32, 255, 192);
-
 int Days[31];
 int Holidays[20];
 int Anniversaries[20];
 int Todos[20];
 bool isMondayFirst = false;
 bool events_loaded = false;
-int temp_hour = -1;
 
 HTTPSRedirect* client = nullptr;
 const char* host = "script.google.com";
@@ -114,33 +153,6 @@ void EventsDisplay() {
   }
 }
 
-void handleRoot() {
-  String html = "<html><head><meta charset='UTF-8'><title>Calendario</title></head><body>";
-  html += "<h1>Calendario Perpetuo</h1>";
-  html += "<p>WiFi: " + String(WiFi.status() == WL_CONNECTED ? "Conectado" : "No conectado") + "</p>";
-  html += "<p>NTP: " + String(ntp_response_ok ? "OK" : "Esperando") + "</p>";
-  html += "<p>Fecha: " + String(DateTime.day) + "/" + String(DateTime.month) + "/" + String(DateTime.year) + "</p>";
-  html += "<p>Hora: " + String(DateTime.hour) + ":" + String(DateTime.minute) + ":" + String(DateTime.second) + "</p>";
-  html += "<hr><h2>Configurar Primer Dia Semana</h2>";
-  html += "<form action='/setday' method='get'>";
-  html += "<select name='day'><option value='0'>Domingo primero</option><option value='1'>Lunes primero</option></select>";
-  html += "<input type='submit' value='Guardar'></form>";
-  html += "<p>Actual: " + String(isMondayFirst ? "Lunes" : "Domingo") + " primero</p>";
-  html += "</body></html>";
-  server.send(200, "text/html", html);
-}
-
-void handleSetDay() {
-  if (server.hasArg("day")) {
-    isMondayFirst = (server.arg("day") == "1");
-    config.FirstWeekDay = server.arg("day");
-    WriteConfig();
-    server.send(200, "text/html", "<html><body><h1>Guardado!</h1><a href='/'>Volver</a></body></html>");
-  } else {
-    server.send(400, "text/plain", "Error");
-  }
-}
-
 void CalendarDisplay(int y, byte m, byte d) {
   fill_solid(leds, NUM_LEDS, CRGB(0,0,0));
   byte mdays = daysInMonth(y, m);
@@ -161,32 +173,141 @@ void CalendarDisplay(int y, byte m, byte d) {
   leds[calendar_months[m - 1]] = month_color;
 }
 
+void setupWebServer() {
+  // Main admin page
+  server.on("/", []() { server.send_P(200, "text/html", PAGE_AdminMainPage); });
+
+  // CSS and JS
+  server.on("/style.css", []() { server.send_P(200, "text/css", PAGE_Style_css); });
+  server.on("/microajax.js", []() { server.send_P(200, "application/javascript", PAGE_microajax_js); });
+
+  // Network configuration
+  server.on("/config.html", send_network_configuration_html);
+  server.on("/admin/values", send_network_configuration_values_html);
+  server.on("/admin/connectionstate", send_connection_state_values_html);
+
+  // Network information
+  server.on("/info.html", []() { server.send_P(200, "text/html", PAGE_Information); });
+  server.on("/admin/infovalues", send_information_values_html);
+
+  // NTP settings
+  server.on("/ntp.html", send_NTP_configuration_html);
+  server.on("/admin/ntpvalues", send_NTP_configuration_values_html);
+
+  // Apps Script settings
+  server.on("/appsscript.html", send_Apps_Script_Settings_html);
+  server.on("/admin/appsscript", send_Apps_Script_Settings_values_html);
+
+  // Manual time setting
+  server.on("/time.html", send_Time_Set_html);
+  server.on("/admin/timevalues", send_Time_Set_values_html);
+
+  // LED settings
+  server.on("/led.html", send_LED_Settings_html);
+  server.on("/admin/ledvalues", send_LED_Settings_values_html);
+  server.on("/admin/setbrightness", handle_set_brightness);
+  server.on("/admin/savebrightness", handle_save_brightness);
+  server.on("/admin/testleds", handle_test_leds);
+  server.on("/admin/refreshcalendar", handle_refresh_calendar);
+
+  // Auto brightness
+  server.on("/autobrightness.html", send_AutoBrightness_html);
+  server.on("/admin/autobrightvalues", send_AutoBrightness_values_html);
+  server.on("/admin/saveautobrightness", handle_save_autobrightness);
+
+  // Color settings
+  server.on("/colors.html", send_Color_Settings_html);
+  server.on("/admin/colorvalues", send_Color_Settings_values_html);
+  server.on("/admin/previewcolors", handle_preview_colors);
+  server.on("/admin/savecolors", handle_save_colors);
+  server.on("/admin/resetcolors", handle_reset_colors);
+  server.on("/admin/gammavalues", send_gamma_values_html);
+  server.on("/admin/previewgamma", handle_preview_gamma);
+  server.on("/admin/savegamma", handle_save_gamma);
+
+  // OTA page
+  server.on("/ota.html", send_OTA_html);
+  server.on("/admin/otavalues", send_OTA_values_html);
+
+  server.begin();
+  Serial.println("Web server started");
+}
+
+void setupOTA() {
+  String hostname = config.DeviceName;
+  hostname.replace(" ", "");
+  hostname.toLowerCase();
+
+  ArduinoOTA.setHostname(hostname.c_str());
+  ArduinoOTA.setPort(8266);
+
+  ArduinoOTA.onStart([]() {
+    Serial.println("OTA: Start");
+  });
+
+  ArduinoOTA.onEnd([]() {
+    Serial.println("\nOTA: End");
+  });
+
+  ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
+    Serial.printf("OTA Progress: %u%%\r", (progress / (total / 100)));
+  });
+
+  ArduinoOTA.onError([](ota_error_t error) {
+    Serial.printf("OTA Error[%u]: ", error);
+    if (error == OTA_AUTH_ERROR) Serial.println("Auth Failed");
+    else if (error == OTA_BEGIN_ERROR) Serial.println("Begin Failed");
+    else if (error == OTA_CONNECT_ERROR) Serial.println("Connect Failed");
+    else if (error == OTA_RECEIVE_ERROR) Serial.println("Receive Failed");
+    else if (error == OTA_END_ERROR) Serial.println("End Failed");
+  });
+
+  ArduinoOTA.begin();
+  Serial.println("OTA ready");
+}
+
 void setup() {
   Serial.begin(115200);
   delay(1000);
-  Serial.println("\n\n=== TEST 10 + Config Simple ===");
+  Serial.println("\n\n=== Perpetual Calendar V2 ===");
 
-  EEPROM.begin(512);
+  EEPROM.begin(700);
 
   if (!ReadConfig()) {
-    Serial.println("Config not found");
+    Serial.println("Config not found, using defaults");
+    config.DeviceName = "PerpetualCalendar";
+    config.ntpServerName = "pool.ntp.org";
+    config.timeZone = -60;
+    config.Update_Time_Via_NTP_Every = 30;
   } else {
     Serial.println("Config loaded");
-    Serial.print("SSID: ");
-    Serial.println(config.ssid);
+    printConfig();
   }
 
-  isMondayFirst = (config.FirstWeekDay == "1");
+  isMondayFirst = (config.FirstWeekDay == "Monday" || config.FirstWeekDay == "1");
 
-  // FastLED
+  // Load saved brightness from EEPROM
+  uint8_t savedBrightness = EEPROM.read(488);
+  if (savedBrightness >= 5 && savedBrightness <= 255) {
+    BRIGHTNESS = savedBrightness;
+  }
+
+  // FastLED initialization
   FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS);
-  FastLED.setBrightness(150);
+  FastLED.setBrightness(BRIGHTNESS);
   Serial.println("FastLED initialized");
 
-  // WiFi
+  // Load auto brightness settings
+  loadAutoBrightnessConfig();
+
+  // Load custom colors
+  loadCustomColors();
+  loadColorCorrection();
+
+  // WiFi setup
   WiFi.mode(WIFI_AP_STA);
   WiFi.softAP("Calendario", "12345678");
-  Serial.println("AP: Calendario");
+  Serial.println("AP: Calendario (password: 12345678)");
 
   if (config.ssid.length() > 0) {
     Serial.print("Connecting to: ");
@@ -204,18 +325,29 @@ void setup() {
       Serial.println("\nWiFi connected!");
       Serial.print("IP: ");
       Serial.println(WiFi.localIP());
+      WIFI_connected = WL_CONNECTED;
+    } else {
+      Serial.println("\nWiFi connection failed, AP mode only");
     }
   }
 
-  server.on("/", handleRoot);
-  server.on("/setday", handleSetDay);
-  server.begin();
+  // Setup web server
+  setupWebServer();
 
-  // mDNS
-  if (MDNS.begin("perpetualcalendar")) {
-    Serial.println("mDNS: perpetualcalendar.local");
+  // Setup mDNS
+  String mdnsName = config.DeviceName;
+  mdnsName.replace(" ", "");
+  mdnsName.toLowerCase();
+  if (MDNS.begin(mdnsName.c_str())) {
+    Serial.print("mDNS: ");
+    Serial.print(mdnsName);
+    Serial.println(".local");
   }
 
+  // Setup OTA
+  setupOTA();
+
+  // Start NTP ticker
   tkSecond.attach(1, ISRsecondTick);
   customWatchdog = millis();
 
@@ -257,21 +389,31 @@ void pride() {
 
 void loop() {
   customWatchdog = millis();
+
+  // Handle web requests and OTA
   MDNS.update();
   server.handleClient();
+  ArduinoOTA.handle();
 
   if (!ntp_response_ok) {
+    // Waiting for NTP - show pride animation
     if (cNTP_Update >= 5) {
       cNTP_Update = 0;
       getNTPtime();
     }
     pride();
   } else {
-    // Load events once per hour or on first run
+    // NTP received - show calendar
+
+    // Update auto brightness
+    updateAutoBrightness(DateTime.hour, DateTime.minute);
+
+    // Load events once per hour or when forced (temp_hour = -1)
     if (temp_hour != DateTime.hour) {
       temp_hour = DateTime.hour;
 
       Serial.println("Loading calendar events...");
+
       getCalendar(config.HolidaysScriptID);
       initDatesArray(Holidays, calendarData);
 
@@ -287,15 +429,20 @@ void loop() {
         client = nullptr;
       }
 
-      // Re-init FastLED after Google
+      // Re-init FastLED after Google HTTPS operations
       FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS);
-      FastLED.setBrightness(150);
+      FastLED.setBrightness(BRIGHTNESS);
 
       Serial.println("Events loaded!");
     }
 
+    // Display calendar
     CalendarDisplay(DateTime.year, DateTime.month, DateTime.day);
     EventsDisplay();
+
+    // Display clock
+    refreshClock(DateTime.hour, DateTime.minute, DateTime.second);
+
     FastLED.show();
   }
 

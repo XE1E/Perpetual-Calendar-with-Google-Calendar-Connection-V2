@@ -1,17 +1,18 @@
 #ifndef PAGE_COLORSETTINGS_H
 #define PAGE_COLORSETTINGS_H
 
-// EEPROM addresses for custom colors (494-517)
-#define EEPROM_CUSTOM_COLORS_ENABLED 494
-#define EEPROM_COLOR_WEEKDAY 495      // 3 bytes (H, S, V)
-#define EEPROM_COLOR_WEEKEND 498      // 3 bytes
-#define EEPROM_COLOR_TODAY 501        // 3 bytes
-#define EEPROM_COLOR_HOLIDAY 504      // 3 bytes
-#define EEPROM_COLOR_ANNIVERSARY 507  // 3 bytes
-#define EEPROM_COLOR_TODO 510         // 3 bytes
-#define EEPROM_COLOR_MONTH 513        // 3 bytes
-#define EEPROM_COLOR_CORRECTION 516   // 1 byte (0=none, 1=TypicalLEDStrip, 2=TypicalSMD5050)
-#define EEPROM_COLOR_TEMPERATURE 517  // 1 byte (0=none, 1=DirectSunlight, 2=Tungsten100W, 3=ClearBlueSky)
+// EEPROM addresses for custom colors (584-607)
+// Note: 489-495 used by AutoBrightness, 520-583 used by backup WiFi
+#define EEPROM_CUSTOM_COLORS_ENABLED 584
+#define EEPROM_COLOR_WEEKDAY 585      // 3 bytes (H, S, V)
+#define EEPROM_COLOR_WEEKEND 588      // 3 bytes
+#define EEPROM_COLOR_TODAY 591        // 3 bytes
+#define EEPROM_COLOR_HOLIDAY 594      // 3 bytes
+#define EEPROM_COLOR_ANNIVERSARY 597  // 3 bytes
+#define EEPROM_COLOR_TODO 600         // 3 bytes
+#define EEPROM_COLOR_MONTH 603        // 3 bytes
+#define EEPROM_COLOR_CORRECTION 606   // 1 byte (0=none, 1=TypicalLEDStrip, 2=TypicalSMD5050)
+#define EEPROM_COLOR_TEMPERATURE 607  // 1 byte (0=none, 1=DirectSunlight, 2=Tungsten100W, 3=ClearBlueSky)
 
 // Color correction settings
 uint8_t colorCorrectionMode = 1;  // Default: TypicalLEDStrip

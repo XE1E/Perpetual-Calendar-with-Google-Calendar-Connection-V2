@@ -76,6 +76,9 @@ bool updateAutoBrightness(uint8_t currentHour, uint8_t currentMinute) {
 
     uint8_t targetBrightness = isDayTime ? autoBrightness.dayBrightness : autoBrightness.nightBrightness;
 
+    // Enforce minimum brightness of 5
+    if (targetBrightness < 5) targetBrightness = 5;
+
     if (BRIGHTNESS != targetBrightness) {
         BRIGHTNESS = targetBrightness;
         FastLED.setBrightness(BRIGHTNESS);
