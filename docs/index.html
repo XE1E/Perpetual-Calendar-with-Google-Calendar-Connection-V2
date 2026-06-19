@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Perpetual Calendar - Web Flasher</title>
+  <title>Calendario Perpetuo - Web Flasher</title>
   <script type="module" src="https://unpkg.com/esp-web-tools@10/dist/web/install-button.js?module"></script>
   <style>
     :root {
@@ -51,6 +51,60 @@
     .subtitle {
       color: var(--text-muted);
       font-size: 1.1rem;
+    }
+
+    .lang-toggle {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--card-bg);
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.1);
+      font-size: 0.9rem;
+    }
+
+    .lang-toggle label {
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: color 0.2s;
+    }
+
+    .lang-toggle label:hover {
+      color: var(--text);
+    }
+
+    .lang-toggle input[type="checkbox"] {
+      display: none;
+    }
+
+    .lang-switch {
+      width: 50px;
+      height: 26px;
+      background: var(--primary);
+      border-radius: 13px;
+      position: relative;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .lang-switch::after {
+      content: '';
+      position: absolute;
+      width: 22px;
+      height: 22px;
+      background: white;
+      border-radius: 50%;
+      top: 2px;
+      left: 2px;
+      transition: transform 0.3s;
+    }
+
+    .lang-toggle input:checked + .lang-switch::after {
+      transform: translateX(24px);
     }
 
     .cards {
@@ -171,74 +225,115 @@
       font-size: 0.8rem;
       margin-bottom: 1rem;
     }
+
+    @media (max-width: 500px) {
+      .lang-toggle {
+        position: static;
+        justify-content: center;
+        margin-bottom: 1.5rem;
+      }
+    }
   </style>
 </head>
 <body>
   <div class="container">
+    <div class="lang-toggle">
+      <label for="langSwitch">ES</label>
+      <input type="checkbox" id="langSwitch">
+      <div class="lang-switch" onclick="document.getElementById('langSwitch').click()"></div>
+      <label for="langSwitch">EN</label>
+    </div>
+
     <header>
-      <h1>Perpetual Calendar</h1>
-      <p class="subtitle">LED Calendar with Google Calendar Integration</p>
+      <h1 data-es="Calendario Perpetuo" data-en="Perpetual Calendar">Calendario Perpetuo</h1>
+      <p class="subtitle" data-es="Calendario LED con integracion de Google Calendar" data-en="LED Calendar with Google Calendar Integration">Calendario LED con integracion de Google Calendar</p>
     </header>
 
     <div class="cards">
       <div class="card">
-        <span class="badge">Recommended</span>
-        <h2>Standard Version</h2>
-        <p>The classic perpetual calendar displaying the current month with Google Calendar events.</p>
+        <span class="badge" data-es="Recomendado" data-en="Recommended">Recomendado</span>
+        <h2 data-es="Version Estandar" data-en="Standard Version">Version Estandar</h2>
+        <p data-es="El calendario perpetuo clasico que muestra el mes actual con eventos de Google Calendar." data-en="The classic perpetual calendar displaying the current month with Google Calendar events.">El calendario perpetuo clasico que muestra el mes actual con eventos de Google Calendar.</p>
         <ul>
-          <li>75 WS2811 LEDs</li>
-          <li>Google Calendar sync</li>
-          <li>Holidays, anniversaries, todos</li>
-          <li>Auto brightness</li>
-          <li>OTA updates</li>
+          <li data-es="75 LEDs WS2811" data-en="75 WS2811 LEDs">75 LEDs WS2811</li>
+          <li data-es="Sincronizacion con Google Calendar" data-en="Google Calendar sync">Sincronizacion con Google Calendar</li>
+          <li data-es="Festivos, aniversarios, tareas" data-en="Holidays, anniversaries, todos">Festivos, aniversarios, tareas</li>
+          <li data-es="Brillo automatico" data-en="Auto brightness">Brillo automatico</li>
+          <li data-es="Actualizaciones OTA" data-en="OTA updates">Actualizaciones OTA</li>
         </ul>
         <esp-web-install-button manifest="manifest.json">
-          <button slot="activate">Install Standard</button>
-          <span slot="unsupported">Your browser doesn't support Web Serial. Use Chrome or Edge.</span>
-          <span slot="not-allowed">Installation not allowed. Connect via HTTPS.</span>
+          <button slot="activate" data-es="Instalar Estandar" data-en="Install Standard">Instalar Estandar</button>
+          <span slot="unsupported" data-es="Tu navegador no soporta Web Serial. Usa Chrome o Edge." data-en="Your browser doesn't support Web Serial. Use Chrome or Edge.">Tu navegador no soporta Web Serial. Usa Chrome o Edge.</span>
+          <span slot="not-allowed" data-es="Instalacion no permitida. Conecta via HTTPS." data-en="Installation not allowed. Connect via HTTPS.">Instalacion no permitida. Conecta via HTTPS.</span>
         </esp-web-install-button>
       </div>
 
       <div class="card">
-        <span class="badge">Extended</span>
-        <h2>Color Coded Clock</h2>
-        <p>Includes everything from Standard plus a color-coded clock display using LEDs 63-67.</p>
+        <span class="badge" data-es="Extendido" data-en="Extended">Extendido</span>
+        <h2 data-es="Reloj con Codigo de Colores" data-en="Color Coded Clock">Reloj con Codigo de Colores</h2>
+        <p data-es="Incluye todo de la version Estandar mas un reloj con codigo de colores usando los LEDs 63-67." data-en="Includes everything from Standard plus a color-coded clock display using LEDs 63-67.">Incluye todo de la version Estandar mas un reloj con codigo de colores usando los LEDs 63-67.</p>
         <ul>
-          <li>All standard features</li>
-          <li>Color coded time display</li>
-          <li>Uses LEDs 63-66 for HH:MM</li>
-          <li>LED 67 as separator</li>
+          <li data-es="Todas las funciones estandar" data-en="All standard features">Todas las funciones estandar</li>
+          <li data-es="Visualizacion de hora con colores" data-en="Color coded time display">Visualizacion de hora con colores</li>
+          <li data-es="Usa LEDs 63-66 para HH:MM" data-en="Uses LEDs 63-66 for HH:MM">Usa LEDs 63-66 para HH:MM</li>
+          <li data-es="LED 67 como separador" data-en="LED 67 as separator">LED 67 como separador</li>
         </ul>
         <esp-web-install-button manifest="manifest-color-clock.json">
-          <button slot="activate">Install Color Clock</button>
-          <span slot="unsupported">Your browser doesn't support Web Serial. Use Chrome or Edge.</span>
-          <span slot="not-allowed">Installation not allowed. Connect via HTTPS.</span>
+          <button slot="activate" data-es="Instalar Reloj de Colores" data-en="Install Color Clock">Instalar Reloj de Colores</button>
+          <span slot="unsupported" data-es="Tu navegador no soporta Web Serial. Usa Chrome o Edge." data-en="Your browser doesn't support Web Serial. Use Chrome or Edge.">Tu navegador no soporta Web Serial. Usa Chrome o Edge.</span>
+          <span slot="not-allowed" data-es="Instalacion no permitida. Conecta via HTTPS." data-en="Installation not allowed. Connect via HTTPS.">Instalacion no permitida. Conecta via HTTPS.</span>
         </esp-web-install-button>
       </div>
     </div>
 
     <div class="instructions">
-      <h2>How to Install</h2>
+      <h2 data-es="Como Instalar" data-en="How to Install">Como Instalar</h2>
       <ol>
-        <li><strong>Connect your ESP8266</strong> (D1 Mini or compatible) to your computer via USB.</li>
-        <li><strong>Click the Install button</strong> for your preferred version above.</li>
-        <li><strong>Select the serial port</strong> when prompted by your browser.</li>
-        <li><strong>Wait for the installation</strong> to complete (about 30 seconds).</li>
-        <li><strong>Connect to WiFi:</strong> After flashing, connect to the "PerpetualCalendar-XXXX" WiFi network (password: admin1234).</li>
-        <li><strong>Configure:</strong> Open http://192.168.4.1 in your browser to set up WiFi and Google Calendar.</li>
+        <li><strong data-es="Conecta tu ESP8266" data-en="Connect your ESP8266">Conecta tu ESP8266</strong> <span data-es="(D1 Mini o compatible) a tu computadora via USB." data-en="(D1 Mini or compatible) to your computer via USB.">(D1 Mini o compatible) a tu computadora via USB.</span></li>
+        <li><strong data-es="Haz clic en el boton Instalar" data-en="Click the Install button">Haz clic en el boton Instalar</strong> <span data-es="de tu version preferida arriba." data-en="for your preferred version above.">de tu version preferida arriba.</span></li>
+        <li><strong data-es="Selecciona el puerto serial" data-en="Select the serial port">Selecciona el puerto serial</strong> <span data-es="cuando el navegador lo solicite." data-en="when prompted by your browser.">cuando el navegador lo solicite.</span></li>
+        <li><strong data-es="Espera a que la instalacion" data-en="Wait for the installation">Espera a que la instalacion</strong> <span data-es="se complete (aproximadamente 30 segundos)." data-en="to complete (about 30 seconds).">se complete (aproximadamente 30 segundos).</span></li>
+        <li><strong data-es="Conectate al WiFi:" data-en="Connect to WiFi:">Conectate al WiFi:</strong> <span data-es="Despues de flashear, conectate a la red WiFi 'PerpetualCalendar-XXXX' (contrasena: admin1234)." data-en="After flashing, connect to the 'PerpetualCalendar-XXXX' WiFi network (password: admin1234).">Despues de flashear, conectate a la red WiFi "PerpetualCalendar-XXXX" (contrasena: admin1234).</span></li>
+        <li><strong data-es="Configura:" data-en="Configure:">Configura:</strong> <span data-es="Abre http://192.168.4.1 en tu navegador para configurar WiFi y Google Calendar." data-en="Open http://192.168.4.1 in your browser to set up WiFi and Google Calendar.">Abre http://192.168.4.1 en tu navegador para configurar WiFi y Google Calendar.</span></li>
       </ol>
 
       <div class="warning">
-        <strong>Note:</strong> This requires Chrome, Edge, or Opera browser. Firefox and Safari do not support Web Serial API. Make sure no other program (like Arduino IDE) is using the serial port.
+        <strong data-es="Nota:" data-en="Note:">Nota:</strong> <span data-es="Esto requiere el navegador Chrome, Edge u Opera. Firefox y Safari no soportan Web Serial API. Asegurate de que ningun otro programa (como Arduino IDE) este usando el puerto serial." data-en="This requires Chrome, Edge, or Opera browser. Firefox and Safari do not support Web Serial API. Make sure no other program (like Arduino IDE) is using the serial port.">Esto requiere el navegador Chrome, Edge u Opera. Firefox y Safari no soportan Web Serial API. Asegurate de que ningun otro programa (como Arduino IDE) este usando el puerto serial.</span>
       </div>
     </div>
 
     <footer>
       <p>
-        <a href="https://github.com/XE1E/Perpetual-Calendar-with-Google-Calendar-Connection-V2">GitHub Repository</a> |
-        <a href="https://www.instructables.com/Perpetual-Calendar-With-Google-Calendar-Connection/">Instructables Guide</a>
+        <a href="https://github.com/XE1E/Perpetual-Calendar-with-Google-Calendar-Connection-V2" data-es="Repositorio en GitHub" data-en="GitHub Repository">Repositorio en GitHub</a> |
+        <a href="https://www.instructables.com/Perpetual-Calendar-With-Google-Calendar-Connection/" data-es="Guia en Instructables" data-en="Instructables Guide">Guia en Instructables</a>
       </p>
     </footer>
   </div>
+
+  <script>
+    const langSwitch = document.getElementById('langSwitch');
+
+    function setLanguage(lang) {
+      document.documentElement.lang = lang;
+      document.title = lang === 'es' ? 'Calendario Perpetuo - Web Flasher' : 'Perpetual Calendar - Web Flasher';
+
+      document.querySelectorAll('[data-es][data-en]').forEach(el => {
+        el.textContent = el.getAttribute(`data-${lang}`);
+      });
+
+      localStorage.setItem('preferredLang', lang);
+    }
+
+    langSwitch.addEventListener('change', () => {
+      setLanguage(langSwitch.checked ? 'en' : 'es');
+    });
+
+    // Load saved preference or default to Spanish
+    const savedLang = localStorage.getItem('preferredLang') || 'es';
+    if (savedLang === 'en') {
+      langSwitch.checked = true;
+      setLanguage('en');
+    }
+  </script>
 </body>
 </html>
