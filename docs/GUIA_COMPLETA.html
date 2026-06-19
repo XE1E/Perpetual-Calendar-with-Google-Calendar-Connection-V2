@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calendario Perpetuo con Google Calendar - Guia Completa</title>
+  <style>
+    @media print {
+      .no-print { display: none; }
+      .page-break { page-break-before: always; }
+      body { font-size: 11pt; }
+      img { max-height: 300px; }
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      max-width: 210mm;
+      margin: 0 auto;
+      padding: 20mm 15mm;
+      background: #fff;
+    }
+
+    h1 {
+      font-size: 2.2em;
+      color: #2c3e50;
+      text-align: center;
+      margin-bottom: 0.3em;
+      border-bottom: 3px solid #3498db;
+      padding-bottom: 0.3em;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #7f8c8d;
+      font-size: 1.1em;
+      margin-bottom: 2em;
+    }
+
+    h2 {
+      font-size: 1.5em;
+      color: #2980b9;
+      margin-top: 1.5em;
+      margin-bottom: 0.5em;
+      border-left: 4px solid #3498db;
+      padding-left: 0.5em;
+    }
+
+    h3 {
+      font-size: 1.2em;
+      color: #34495e;
+      margin-top: 1em;
+      margin-bottom: 0.5em;
+    }
+
+    p { margin-bottom: 0.8em; }
+
+    ul, ol {
+      margin-left: 1.5em;
+      margin-bottom: 1em;
+    }
+
+    li { margin-bottom: 0.3em; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1em 0;
+      font-size: 0.95em;
+    }
+
+    th, td {
+      border: 1px solid #bdc3c7;
+      padding: 0.5em;
+      text-align: left;
+    }
+
+    th {
+      background: #3498db;
+      color: white;
+    }
+
+    tr:nth-child(even) { background: #ecf0f1; }
+
+    code {
+      background: #f4f4f4;
+      padding: 0.2em 0.4em;
+      border-radius: 3px;
+      font-family: 'Consolas', monospace;
+      font-size: 0.9em;
+    }
+
+    pre {
+      background: #2c3e50;
+      color: #ecf0f1;
+      padding: 1em;
+      border-radius: 5px;
+      overflow-x: auto;
+      margin: 1em 0;
+      font-size: 0.85em;
+    }
+
+    pre code {
+      background: none;
+      padding: 0;
+      color: inherit;
+    }
+
+    .tip {
+      background: #e8f6f3;
+      border-left: 4px solid #1abc9c;
+      padding: 1em;
+      margin: 1em 0;
+    }
+
+    .warning {
+      background: #fef9e7;
+      border-left: 4px solid #f39c12;
+      padding: 1em;
+      margin: 1em 0;
+    }
+
+    .danger {
+      background: #fdedec;
+      border-left: 4px solid #e74c3c;
+      padding: 1em;
+      margin: 1em 0;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1em;
+      margin: 1em 0;
+    }
+
+    .feature-card {
+      background: #f8f9fa;
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+      padding: 1em;
+    }
+
+    .feature-card h4 {
+      color: #2980b9;
+      margin-bottom: 0.5em;
+    }
+
+    .color-sample {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border-radius: 3px;
+      vertical-align: middle;
+      margin-right: 0.5em;
+      border: 1px solid #ccc;
+    }
+
+    .toc {
+      background: #f8f9fa;
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+      padding: 1.5em;
+      margin: 2em 0;
+    }
+
+    .toc h3 {
+      margin-top: 0;
+      color: #2c3e50;
+    }
+
+    .toc ol {
+      margin-bottom: 0;
+    }
+
+    .toc a {
+      color: #2980b9;
+      text-decoration: none;
+    }
+
+    .toc a:hover {
+      text-decoration: underline;
+    }
+
+    .step-number {
+      display: inline-block;
+      background: #3498db;
+      color: white;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 30px;
+      margin-right: 0.5em;
+      font-weight: bold;
+    }
+
+    .diagram {
+      background: #1a1a2e;
+      color: #eee;
+      padding: 1em;
+      border-radius: 5px;
+      font-family: 'Consolas', monospace;
+      font-size: 0.8em;
+      overflow-x: auto;
+      white-space: pre;
+      margin: 1em 0;
+    }
+
+    footer {
+      margin-top: 3em;
+      padding-top: 1em;
+      border-top: 1px solid #dee2e6;
+      text-align: center;
+      color: #7f8c8d;
+      font-size: 0.9em;
+    }
+
+    .version-badge {
+      display: inline-block;
+      background: #27ae60;
+      color: white;
+      padding: 0.2em 0.6em;
+      border-radius: 4px;
+      font-size: 0.8em;
+      margin-left: 0.5em;
+    }
+
+    .img-container {
+      text-align: center;
+      margin: 1.5em 0;
+    }
+
+    .img-container img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .img-container.small img {
+      max-width: 300px;
+    }
+
+    .img-container.medium img {
+      max-width: 500px;
+    }
+
+    .img-caption {
+      font-size: 0.9em;
+      color: #666;
+      margin-top: 0.5em;
+      font-style: italic;
+    }
+
+    .img-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1em;
+      margin: 1em 0;
+    }
+
+    .img-grid img {
+      width: 100%;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .hero-img {
+      width: 100%;
+      max-height: 400px;
+      object-fit: cover;
+      border-radius: 12px;
+      margin: 1em 0 2em 0;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    }
+  </style>
+</head>
+<body>
+
+<h1>Calendario Perpetuo con Google Calendar <span class="version-badge">V2</span></h1>
+<p class="subtitle">Guia completa de construccion, instalacion y configuracion</p>
+
+<div class="img-container">
+  <img src="images/calendario_funcionando.jpg" alt="Calendario Perpetuo funcionando" class="hero-img">
+  <p class="img-caption">El Calendario Perpetuo mostrando enero con festivos, aniversarios y el reloj de colores</p>
+</div>
+
+<div class="toc">
+  <h3>Tabla de Contenidos</h3>
+  <ol>
+    <li><a href="#intro">Introduccion</a></li>
+    <li><a href="#caracteristicas">Caracteristicas</a></li>
+    <li><a href="#materiales">Materiales Necesarios</a></li>
+    <li><a href="#construccion">Construccion</a></li>
+    <li><a href="#instalacion">Instalacion del Firmware</a></li>
+    <li><a href="#configuracion">Configuracion Inicial</a></li>
+    <li><a href="#google">Configuracion de Google Calendar</a></li>
+    <li><a href="#reloj">Reloj con Codigo de Colores</a></li>
+    <li><a href="#interfaz">Interfaz Web</a></li>
+    <li><a href="#problemas">Resolucion de Problemas</a></li>
+  </ol>
+</div>
+
+<!-- ==================== INTRODUCCION ==================== -->
+<h2 id="intro"><span class="step-number">1</span> Introduccion</h2>
+
+<p>Este proyecto es un <strong>calendario perpetuo fisico</strong> que muestra todos los dias del mes actual usando LEDs de colores. Los digitos de los dias estan posicionados de tal manera que cualquier mes puede mostrarse simplemente encendiendo los LEDs en las posiciones correctas.</p>
+
+<div class="img-grid">
+  <div>
+    <img src="images/enero_domingo.png" alt="Enero con domingo primero">
+    <p class="img-caption">Enero 2022 - Domingo como primer dia</p>
+  </div>
+  <div>
+    <img src="images/enero_lunes.png" alt="Enero con lunes primero">
+    <p class="img-caption">Enero 2022 - Lunes como primer dia</p>
+  </div>
+</div>
+
+<p>El calendario se sincroniza automaticamente con <strong>Google Calendar</strong> para mostrar:</p>
+<ul>
+  <li><strong>Dias festivos</strong> - importados de calendarios publicos de tu pais</li>
+  <li><strong>Aniversarios</strong> - cumpleanos, fechas importantes</li>
+  <li><strong>Tareas</strong> - eventos y recordatorios</li>
+</ul>
+
+<p>Cada tipo de evento se muestra en un color diferente, permitiendo ver de un vistazo que dias son especiales.</p>
+
+<h3>Principio de Funcionamiento</h3>
+<p>Los numeros permanecen fijos en su lugar. Solo los LEDs se encienden en diferentes posiciones y colores segun el mes:</p>
+<ul>
+  <li><span class="color-sample" style="background:#00ff00"></span> <strong>Verde</strong> - Dias laborables (lunes a viernes)</li>
+  <li><span class="color-sample" style="background:#ff0000"></span> <strong>Rojo</strong> - Fines de semana (sabado y domingo)</li>
+  <li><span class="color-sample" style="background:#0000ff"></span> <strong>Azul</strong> - Dia actual</li>
+  <li><span class="color-sample" style="background:#ff00ff"></span> <strong>Magenta</strong> - Festivos</li>
+  <li><span class="color-sample" style="background:#00ffff"></span> <strong>Cyan</strong> - Aniversarios</li>
+  <li><span class="color-sample" style="background:#ffaa00"></span> <strong>Naranja</strong> - Tareas</li>
+</ul>
+
+<div class="tip">
+  <strong>Prioridad de colores:</strong> Si un dia tiene multiples eventos, el color final sigue esta prioridad (el ultimo sobrescribe): Dia base → Dia actual → Festivos → Aniversarios → Tareas.
+</div>
+
+<!-- ==================== CARACTERISTICAS ==================== -->
+<h2 id="caracteristicas" class="page-break"><span class="step-number">2</span> Caracteristicas</h2>
+
+<p>La <strong>Version 2</strong> incluye mejoras significativas sobre el proyecto original:</p>
+
+<div class="feature-grid">
+  <div class="feature-card">
+    <h4>Web Flasher</h4>
+    <p>Instala el firmware directamente desde el navegador. No necesitas Arduino IDE ni conocimientos de programacion.</p>
+  </div>
+  <div class="feature-card">
+    <h4>Interfaz Web Completa</h4>
+    <p>Configura todo desde tu telefono o computadora: WiFi, colores, brillo, Google Calendar.</p>
+  </div>
+  <div class="feature-card">
+    <h4>Actualizaciones OTA</h4>
+    <p>Actualiza el firmware sin cables, directamente por WiFi.</p>
+  </div>
+  <div class="feature-card">
+    <h4>mDNS</h4>
+    <p>Accede facilmente via <code>http://perpetualcalendar.local</code></p>
+  </div>
+  <div class="feature-card">
+    <h4>Auto-Brillo</h4>
+    <p>Ajusta automaticamente el brillo segun la hora. Modo nocturno para apagar LEDs de noche.</p>
+  </div>
+  <div class="feature-card">
+    <h4>Colores Personalizables</h4>
+    <p>Cambia los colores de cada tipo de dia desde la interfaz web.</p>
+  </div>
+  <div class="feature-card">
+    <h4>WiFi Multi-Red</h4>
+    <p>Configura red principal y de respaldo. Reconexion automatica.</p>
+  </div>
+  <div class="feature-card">
+    <h4>Reloj con Colores</h4>
+    <p>Opcion de mostrar HH:MM:SS usando 6 LEDs con colores codificados.</p>
+  </div>
+</div>
+
+<h3>Especificaciones Tecnicas</h3>
+<table>
+  <tr><th>Parametro</th><th>Valor</th></tr>
+  <tr><td>Microcontrolador</td><td>ESP8266 (D1 Mini, NodeMCU, etc.)</td></tr>
+  <tr><td>LEDs</td><td>75 LEDs WS2811/WS2812B</td></tr>
+  <tr><td>Pin de datos</td><td>GPIO 2 (D4 en NodeMCU)</td></tr>
+  <tr><td>Alimentacion</td><td>5V, minimo 3A</td></tr>
+  <tr><td>Conexion</td><td>WiFi 2.4GHz</td></tr>
+  <tr><td>Puerto web</td><td>80</td></tr>
+  <tr><td>Puerto OTA</td><td>8266</td></tr>
+</table>
+
+<!-- ==================== MATERIALES ==================== -->
+<h2 id="materiales" class="page-break"><span class="step-number">3</span> Materiales Necesarios</h2>
+
+<h3>Componentes Electronicos</h3>
+<table>
+  <tr><th>Componente</th><th>Cantidad</th><th>Notas</th></tr>
+  <tr><td>ESP8266 (D1 Mini o NodeMCU)</td><td>1</td><td>Recomendado: Wemos D1 Mini</td></tr>
+  <tr><td>Tira LED WS2811/WS2812B</td><td>75 LEDs</td><td>60 LEDs/m, cortar en tiras</td></tr>
+  <tr><td>Fuente de alimentacion 5V</td><td>1</td><td>Minimo 3A (75 LEDs x 60mA)</td></tr>
+  <tr><td>Conector DC hembra 5.5mm/2.5mm</td><td>1</td><td>Para la fuente de poder</td></tr>
+  <tr><td>Modulo regulador 5V/3.3V</td><td>1</td><td>Para alimentar el ESP</td></tr>
+  <tr><td>Resistencia 3K ohm</td><td>1</td><td>Entre GPIO2 y VCC (importante)</td></tr>
+  <tr><td>Cables de colores</td><td>Varios</td><td>Para conexiones</td></tr>
+</table>
+
+<h3>Materiales de Construccion</h3>
+
+<div class="img-container medium">
+  <img src="images/acrilico_ahumado.jpg" alt="Acrilico ahumado">
+  <p class="img-caption">Acrilico ahumado de 2mm de grosor</p>
+</div>
+
+<table>
+  <tr><th>Material</th><th>Especificacion</th></tr>
+  <tr><td>Piezas impresas 3D</td><td>Marco, soporte de LEDs, rejilla, pata</td></tr>
+  <tr><td>Acrilico ahumado</td><td>191mm x 96mm x 2mm</td></tr>
+  <tr><td>Papel blanco impreso</td><td>Con numeros de dias y meses (PDF incluido)</td></tr>
+  <tr><td>Pegamento caliente</td><td>Para fijar componentes</td></tr>
+  <tr><td>Cinta adhesiva de espuma</td><td>1mm de grosor, para la pata</td></tr>
+</table>
+
+<h3>Piezas Impresas en 3D</h3>
+
+<div class="img-grid">
+  <div>
+    <img src="images/soporte_leds_3d.jpg" alt="Soporte de LEDs">
+    <p class="img-caption">Soporte para los LEDs con relieves</p>
+  </div>
+  <div>
+    <img src="images/rejilla_3d.jpg" alt="Rejilla">
+    <p class="img-caption">Rejilla separadora</p>
+  </div>
+  <div>
+    <img src="images/marco_3d_frame.jpg" alt="Marco">
+    <p class="img-caption">Marco frontal</p>
+  </div>
+  <div>
+    <img src="images/pata_soporte.jpg" alt="Pata soporte">
+    <p class="img-caption">Pata y tapa trasera</p>
+  </div>
+</div>
+
+<div class="tip">
+  <strong>Archivos 3D:</strong> Descarga los modelos STL desde Tinkercad:<br>
+  <a href="https://www.tinkercad.com/things/52D6lIWCsAP-3d-printed-perpetual-calendar">https://www.tinkercad.com/things/52D6lIWCsAP-3d-printed-perpetual-calendar</a><br>
+  Hay dos versiones de rejilla: con y sin separaciones para los 6 LEDs del reloj.
+</div>
+
+<h3>Herramientas</h3>
+<ul>
+  <li>Soldador y estano</li>
+  <li>Pistola de pegamento caliente</li>
+  <li>Lija (para redondear esquinas del acrilico)</li>
+  <li>Impresora 3D (o acceso a servicio de impresion)</li>
+  <li>Cable USB para programar el ESP8266</li>
+</ul>
+
+<!-- ==================== CONSTRUCCION ==================== -->
+<h2 id="construccion" class="page-break"><span class="step-number">4</span> Construccion</h2>
+
+<h3>Paso 4.1: Preparar las Tiras LED</h3>
+<p>Corta la tira de LEDs en las siguientes piezas:</p>
+<ul>
+  <li>5 piezas de 13 LEDs cada una</li>
+  <li>1 pieza de 10 LEDs</li>
+</ul>
+
+<div class="img-container medium">
+  <img src="images/tiras_led_cortadas.jpg" alt="Tiras LED cortadas">
+  <p class="img-caption">Las 6 tiras de LEDs cortadas y listas para montar</p>
+</div>
+
+<div class="warning">
+  <strong>Importante:</strong> Presta atencion a la direccion de los datos (flechas en la tira). Las piezas se conectan en zigzag alternando direcciones.
+</div>
+
+<h3>Paso 4.2: Montar los LEDs en el Soporte</h3>
+<ol>
+  <li>Posiciona las tiras de LEDs en el soporte, entre los relieves</li>
+  <li>Presiona firmemente con un palo de plastico para buena adherencia</li>
+  <li>Los relieves permiten acercar los LEDs a 12mm de distancia (como si fuera 83 LEDs/m)</li>
+  <li>Respeta las direcciones de las flechas (zigzag)</li>
+</ol>
+
+<div class="img-container medium">
+  <img src="images/leds_montados.jpg" alt="LEDs montados">
+  <p class="img-caption">LEDs montados en el soporte mostrando el patron zigzag</p>
+</div>
+
+<h3>Paso 4.3: Esquema de Conexiones</h3>
+
+<div class="img-container">
+  <img src="images/esquema_electronico.png" alt="Esquema electronico">
+  <p class="img-caption">Diagrama completo de conexiones - nota el patron zigzag y la resistencia de 3K</p>
+</div>
+
+<div class="danger">
+  <strong>Resistencia de 3K obligatoria:</strong> La resistencia entre GPIO2 y VCC es necesaria para que el ESP-01 arranque correctamente con la tira LED conectada. Sin ella, el modulo puede no iniciar.
+</div>
+
+<div class="danger">
+  <strong>Alimentacion:</strong> NO alimentes la tira de 75 LEDs desde el ESP8266. Usa una fuente externa de 5V/3A y conecta el GND comun entre la fuente, los LEDs y el ESP8266.
+</div>
+
+<h3>Paso 4.4: Preparar el Papel con Numeros</h3>
+
+<div class="img-container medium">
+  <img src="images/papel_numeros.jpg" alt="Papel con numeros">
+  <p class="img-caption">Plantilla impresa con los numeros y nombres de meses</p>
+</div>
+
+<div class="tip">
+  <strong>PDF incluido:</strong> El archivo <code>plantilla_numeros.pdf</code> contiene la plantilla lista para imprimir en papel A4. Recorta siguiendo el contorno.
+</div>
+
+<h3>Paso 4.5: Ensamblaje Final</h3>
+<p>El ensamblaje se realiza en capas, de atras hacia adelante:</p>
+<ol>
+  <li><strong>Soporte con LEDs</strong> - Base con las tiras LED montadas y soldadas</li>
+  <li><strong>Modulo ESP y regulador</strong> - Fijados con pegamento caliente en la ranura</li>
+  <li><strong>Rejilla 3D</strong> - Sobre el soporte, separa la luz de cada LED</li>
+  <li><strong>Papel impreso</strong> - Con los numeros hacia arriba</li>
+  <li><strong>Acrilico ahumado</strong> - Difunde la luz y protege</li>
+  <li><strong>Marco frontal</strong> - Fija todo en su lugar</li>
+  <li><strong>Pata trasera</strong> - Con cinta adhesiva de espuma</li>
+</ol>
+
+<!-- ==================== INSTALACION ==================== -->
+<h2 id="instalacion" class="page-break"><span class="step-number">5</span> Instalacion del Firmware</h2>
+
+<h3>Opcion A: Web Flasher (Recomendado)</h3>
+<p>La forma mas facil de instalar. No requiere ningun software.</p>
+
+<ol>
+  <li>Conecta el ESP8266 a tu computadora via USB</li>
+  <li>Abre Chrome, Edge u Opera (Firefox/Safari no soportados)</li>
+  <li>Visita: <code>https://XE1E.github.io/Perpetual-Calendar-with-Google-Calendar-Connection-V2/</code></li>
+  <li>Selecciona la version:
+    <ul>
+      <li><strong>Estandar</strong> - Calendario basico</li>
+      <li><strong>Reloj de Colores</strong> - Incluye reloj HH:MM:SS en LEDs 62-67</li>
+    </ul>
+  </li>
+  <li>Haz clic en "Instalar"</li>
+  <li>Selecciona el puerto serial cuando aparezca</li>
+  <li>Espera ~30 segundos a que termine</li>
+</ol>
+
+<div class="tip">
+  <strong>Problemas comunes:</strong> Si no aparece el puerto, verifica que el cable USB soporte datos (no solo carga) y que ningun otro programa este usando el puerto (cierra Arduino IDE).
+</div>
+
+<h3>Opcion B: PlatformIO</h3>
+<pre><code># Clonar repositorio
+git clone https://github.com/XE1E/Perpetual-Calendar-with-Google-Calendar-Connection-V2.git
+
+# Version estandar
+pio run -e standard -t upload
+
+# Version con reloj de colores
+pio run -e color_coded_clock -t upload</code></pre>
+
+<h3>Opcion C: Arduino IDE</h3>
+<ol>
+  <li>Instala Arduino IDE</li>
+  <li>Anade soporte ESP8266: <code>http://arduino.esp8266.com/stable/package_esp8266com_index.json</code></li>
+  <li>Instala la libreria <strong>FastLED</strong> desde el gestor de librerias</li>
+  <li>Selecciona placa: NodeMCU 1.0</li>
+  <li>Carga el sketch</li>
+</ol>
+
+<!-- ==================== CONFIGURACION ==================== -->
+<h2 id="configuracion" class="page-break"><span class="step-number">6</span> Configuracion Inicial</h2>
+
+<h3>Paso 6.1: Conectar al Punto de Acceso</h3>
+<p>Despues de flashear, el ESP8266 crea una red WiFi:</p>
+<table>
+  <tr><th>Parametro</th><th>Valor</th></tr>
+  <tr><td>Nombre de red (SSID)</td><td><code>Calendario</code></td></tr>
+  <tr><td>Contrasena</td><td><code>12345678</code></td></tr>
+  <tr><td>IP de configuracion</td><td><code>http://192.168.4.1</code></td></tr>
+</table>
+
+<h3>Paso 6.2: Configurar WiFi</h3>
+<ol>
+  <li>Conecta tu telefono/PC a la red "Calendario"</li>
+  <li>Abre un navegador y ve a <code>http://192.168.4.1</code></li>
+  <li>Haz clic en "Configuracion de Red"</li>
+  <li>Ingresa el SSID y contrasena de tu red WiFi</li>
+  <li>Opcionalmente, configura una red de respaldo</li>
+  <li>Guarda y reinicia</li>
+</ol>
+
+<h3>Paso 6.3: Configurar NTP</h3>
+<ol>
+  <li>Ve a "Configuracion NTP"</li>
+  <li>Servidor NTP: <code>pool.ntp.org</code> (o uno local)</li>
+  <li>Zona horaria: Selecciona tu zona (ej: UTC-6 para Mexico Centro)</li>
+  <li>Horario de verano: Activa si aplica en tu region</li>
+</ol>
+
+<h3>Paso 6.4: Acceso Normal</h3>
+<p>Una vez configurado, accede al calendario mediante:</p>
+<ul>
+  <li><strong>mDNS:</strong> <code>http://perpetualcalendar.local</code></li>
+  <li><strong>IP directa:</strong> La IP que le asigno tu router (visible en Serial Monitor)</li>
+</ul>
+
+<!-- ==================== GOOGLE CALENDAR ==================== -->
+<h2 id="google" class="page-break"><span class="step-number">7</span> Configuracion de Google Calendar</h2>
+
+<h3>Paso 7.1: Crear Calendarios en Google</h3>
+<p>Necesitas tres calendarios separados:</p>
+<ol>
+  <li><strong>Festivos</strong> - Importa el calendario de festivos de tu pais desde "Explorar calendarios de interes"</li>
+  <li><strong>Aniversarios</strong> - Crea un nuevo calendario para cumpleanos y fechas importantes</li>
+  <li><strong>Tareas</strong> - Crea un nuevo calendario para tareas y recordatorios</li>
+</ol>
+
+<div class="warning">
+  <strong>Importante:</strong> Los eventos deben ser de "todo el dia", no eventos con hora especifica. De lo contrario no apareceran en el calendario.
+</div>
+
+<h3>Paso 7.2: Obtener IDs de Calendarios</h3>
+<ol>
+  <li>Ve a calendar.google.com</li>
+  <li>Haz clic en los tres puntos junto al calendario</li>
+  <li>Selecciona "Configuracion y uso compartido"</li>
+  <li>Busca "ID del calendario" (formato: xxx@group.calendar.google.com)</li>
+  <li>Copia el ID de cada calendario</li>
+</ol>
+
+<h3>Paso 7.3: Crear Google Apps Scripts</h3>
+<p>Para cada calendario, crea un script en <code>script.google.com</code>:</p>
+
+<pre><code>function doGet() {
+  var calId = 'TU_CALENDAR_ID_AQUI';
+  var calendar = CalendarApp.getCalendarById(calId);
+
+  if (!calendar) {
+    return ContentService.createTextOutput('Error: Calendario no encontrado');
+  }
+
+  var now = new Date();
+  var start = new Date(now.getFullYear(), now.getMonth(), 1);
+  var end = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
+  var events = calendar.getEvents(start, end);
+
+  var days = "";
+  for (var i = 0; i < events.length; i++) {
+    if (events[i].isAllDayEvent()) {
+      var eventStart = events[i].getAllDayStartDate();
+      var eventEnd = events[i].getAllDayEndDate();
+      var current = new Date(eventStart);
+
+      while (current < eventEnd) {
+        if (current.getMonth() === now.getMonth()) {
+          days += current.getDate() + "-";
+        }
+        current.setDate(current.getDate() + 1);
+      }
+    }
+  }
+
+  return ContentService.createTextOutput(days);
+}</code></pre>
+
+<h3>Paso 7.4: Publicar los Scripts</h3>
+<ol>
+  <li>En cada script, ve a "Implementar" → "Nueva implementacion"</li>
+  <li>Tipo: "Aplicacion web"</li>
+  <li>Ejecutar como: "Yo"</li>
+  <li>Quien tiene acceso: "Cualquier persona"</li>
+  <li>Haz clic en "Implementar"</li>
+  <li>Autoriza el acceso a tu cuenta de Google</li>
+  <li>Copia el <strong>ID de implementacion</strong> (no la URL completa)</li>
+</ol>
+
+<h3>Paso 7.5: Configurar en el Calendario</h3>
+<ol>
+  <li>Accede a la interfaz web del calendario</li>
+  <li>Ve a "Apps Script Settings"</li>
+  <li>Pega los IDs de cada script en su campo correspondiente</li>
+  <li>Guarda la configuracion</li>
+</ol>
+
+<div class="tip">
+  <strong>Frecuencia de actualizacion:</strong> El calendario de tareas se actualiza cada minuto. Festivos y aniversarios se actualizan cada hora.
+</div>
+
+<!-- ==================== RELOJ ==================== -->
+<h2 id="reloj" class="page-break"><span class="step-number">8</span> Reloj con Codigo de Colores</h2>
+
+<p>La version "Color Coded Clock" usa los LEDs 62-67 para mostrar la hora en formato HH:MM:SS, donde cada digito se representa con un color diferente.</p>
+
+<h3>Distribucion de LEDs</h3>
+<div class="diagram">
+LED 62   LED 63   LED 64   LED 65   LED 66   LED 67
+ ┌──┐     ┌──┐     ┌──┐     ┌──┐     ┌──┐     ┌──┐
+ │H1│     │H2│     │M1│     │M2│     │S1│     │S2│
+ └──┘     └──┘     └──┘     └──┘     └──┘     └──┘
+  ↓        ↓        ↓        ↓        ↓        ↓
+Decena   Unidad   Decena   Unidad   Decena   Unidad
+ Hora     Hora    Minuto   Minuto   Segundo  Segundo
+</div>
+
+<h3>Tabla de Colores por Digito</h3>
+<table>
+  <tr><th>Digito</th><th>Color</th><th>Muestra</th></tr>
+  <tr><td>0</td><td>Negro/Apagado</td><td><span class="color-sample" style="background:#000"></span></td></tr>
+  <tr><td>1</td><td>Rojo</td><td><span class="color-sample" style="background:#ff0000"></span></td></tr>
+  <tr><td>2</td><td>Naranja</td><td><span class="color-sample" style="background:#ff8000"></span></td></tr>
+  <tr><td>3</td><td>Amarillo</td><td><span class="color-sample" style="background:#ffff00"></span></td></tr>
+  <tr><td>4</td><td>Verde</td><td><span class="color-sample" style="background:#00ff00"></span></td></tr>
+  <tr><td>5</td><td>Cyan</td><td><span class="color-sample" style="background:#00ffff"></span></td></tr>
+  <tr><td>6</td><td>Azul</td><td><span class="color-sample" style="background:#0000ff"></span></td></tr>
+  <tr><td>7</td><td>Purpura</td><td><span class="color-sample" style="background:#8000ff"></span></td></tr>
+  <tr><td>8</td><td>Rosa</td><td><span class="color-sample" style="background:#ff00ff"></span></td></tr>
+  <tr><td>9</td><td>Blanco/Gris</td><td><span class="color-sample" style="background:#c0c0c0"></span></td></tr>
+</table>
+
+<h3>Ejemplo: 14:35:27</h3>
+<ul>
+  <li>LED 62 = 1 → <span class="color-sample" style="background:#ff0000"></span> Rojo (decena hora)</li>
+  <li>LED 63 = 4 → <span class="color-sample" style="background:#00ff00"></span> Verde (unidad hora)</li>
+  <li>LED 64 = 3 → <span class="color-sample" style="background:#ffff00"></span> Amarillo (decena minuto)</li>
+  <li>LED 65 = 5 → <span class="color-sample" style="background:#00ffff"></span> Cyan (unidad minuto)</li>
+  <li>LED 66 = 2 → <span class="color-sample" style="background:#ff8000"></span> Naranja (decena segundo)</li>
+  <li>LED 67 = 7 → <span class="color-sample" style="background:#8000ff"></span> Purpura (unidad segundo)</li>
+</ul>
+
+<!-- ==================== INTERFAZ WEB ==================== -->
+<h2 id="interfaz" class="page-break"><span class="step-number">9</span> Interfaz Web</h2>
+
+<h3>Paginas Disponibles</h3>
+<table>
+  <tr><th>Pagina</th><th>URL</th><th>Descripcion</th></tr>
+  <tr><td>Principal</td><td><code>/</code></td><td>Menu de administracion</td></tr>
+  <tr><td>Red WiFi</td><td><code>/config.html</code></td><td>Configurar redes WiFi</td></tr>
+  <tr><td>NTP</td><td><code>/ntp.html</code></td><td>Servidor de tiempo</td></tr>
+  <tr><td>Apps Script</td><td><code>/appsscript.html</code></td><td>IDs de Google Scripts</td></tr>
+  <tr><td>Hora Manual</td><td><code>/time.html</code></td><td>Ajustar hora manualmente</td></tr>
+  <tr><td>Informacion</td><td><code>/info.html</code></td><td>Estado del sistema, reinicio</td></tr>
+  <tr><td>Brillo</td><td><code>/led.html</code></td><td>Control de brillo, test LEDs</td></tr>
+  <tr><td>Auto-Brillo</td><td><code>/autobrightness.html</code></td><td>Modo dia/noche</td></tr>
+  <tr><td>Colores</td><td><code>/colors.html</code></td><td>Personalizar colores</td></tr>
+  <tr><td>OTA</td><td><code>/ota.html</code></td><td>Actualizaciones por WiFi</td></tr>
+</table>
+
+<h3>Funciones de la Pagina de Informacion</h3>
+<ul>
+  <li><strong>Red:</strong> SSID conectado, IP, Mascara, Gateway, MAC</li>
+  <li><strong>Recursos:</strong> RAM libre, Flash, CPU, Uptime</li>
+  <li><strong>Reiniciar ESP:</strong> Reinicia el dispositivo</li>
+  <li><strong>Borrar WiFi:</strong> Elimina credenciales y reinicia en modo AP</li>
+</ul>
+
+<h3>Configuracion de Auto-Brillo</h3>
+<table>
+  <tr><th>Parametro</th><th>Descripcion</th><th>Rango</th></tr>
+  <tr><td>Brillo dia</td><td>Brillo durante horas diurnas</td><td>5-255</td></tr>
+  <tr><td>Brillo noche</td><td>Brillo durante horas nocturnas</td><td>0-255 (0=apagado)</td></tr>
+  <tr><td>Hora inicio dia</td><td>Cuando empieza modo dia</td><td>0-23</td></tr>
+  <tr><td>Hora inicio noche</td><td>Cuando empieza modo noche</td><td>0-23</td></tr>
+</table>
+
+<!-- ==================== PROBLEMAS ==================== -->
+<h2 id="problemas" class="page-break"><span class="step-number">10</span> Resolucion de Problemas</h2>
+
+<h3>Animacion Arcoiris Continua</h3>
+<p><strong>Causa:</strong> No se recibe respuesta del servidor NTP.</p>
+<p><strong>Solucion:</strong></p>
+<ul>
+  <li>Verifica la conexion a Internet</li>
+  <li>Prueba otro servidor NTP (ej: <code>time.google.com</code>)</li>
+  <li>Verifica que el puerto UDP 123 no este bloqueado</li>
+</ul>
+
+<h3>No se Muestran Eventos de Google</h3>
+<p><strong>Causa:</strong> Problema con los scripts de Google Apps.</p>
+<p><strong>Solucion:</strong></p>
+<ul>
+  <li>Verifica que los IDs de scripts esten correctos</li>
+  <li>Asegurate de que los scripts esten publicados como "Cualquier persona"</li>
+  <li>Los eventos deben ser de "todo el dia"</li>
+  <li>Prueba el script en el navegador: <code>https://script.google.com/macros/s/TU_ID/exec</code></li>
+</ul>
+
+<h3>Hora Incorrecta</h3>
+<p><strong>Solucion:</strong></p>
+<ul>
+  <li>Verifica la zona horaria en la configuracion NTP</li>
+  <li>Activa/desactiva horario de verano segun tu region</li>
+</ul>
+
+<h3>No Funciona mDNS</h3>
+<p><strong>Solucion:</strong></p>
+<ul>
+  <li>En Windows: Instala Bonjour (viene con iTunes)</li>
+  <li>En Android: Usa la IP directa</li>
+  <li>Espera 30 segundos despues del reinicio</li>
+</ul>
+
+<h3>LEDs No Encienden</h3>
+<p><strong>Solucion:</strong></p>
+<ul>
+  <li>Verifica la conexion del pin de datos (GPIO 2)</li>
+  <li>Verifica la alimentacion de 5V</li>
+  <li>Verifica la resistencia de 3K entre GPIO2 y VCC</li>
+  <li>Usa la funcion "Test LEDs" en la pagina de brillo</li>
+  <li>Verifica la direccion de las flechas en la tira LED</li>
+</ul>
+
+<h3>ESP No Inicia / Se Reinicia</h3>
+<p><strong>Causa:</strong> Falta la resistencia de 3K o problema de alimentacion.</p>
+<p><strong>Solucion:</strong></p>
+<ul>
+  <li>Asegurate de tener la resistencia de 3K entre GPIO2 y VCC</li>
+  <li>Verifica que la fuente de 5V tenga suficiente corriente (3A minimo)</li>
+  <li>Conecta los GND de todas las fuentes juntos</li>
+</ul>
+
+<footer>
+  <p><strong>Calendario Perpetuo con Google Calendar V2</strong></p>
+  <p>Basado en el proyecto original de andrei.erdei en Instructables</p>
+  <p>Repositorio: <code>https://github.com/XE1E/Perpetual-Calendar-with-Google-Calendar-Connection-V2</code></p>
+  <p>Web Flasher: <code>https://XE1E.github.io/Perpetual-Calendar-with-Google-Calendar-Connection-V2/</code></p>
+  <p>Modelos 3D: <code>https://www.tinkercad.com/things/52D6lIWCsAP-3d-printed-perpetual-calendar</code></p>
+</footer>
+
+</body>
+</html>

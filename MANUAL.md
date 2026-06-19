@@ -36,7 +36,7 @@ El calendario:
 - Se conecta a Google Calendar para mostrar eventos
 - Diferencia visualmente fines de semana, días festivos, aniversarios y tareas
 - Se configura mediante una interfaz web integrada
-- **Modo reloj opcional** con colores para mostrar la hora (HH:MM)
+- **Modo reloj opcional** con colores para mostrar la hora (HH:MM:SS)
 - **Acceso fácil** mediante mDNS (http://perpetualcalendar.local)
 - **Actualizaciones OTA** sin necesidad de cable USB
 - **Brillo ajustable** manualmente o automático según hora del día
@@ -151,7 +151,7 @@ Perpetual-Calendar-with-Google-Calendar-Connection/
 2. Leer configuración desde EEPROM
 3. Intentar conexión WiFi
    ├── Éxito: Modo Station (cliente WiFi)
-   └── Fallo: Modo AP (punto de acceso "PerpetualCalendar-XXXX")
+   └── Fallo: Modo AP (punto de acceso "Calendario")
 4. Iniciar servidor web en puerto 80
 5. Configurar FastLED (75 LEDs, WS2811, pin GPIO 2)
 6. Conectar a Google Apps Script
@@ -484,8 +484,8 @@ void initDatesArray(int (&Dates)[20], String calendarString) {
 
 - **Modo Station (conectado a WiFi):** `http://[IP_asignada]/`
 - **Modo AP (sin WiFi configurado):** `http://192.168.4.1/`
-  - SSID: `PerpetualCalendar-XXXX` (XXXX = ID del chip)
-  - Password: `admin1234`
+  - SSID: `Calendario`
+  - Password: `12345678`
 
 ### Páginas Disponibles
 
@@ -550,7 +550,7 @@ Muestra información completa del dispositivo y permite realizar acciones de man
 - **Reiniciar ESP:** Reinicia el dispositivo (con confirmación)
 - **Borrar WiFi:** Borra las credenciales WiFi guardadas y reinicia en modo AP (con confirmación)
 
-> **Nota:** Al borrar WiFi, el dispositivo creará nuevamente la red `PerpetualCalendar-XXXX` para reconfigurar.
+> **Nota:** Al borrar WiFi, el dispositivo creará nuevamente la red `Calendario` para reconfigurar.
 
 ---
 
@@ -798,7 +798,7 @@ La forma más fácil de instalar el firmware es usando el **Web Flasher** direct
 2. Abrir el Web Flasher: **https://XE1E.github.io/Perpetual-Calendar-with-Google-Calendar-Connection-V2/**
 3. Seleccionar la versión a instalar:
    - **Standard** - Calendario básico
-   - **Color Coded Clock** - Incluye reloj con colores en LEDs 63-67
+   - **Color Coded Clock** - Incluye reloj con colores en LEDs 62-67 (HH:MM:SS)
 4. Hacer clic en "Install"
 5. Seleccionar el puerto serial cuando el navegador lo solicite
 6. Esperar ~30 segundos a que termine la instalación
@@ -844,8 +844,8 @@ Si prefieres compilar el código tú mismo o necesitas hacer modificaciones:
 
 ### Paso 3: Configuración Inicial (Ambas opciones)
 
-1. El ESP8266 creará una red WiFi: `PerpetualCalendar-XXXX`
-2. Conectarse con contraseña: `admin1234`
+1. El ESP8266 creará una red WiFi: `Calendario`
+2. Conectarse con contraseña: `12345678`
 3. Abrir navegador en: `http://192.168.4.1`
 4. Configurar en orden:
    - **Red WiFi principal** (SSID y contraseña)
@@ -991,7 +991,7 @@ function doGet() {
 **Soluciones:**
 1. Verificar que `#define COLOR_CODED_CLOCK` esté descomentado
 2. Verificar que NTP esté funcionando (hora correcta)
-3. Los LEDs del reloj (63-67) no deben estar dañados
+3. Los LEDs del reloj (62-67) no deben estar dañados
 4. Reiniciar el dispositivo
 
 ---
