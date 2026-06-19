@@ -43,7 +43,7 @@ var i18n = {
 		"ota_update": "OTA Update",
 		"back": "Back",
 		"save": "Save",
-		"refresh": "Refresh",
+		"refresh": "Refresh Calendar",
 		// Network config
 		"ssid": "SSID",
 		"password": "Password",
@@ -136,7 +136,7 @@ var i18n = {
 		"ota_update": "Actualizacion OTA",
 		"back": "Volver",
 		"save": "Guardar",
-		"refresh": "Actualizar",
+		"refresh": "Actualizar Calendario",
 		// Config red
 		"ssid": "SSID",
 		"password": "Contrasena",

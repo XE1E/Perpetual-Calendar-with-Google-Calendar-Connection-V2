@@ -398,6 +398,9 @@ void loop() {
   server.handleClient();
   ArduinoOTA.handle();
 
+  // Procesar test de LEDs si fue solicitado
+  processTestLeds();
+
   if (!ntp_response_ok) {
     // Waiting for NTP - show pride animation
     if (cNTP_Update >= 5) {

@@ -19,7 +19,7 @@ const char PAGE_LEDSettings[] PROGMEM = R"=====(
 <strong data-i18n="preview">Vista Previa</strong>
 <table style="width:310px">
 <tr><td><input type="button" id="testBtn" style="width:130px" class="btn btn--s btn--grey" value="Probar LEDs" onclick="testLeds()"></td>
-<td><input type="button" id="refreshBtn" style="width:130px" class="btn btn--s btn--grey" value="Actualizar" onclick="refreshCalendar()"></td></tr>
+<td><input type="button" id="refreshBtn" style="width:130px;height:50px;white-space:normal" class="btn btn--s btn--grey" value="Actualizar Calendario" onclick="refreshCalendar()"></td></tr>
 </table>
 <hr>
 <a href="/" style="width:250px" class="btn btn--m btn--grey"><span data-i18n="back">Volver</span></a>
@@ -104,17 +104,35 @@ void handle_save_brightness() {
     server.send(200, "text/plain", "OK");
 }
 
+// Flag para test de LEDs (procesado en loop principal)
+volatile bool testLedsRequested = false;
+
 void handle_test_leds() {
-    for (int i = 0; i < NUM_LEDS; i++) {
-        leds[i] = CRGB::White;
-    }
-    FastLED.show();
-    delay(500);
-    for (int i = 0; i < NUM_LEDS; i++) {
-        leds[i] = CRGB::Black;
-    }
-    FastLED.show();
+    testLedsRequested = true;
     server.send(200, "text/plain", "OK");
+}
+
+// Llamar desde loop() principal
+void processTestLeds() {
+    if (!testLedsRequested) return;
+    testLedsRequested = false;
+
+    uint8_t originalBrightness = FastLED.getBrightness();
+    FastLED.setBrightness(60);
+
+    // 3 parpadeos
+    for (int p = 0; p < 3; p++) {
+        fill_solid(leds, NUM_LEDS, CRGB::White);
+        FastLED.show();
+        FastLED.delay(150);
+
+        fill_solid(leds, NUM_LEDS, CRGB::Black);
+        FastLED.show();
+        FastLED.delay(100);
+    }
+
+    FastLED.setBrightness(originalBrightness);
+    temp_minute = -1;
 }
 
 void handle_refresh_calendar() {
