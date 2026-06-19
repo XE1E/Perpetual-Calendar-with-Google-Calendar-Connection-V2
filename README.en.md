@@ -7,6 +7,10 @@
 
 A physical LED perpetual calendar powered by ESP8266 that syncs with Google Calendar to display holidays, anniversaries, and to-dos using color-coded LEDs.
 
+## [Complete Build Guide](https://xe1e.github.io/Perpetual-Calendar-with-Google-Calendar-Connection-V2/GUIA_COMPLETA.html)
+
+Step-by-step guide with images to build your own perpetual calendar (in Spanish).
+
 ## Quick Install (Web Flasher)
 
 **No software installation required!** Flash the firmware directly from your browser:
@@ -70,9 +74,10 @@ pio run -e standard -t upload
 
 ## Documentation
 
-- [Instructables Guide](https://www.instructables.com/Perpetual-Calendar-With-Google-Calendar-Connection/)
+- [Complete Build Guide](https://xe1e.github.io/Perpetual-Calendar-with-Google-Calendar-Connection-V2/GUIA_COMPLETA.html) - Step-by-step with images (Spanish)
 - [Google Calendar Setup](GOOGLE_CALENDAR_SETUP.md)
-- [Manual](MANUAL.md)
+- [Technical Manual](MANUAL.md)
+- [Original Instructables Guide](https://www.instructables.com/Perpetual-Calendar-With-Google-Calendar-Connection/)
 
 ## License
 

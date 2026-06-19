@@ -7,6 +7,10 @@
 
 Un calendario perpetuo físico con LEDs, basado en ESP8266, que se sincroniza con Google Calendar para mostrar festivos, aniversarios y tareas usando colores.
 
+## [Guía Completa de Construcción](https://xe1e.github.io/Perpetual-Calendar-with-Google-Calendar-Connection-V2/GUIA_COMPLETA.html)
+
+Guía paso a paso con imágenes para construir tu propio calendario perpetuo.
+
 ## Instalación Rápida (Web Flasher)
 
 **No requiere instalar software!** Flashea el firmware directamente desde tu navegador:
@@ -46,9 +50,10 @@ pio run -e standard -t upload
 
 ## Documentación
 
-- [Guía en Instructables](https://www.instructables.com/Perpetual-Calendar-With-Google-Calendar-Connection/)
+- [Guía Completa de Construcción](https://xe1e.github.io/Perpetual-Calendar-with-Google-Calendar-Connection-V2/GUIA_COMPLETA.html) - Con imágenes paso a paso
 - [Configuración de Google Calendar](GOOGLE_CALENDAR_SETUP.md)
-- [Manual Completo](MANUAL.md)
+- [Manual Técnico](MANUAL.md)
+- [Guía Original en Instructables](https://www.instructables.com/Perpetual-Calendar-With-Google-Calendar-Connection/)
 
 ## Licencia
 
