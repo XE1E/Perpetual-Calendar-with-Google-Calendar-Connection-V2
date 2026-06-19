@@ -49,7 +49,9 @@ CHSV todos_color = CHSV(32, 255, 192);
 #include "global.h"
 #include "NTP.h"
 #include "AutoBrightness.h"
+#ifdef COLOR_CODED_CLOCK
 #include "ColorCodedClock.h"
+#endif
 
 // Include web pages (must come after global variables are defined)
 #include "Page_Style.css.h"
@@ -446,8 +448,10 @@ void loop() {
     CalendarDisplay(DateTime.year, DateTime.month, DateTime.day);
     EventsDisplay();
 
-    // Display clock
+    // Display clock (only for color coded clock version)
+    #ifdef COLOR_CODED_CLOCK
     refreshClock(DateTime.hour, DateTime.minute, DateTime.second);
+    #endif
 
     FastLED.show();
   }
