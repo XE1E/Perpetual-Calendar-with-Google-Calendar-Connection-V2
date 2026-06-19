@@ -170,8 +170,8 @@ const char PAGE_ColorSettings[] PROGMEM = R"=====(
 <tr><td data-i18n="anniversary_color">Aniversarios:</td><td><input type="color" id="anniversary" value="#00ffff"></td></tr>
 <tr><td data-i18n="todo_color">Tareas:</td><td><input type="color" id="todo" value="#ffa500"></td></tr>
 <tr><td colspan="2" style="padding-top:10px">
-<input type="button" id="previewBtn" style="width:100px" class="btn btn--s btn--grey" value="Vista Previa" onclick="previewColors()">
-<input type="button" id="saveBtn" style="width:80px" class="btn btn--s btn--grey" value="Guardar" onclick="saveColors()">
+<input type="button" id="previewBtn" style="width:130px" class="btn btn--s btn--grey" value="Vista Previa" onclick="previewColors()">
+<input type="button" id="saveBtn" style="width:100px" class="btn btn--s btn--grey" value="Guardar" onclick="saveColors()">
 </td></tr>
 <tr><td colspan="2">
 <input type="button" id="resetBtn" style="width:210px" class="btn btn--s btn--grey" value="Restablecer" onclick="resetColors()">

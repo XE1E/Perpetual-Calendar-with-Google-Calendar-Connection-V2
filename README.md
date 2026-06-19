@@ -21,7 +21,9 @@ Un calendario perpetuo físico con LEDs, basado en ESP8266, que se sincroniza co
 - 75 LEDs direccionables WS2811
 - Integración con Google Calendar (festivos, aniversarios, tareas)
 - Brillo automático según hora del día
+- Colores personalizables via interfaz web
 - Configuración WiFi via interfaz web
+- Panel de información del sistema (RAM, CPU, Uptime)
 - Actualizaciones OTA (Over-The-Air)
 - Reloj con colores opcional
 

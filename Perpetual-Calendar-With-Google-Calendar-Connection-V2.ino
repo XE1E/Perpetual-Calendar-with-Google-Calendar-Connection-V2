@@ -189,6 +189,8 @@ void setupWebServer() {
   // Network information
   server.on("/info.html", []() { server.send_P(200, "text/html", PAGE_Information); });
   server.on("/admin/infovalues", send_information_values_html);
+  server.on("/admin/restart", handle_restart);
+  server.on("/admin/clearwifi", handle_clear_wifi);
 
   // NTP settings
   server.on("/ntp.html", send_NTP_configuration_html);
@@ -355,6 +357,7 @@ void setup() {
 }
 
 void pride() {
+  FastLED.setBrightness(120);  // Brillo fijo para animación
   static uint16_t sPseudotime = 0;
   static uint16_t sLastMillis = 0;
   static uint16_t sHue16 = 0;

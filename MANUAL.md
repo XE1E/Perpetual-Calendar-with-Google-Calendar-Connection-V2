@@ -496,7 +496,7 @@ void initDatesArray(int (&Dates)[20], String calendarString) {
 | `/ntp.html` | Configuración del servidor NTP |
 | `/appsscript.html` | IDs de Google Apps Script |
 | `/time.html` | Configuración manual de hora |
-| `/info.html` | Información del dispositivo |
+| `/info.html` | Información del sistema (red, recursos, acciones) |
 | `/led.html` | Control de brillo de LEDs |
 | `/autobrightness.html` | Configuración de auto-brillo |
 | `/colors.html` | Personalización de colores |
@@ -524,10 +524,35 @@ void initDatesArray(int (&Dates)[20], String calendarString) {
 | `/admin/otavalues` | GET | Información OTA |
 | `/admin/testleds` | GET | Probar todos los LEDs |
 | `/admin/refreshcalendar` | GET | Forzar actualización calendario |
+| `/admin/restart` | GET | Reiniciar el dispositivo |
+| `/admin/clearwifi` | GET | Borrar credenciales WiFi y reiniciar |
 
 ---
 
 ## Funciones Avanzadas V2
+
+### Página de Información del Sistema
+
+**Página:** `/info.html`
+
+Muestra información completa del dispositivo y permite realizar acciones de mantenimiento.
+
+**Secciones:**
+
+| Sección | Contenido |
+|---------|-----------|
+| **Red** | SSID conectado, IP, Máscara, Gateway, MAC |
+| **Recursos** | RAM libre, Fragmentación, Flash, CPU, Uptime |
+| **Acciones** | Botones de reinicio y borrado WiFi |
+
+**Acciones disponibles:**
+
+- **Reiniciar ESP:** Reinicia el dispositivo (con confirmación)
+- **Borrar WiFi:** Borra las credenciales WiFi guardadas y reinicia en modo AP (con confirmación)
+
+> **Nota:** Al borrar WiFi, el dispositivo creará nuevamente la red `PerpetualCalendar-XXXX` para reconfigurar.
+
+---
 
 ### mDNS
 
@@ -1012,6 +1037,15 @@ function doGet() {
 
 ## Historial de Versiones
 
+### Versión 2.1
+- Añadida página de información del sistema con recursos (RAM, Flash, CPU, Uptime)
+- Añadido botón para reiniciar el dispositivo desde la web
+- Añadido botón para borrar credenciales WiFi desde la web
+- Mejorada persistencia de colores personalizados
+- Mejorada interfaz de configuración de colores (botones más grandes)
+- Añadido brillo fijo (120) para animación arcoíris
+- Añadidas traducciones para nuevos elementos
+
 ### Versión 2.0
 - Añadido soporte mDNS (acceso via .local)
 - Añadido actualizaciones OTA
@@ -1032,4 +1066,4 @@ function doGet() {
 
 ---
 
-*Manual generado para el proyecto Perpetual Calendar with Google Calendar Connection v2.0*
+*Manual generado para el proyecto Perpetual Calendar with Google Calendar Connection v2.1*

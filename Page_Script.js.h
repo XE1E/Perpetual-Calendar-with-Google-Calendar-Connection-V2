@@ -115,7 +115,12 @@ var i18n = {
 		"anniversary_color": "Anniversaries",
 		"todo_color": "To-Dos",
 		"reset_colors": "Reset to Default",
-		"preview": "Preview"
+		"preview": "Preview",
+		"save_gamma": "Save Gamma",
+		// System info
+		"system_info": "System Information",
+		"resources": "Resources",
+		"actions": "Actions"
 	},
 	es: {
 		// Menu principal
@@ -203,7 +208,12 @@ var i18n = {
 		"anniversary_color": "Color aniversarios",
 		"todo_color": "Color tareas",
 		"reset_colors": "Restablecer",
-		"preview": "Vista Previa"
+		"preview": "Vista Previa",
+		"save_gamma": "Guardar Gamma",
+		// System info
+		"system_info": "Informacion",
+		"resources": "Recursos",
+		"actions": "Acciones"
 	}
 };
 

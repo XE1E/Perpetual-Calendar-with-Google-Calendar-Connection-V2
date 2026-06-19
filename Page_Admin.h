@@ -15,7 +15,7 @@ const char PAGE_AdminMainPage[] PROGMEM = R"=====(
 </div>
 <hr>
 <a href="config.html" style="width:250px" class="btn btn--m btn--grey"><span data-i18n="network_config">Configuracion de Red</span></a><br>
-<a href="info.html" style="width:250px" class="btn btn--m btn--grey"><span data-i18n="network_info">Informacion de Red</span></a><br>
+<a href="info.html" style="width:250px" class="btn btn--m btn--grey"><span data-i18n="system_info">Informacion</span></a><br>
 <a href="ntp.html" style="width:250px" class="btn btn--m btn--grey"><span data-i18n="ntp_settings">Configuracion NTP</span></a><br>
 <a href="appsscript.html" style="width:250px" class="btn btn--m btn--grey"><span data-i18n="apps_script">Apps Script Config</span></a><br>
 <a href="time.html" style="width:250px" class="btn btn--m btn--grey"><span data-i18n="manual_time">Ajuste Manual de Hora</span></a><br>
