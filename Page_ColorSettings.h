@@ -30,32 +30,47 @@ struct CustomColors {
 } customColors;
 
 void loadCustomColors() {
-    customColors.enabled = EEPROM.read(EEPROM_CUSTOM_COLORS_ENABLED);
+    // 1. Leer enabled correctamente (solo true si es exactamente 1)
+    uint8_t enabledByte = EEPROM.read(EEPROM_CUSTOM_COLORS_ENABLED);
+    customColors.enabled = (enabledByte == 1);
 
-    if (customColors.enabled == 1) {
-        customColors.weekday = CHSV(EEPROM.read(EEPROM_COLOR_WEEKDAY),
-                                     EEPROM.read(EEPROM_COLOR_WEEKDAY + 1),
-                                     EEPROM.read(EEPROM_COLOR_WEEKDAY + 2));
-        customColors.weekend = CHSV(EEPROM.read(EEPROM_COLOR_WEEKEND),
-                                     EEPROM.read(EEPROM_COLOR_WEEKEND + 1),
-                                     EEPROM.read(EEPROM_COLOR_WEEKEND + 2));
-        customColors.today = CHSV(EEPROM.read(EEPROM_COLOR_TODAY),
-                                   EEPROM.read(EEPROM_COLOR_TODAY + 1),
-                                   EEPROM.read(EEPROM_COLOR_TODAY + 2));
-        customColors.holiday = CHSV(EEPROM.read(EEPROM_COLOR_HOLIDAY),
-                                     EEPROM.read(EEPROM_COLOR_HOLIDAY + 1),
-                                     EEPROM.read(EEPROM_COLOR_HOLIDAY + 2));
-        customColors.anniversary = CHSV(EEPROM.read(EEPROM_COLOR_ANNIVERSARY),
-                                         EEPROM.read(EEPROM_COLOR_ANNIVERSARY + 1),
-                                         EEPROM.read(EEPROM_COLOR_ANNIVERSARY + 2));
-        customColors.todo = CHSV(EEPROM.read(EEPROM_COLOR_TODO),
-                                  EEPROM.read(EEPROM_COLOR_TODO + 1),
-                                  EEPROM.read(EEPROM_COLOR_TODO + 2));
-        customColors.month = CHSV(EEPROM.read(EEPROM_COLOR_MONTH),
-                                   EEPROM.read(EEPROM_COLOR_MONTH + 1),
-                                   EEPROM.read(EEPROM_COLOR_MONTH + 2));
+    // 2. SIEMPRE cargar colores de EEPROM al struct (para mostrar en UI)
+    customColors.weekday = CHSV(EEPROM.read(EEPROM_COLOR_WEEKDAY),
+                                 EEPROM.read(EEPROM_COLOR_WEEKDAY + 1),
+                                 EEPROM.read(EEPROM_COLOR_WEEKDAY + 2));
+    customColors.weekend = CHSV(EEPROM.read(EEPROM_COLOR_WEEKEND),
+                                 EEPROM.read(EEPROM_COLOR_WEEKEND + 1),
+                                 EEPROM.read(EEPROM_COLOR_WEEKEND + 2));
+    customColors.today = CHSV(EEPROM.read(EEPROM_COLOR_TODAY),
+                               EEPROM.read(EEPROM_COLOR_TODAY + 1),
+                               EEPROM.read(EEPROM_COLOR_TODAY + 2));
+    customColors.holiday = CHSV(EEPROM.read(EEPROM_COLOR_HOLIDAY),
+                                 EEPROM.read(EEPROM_COLOR_HOLIDAY + 1),
+                                 EEPROM.read(EEPROM_COLOR_HOLIDAY + 2));
+    customColors.anniversary = CHSV(EEPROM.read(EEPROM_COLOR_ANNIVERSARY),
+                                     EEPROM.read(EEPROM_COLOR_ANNIVERSARY + 1),
+                                     EEPROM.read(EEPROM_COLOR_ANNIVERSARY + 2));
+    customColors.todo = CHSV(EEPROM.read(EEPROM_COLOR_TODO),
+                              EEPROM.read(EEPROM_COLOR_TODO + 1),
+                              EEPROM.read(EEPROM_COLOR_TODO + 2));
+    customColors.month = CHSV(EEPROM.read(EEPROM_COLOR_MONTH),
+                               EEPROM.read(EEPROM_COLOR_MONTH + 1),
+                               EEPROM.read(EEPROM_COLOR_MONTH + 2));
 
-        // Apply custom colors
+    // 3. Validar EEPROM no inicializada (255 = no escrita)
+    if (customColors.weekday.h == 255 && customColors.weekday.s == 255) {
+        // EEPROM vacía, usar defaults
+        customColors.weekday = CHSV(96, 255, 192);
+        customColors.weekend = CHSV(0, 255, 128);
+        customColors.today = CHSV(160, 255, 192);
+        customColors.holiday = CHSV(192, 255, 255);
+        customColors.anniversary = CHSV(128, 255, 255);
+        customColors.todo = CHSV(32, 255, 192);
+        customColors.month = CHSV(0, 0, 192);
+    }
+
+    // 4. SOLO aplicar a LEDs si está habilitado
+    if (customColors.enabled) {
         weekday_color = customColors.weekday;
         weekend_color = customColors.weekend;
         actualday_color = customColors.today;
@@ -245,18 +260,27 @@ function hexToHsv(hex) {
 }
 
 function loadColors() {
-    microAjax("/admin/colorvalues", function(res) {
-        var data = JSON.parse(res);
-        document.getElementById("enabled").checked = data.enabled == "1";
-        document.getElementById("weekday").value = hsvToHex(parseInt(data.weekday_h), parseInt(data.weekday_s), parseInt(data.weekday_v));
-        document.getElementById("weekend").value = hsvToHex(parseInt(data.weekend_h), parseInt(data.weekend_s), parseInt(data.weekend_v));
-        document.getElementById("today").value = hsvToHex(parseInt(data.today_h), parseInt(data.today_s), parseInt(data.today_v));
-        document.getElementById("month").value = hsvToHex(parseInt(data.month_h), parseInt(data.month_s), parseInt(data.month_v));
-        document.getElementById("holiday").value = hsvToHex(parseInt(data.holiday_h), parseInt(data.holiday_s), parseInt(data.holiday_v));
-        document.getElementById("anniversary").value = hsvToHex(parseInt(data.anniversary_h), parseInt(data.anniversary_s), parseInt(data.anniversary_v));
-        document.getElementById("todo").value = hsvToHex(parseInt(data.todo_h), parseInt(data.todo_s), parseInt(data.todo_v));
-        toggleColors();
-    });
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", "/admin/colorvalues", true);
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState == 4 && xhr.status == 200) {
+            processColors(xhr.responseText);
+        }
+    };
+    xhr.send();
+}
+
+function processColors(res) {
+    var data = JSON.parse(res);
+    document.getElementById("enabled").checked = (data.enabled == "1");
+    document.getElementById("weekday").value = hsvToHex(parseInt(data.weekday_h), parseInt(data.weekday_s), parseInt(data.weekday_v));
+    document.getElementById("weekend").value = hsvToHex(parseInt(data.weekend_h), parseInt(data.weekend_s), parseInt(data.weekend_v));
+    document.getElementById("today").value = hsvToHex(parseInt(data.today_h), parseInt(data.today_s), parseInt(data.today_v));
+    document.getElementById("month").value = hsvToHex(parseInt(data.month_h), parseInt(data.month_s), parseInt(data.month_v));
+    document.getElementById("holiday").value = hsvToHex(parseInt(data.holiday_h), parseInt(data.holiday_s), parseInt(data.holiday_v));
+    document.getElementById("anniversary").value = hsvToHex(parseInt(data.anniversary_h), parseInt(data.anniversary_s), parseInt(data.anniversary_v));
+    document.getElementById("todo").value = hsvToHex(parseInt(data.todo_h), parseInt(data.todo_s), parseInt(data.todo_v));
+    toggleColors();
 }
 
 function toggleColors() {
@@ -345,27 +369,27 @@ void send_Color_Settings_html() {
 void send_Color_Settings_values_html() {
     String response = "{";
     response += "\"enabled\":\"" + String(customColors.enabled ? 1 : 0) + "\",";
-    response += "\"weekday_h\":\"" + String(weekday_color.h) + "\",";
-    response += "\"weekday_s\":\"" + String(weekday_color.s) + "\",";
-    response += "\"weekday_v\":\"" + String(weekday_color.v) + "\",";
-    response += "\"weekend_h\":\"" + String(weekend_color.h) + "\",";
-    response += "\"weekend_s\":\"" + String(weekend_color.s) + "\",";
-    response += "\"weekend_v\":\"" + String(weekend_color.v) + "\",";
-    response += "\"today_h\":\"" + String(actualday_color.h) + "\",";
-    response += "\"today_s\":\"" + String(actualday_color.s) + "\",";
-    response += "\"today_v\":\"" + String(actualday_color.v) + "\",";
-    response += "\"month_h\":\"" + String(month_color.h) + "\",";
-    response += "\"month_s\":\"" + String(month_color.s) + "\",";
-    response += "\"month_v\":\"" + String(month_color.v) + "\",";
-    response += "\"holiday_h\":\"" + String(holidays_color.h) + "\",";
-    response += "\"holiday_s\":\"" + String(holidays_color.s) + "\",";
-    response += "\"holiday_v\":\"" + String(holidays_color.v) + "\",";
-    response += "\"anniversary_h\":\"" + String(anniversaries_color.h) + "\",";
-    response += "\"anniversary_s\":\"" + String(anniversaries_color.s) + "\",";
-    response += "\"anniversary_v\":\"" + String(anniversaries_color.v) + "\",";
-    response += "\"todo_h\":\"" + String(todos_color.h) + "\",";
-    response += "\"todo_s\":\"" + String(todos_color.s) + "\",";
-    response += "\"todo_v\":\"" + String(todos_color.v) + "\"";
+    response += "\"weekday_h\":\"" + String(customColors.weekday.h) + "\",";
+    response += "\"weekday_s\":\"" + String(customColors.weekday.s) + "\",";
+    response += "\"weekday_v\":\"" + String(customColors.weekday.v) + "\",";
+    response += "\"weekend_h\":\"" + String(customColors.weekend.h) + "\",";
+    response += "\"weekend_s\":\"" + String(customColors.weekend.s) + "\",";
+    response += "\"weekend_v\":\"" + String(customColors.weekend.v) + "\",";
+    response += "\"today_h\":\"" + String(customColors.today.h) + "\",";
+    response += "\"today_s\":\"" + String(customColors.today.s) + "\",";
+    response += "\"today_v\":\"" + String(customColors.today.v) + "\",";
+    response += "\"month_h\":\"" + String(customColors.month.h) + "\",";
+    response += "\"month_s\":\"" + String(customColors.month.s) + "\",";
+    response += "\"month_v\":\"" + String(customColors.month.v) + "\",";
+    response += "\"holiday_h\":\"" + String(customColors.holiday.h) + "\",";
+    response += "\"holiday_s\":\"" + String(customColors.holiday.s) + "\",";
+    response += "\"holiday_v\":\"" + String(customColors.holiday.v) + "\",";
+    response += "\"anniversary_h\":\"" + String(customColors.anniversary.h) + "\",";
+    response += "\"anniversary_s\":\"" + String(customColors.anniversary.s) + "\",";
+    response += "\"anniversary_v\":\"" + String(customColors.anniversary.v) + "\",";
+    response += "\"todo_h\":\"" + String(customColors.todo.h) + "\",";
+    response += "\"todo_s\":\"" + String(customColors.todo.s) + "\",";
+    response += "\"todo_v\":\"" + String(customColors.todo.v) + "\"";
     response += "}";
     server.send(200, "application/json", response);
 }
@@ -406,29 +430,40 @@ void applyColorsFromArgs() {
 
 void handle_preview_colors() {
     applyColorsFromArgs();
-    // Force calendar redraw
-    temp_hour = -1;
+    // Colors applied, display updates on next loop iteration
     server.send(200, "text/plain", "OK");
 }
 
 void handle_save_colors() {
     applyColorsFromArgs();
     saveCustomColors();
-    temp_hour = -1;
     server.send(200, "text/plain", "OK");
 }
 
 void handle_reset_colors() {
+    // Desactivar colores personalizados
     customColors.enabled = false;
-    weekday_color = rainbow_colors[4];
-    weekend_color = rainbow_colors[1];
-    actualday_color = rainbow_colors[6];
-    month_color = rainbow_colors[9];
-    holidays_color = rainbow_colors[7];
-    anniversaries_color = rainbow_colors[5];
-    todos_color = rainbow_colors[2];
+
+    // Restaurar defaults en el struct
+    customColors.weekday = CHSV(96, 255, 192);
+    customColors.weekend = CHSV(0, 255, 128);
+    customColors.today = CHSV(160, 255, 192);
+    customColors.holiday = CHSV(192, 255, 255);
+    customColors.anniversary = CHSV(128, 255, 255);
+    customColors.todo = CHSV(32, 255, 192);
+    customColors.month = CHSV(0, 0, 192);
+
+    // Aplicar a colores activos
+    weekday_color = customColors.weekday;
+    weekend_color = customColors.weekend;
+    actualday_color = customColors.today;
+    holidays_color = customColors.holiday;
+    anniversaries_color = customColors.anniversary;
+    todos_color = customColors.todo;
+    month_color = customColors.month;
+
+    // Guardar en EEPROM
     saveCustomColors();
-    temp_hour = -1;
     server.send(200, "text/plain", "OK");
 }
 
