@@ -537,7 +537,7 @@ Si tienes el ESP8266 conectado por USB:
 
 **Verificaciones:**
 1. El dispositivo tiene conexion a Internet?
-2. El LED 62 (advertencia) esta apagado?
+2. La animacion arcoiris se detuvo? (indica que NTP respondio)
 3. Puedes acceder a la interfaz web del dispositivo?
 
 **Solucion:**
@@ -780,4 +780,4 @@ Los eventos recurrentes (cumpleanos anuales, reuniones semanales) funcionan auto
 
 ---
 
-*Guia creada para el proyecto Perpetual Calendar with Google Calendar Connection v2.0*
+*Guia creada para el proyecto Perpetual Calendar with Google Calendar Connection v2.2*

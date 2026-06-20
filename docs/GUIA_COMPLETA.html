@@ -185,6 +185,15 @@
       text-decoration: underline;
     }
 
+    a {
+      color: #2980b9;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
     .step-number {
       display: inline-block;
       background: #3498db;
@@ -519,7 +528,7 @@
 </div>
 
 <div class="tip">
-  <strong>PDF incluido:</strong> El archivo <code>plantilla_numeros.pdf</code> contiene la plantilla lista para imprimir en papel A4. Recorta siguiendo el contorno.
+  <strong>PDF incluido:</strong> El archivo <a href="plantilla_numeros.pdf" target="_blank"><code>plantilla_numeros.pdf</code></a> contiene la plantilla lista para imprimir en papel A4. Recorta siguiendo el contorno.
 </div>
 
 <h3>Paso 4.5: Ensamblaje Final</h3>
@@ -543,7 +552,7 @@
 <ol>
   <li>Conecta el ESP8266 a tu computadora via USB</li>
   <li>Abre Chrome, Edge u Opera (Firefox/Safari no soportados)</li>
-  <li>Visita: <code>https://XE1E.github.io/Perpetual-Calendar-with-Google-Calendar-Connection-V2/</code></li>
+  <li>Visita: <a href="https://XE1E.github.io/Perpetual-Calendar-with-Google-Calendar-Connection-V2/" target="_blank">https://XE1E.github.io/Perpetual-Calendar-with-Google-Calendar-Connection-V2/</a></li>
   <li>Selecciona la version:
     <ul>
       <li><strong>Estandar</strong> - Calendario basico</li>
@@ -572,7 +581,7 @@ pio run -e color_coded_clock -t upload</code></pre>
 <h3>Opcion C: Arduino IDE</h3>
 <ol>
   <li>Instala Arduino IDE</li>
-  <li>Anade soporte ESP8266: <code>http://arduino.esp8266.com/stable/package_esp8266com_index.json</code></li>
+  <li>Anade soporte ESP8266: <a href="http://arduino.esp8266.com/stable/package_esp8266com_index.json" target="_blank"><code>http://arduino.esp8266.com/stable/package_esp8266com_index.json</code></a></li>
   <li>Instala la libreria <strong>FastLED</strong> desde el gestor de librerias</li>
   <li>Selecciona placa: NodeMCU 1.0</li>
   <li>Carga el sketch</li>
@@ -603,7 +612,7 @@ pio run -e color_coded_clock -t upload</code></pre>
 <h3>Paso 6.3: Configurar NTP</h3>
 <ol>
   <li>Ve a "Configuracion NTP"</li>
-  <li>Servidor NTP: <code>pool.ntp.org</code> (o uno local)</li>
+  <li>Servidor NTP: <code>time.cloudflare.com</code> (o uno local)</li>
   <li>Zona horaria: Selecciona tu zona (ej: UTC-6 para Mexico Centro)</li>
   <li>Horario de verano: Activa si aplica en tu region</li>
 </ol>
@@ -626,8 +635,8 @@ pio run -e color_coded_clock -t upload</code></pre>
   <li><strong>Tareas</strong> - Crea un nuevo calendario para tareas y recordatorios</li>
 </ol>
 
-<div class="warning">
-  <strong>Importante:</strong> Los eventos deben ser de "todo el dia", no eventos con hora especifica. De lo contrario no apareceran en el calendario.
+<div class="tip">
+  <strong>Tip:</strong> Para los festivos, puedes importar un calendario publico de tu pais desde "Configuracion" → "Agregar calendario" → "Explorar calendarios de interes".
 </div>
 
 <h3>Paso 7.2: Obtener IDs de Calendarios</h3>
@@ -656,18 +665,12 @@ pio run -e color_coded_clock -t upload</code></pre>
   var events = calendar.getEvents(start, end);
 
   var days = "";
+  var added = {};
   for (var i = 0; i < events.length; i++) {
-    if (events[i].isAllDayEvent()) {
-      var eventStart = events[i].getAllDayStartDate();
-      var eventEnd = events[i].getAllDayEndDate();
-      var current = new Date(eventStart);
-
-      while (current < eventEnd) {
-        if (current.getMonth() === now.getMonth()) {
-          days += current.getDate() + "-";
-        }
-        current.setDate(current.getDate() + 1);
-      }
+    var d = events[i].getStartTime().getDate();
+    if (!added[d]) {
+      days += d + "-";
+      added[d] = true;
     }
   }
 
@@ -744,34 +747,148 @@ Decena   Unidad   Decena   Unidad   Decena   Unidad
 <h3>Paginas Disponibles</h3>
 <table>
   <tr><th>Pagina</th><th>URL</th><th>Descripcion</th></tr>
-  <tr><td>Principal</td><td><code>/</code></td><td>Menu de administracion</td></tr>
-  <tr><td>Red WiFi</td><td><code>/config.html</code></td><td>Configurar redes WiFi</td></tr>
-  <tr><td>NTP</td><td><code>/ntp.html</code></td><td>Servidor de tiempo</td></tr>
-  <tr><td>Apps Script</td><td><code>/appsscript.html</code></td><td>IDs de Google Scripts</td></tr>
-  <tr><td>Hora Manual</td><td><code>/time.html</code></td><td>Ajustar hora manualmente</td></tr>
+  <tr><td>Calendario Perpetuo</td><td><code>/</code></td><td>Menu de administracion</td></tr>
+  <tr><td>Configuracion de Red</td><td><code>/config.html</code></td><td>Configurar redes WiFi</td></tr>
   <tr><td>Informacion</td><td><code>/info.html</code></td><td>Estado del sistema, reinicio</td></tr>
-  <tr><td>Brillo</td><td><code>/led.html</code></td><td>Control de brillo, test LEDs</td></tr>
-  <tr><td>Auto-Brillo</td><td><code>/autobrightness.html</code></td><td>Modo dia/noche</td></tr>
-  <tr><td>Colores</td><td><code>/colors.html</code></td><td>Personalizar colores</td></tr>
-  <tr><td>OTA</td><td><code>/ota.html</code></td><td>Actualizaciones por WiFi</td></tr>
+  <tr><td>Configuracion NTP</td><td><code>/ntp.html</code></td><td>Servidor de tiempo</td></tr>
+  <tr><td>Apps Script Config</td><td><code>/appsscript.html</code></td><td>IDs de Google Scripts</td></tr>
+  <tr><td>Ajuste Manual de Hora</td><td><code>/time.html</code></td><td>Ajustar hora manualmente</td></tr>
+  <tr><td>Configuracion LEDs</td><td><code>/led.html</code></td><td>Control de brillo, test LEDs</td></tr>
+  <tr><td>Brillo Automatico</td><td><code>/autobrightness.html</code></td><td>Modo dia/noche</td></tr>
+  <tr><td>Configuracion Colores</td><td><code>/colors.html</code></td><td>Personalizar colores</td></tr>
+  <tr><td>Actualizacion OTA</td><td><code>/ota.html</code></td><td>Actualizaciones por WiFi</td></tr>
 </table>
 
-<h3>Funciones de la Pagina de Informacion</h3>
+<h3>9.1 Calendario Perpetuo (Menu Principal)</h3>
+<p>Pagina principal con acceso a todas las opciones de configuracion. Incluye boton para cambiar entre espanol e ingles.</p>
+
+<h3>9.2 Configuracion de Red</h3>
+<p>Permite configurar la conexion WiFi del dispositivo.</p>
+<table>
+  <tr><th>Seccion</th><th>Campos</th></tr>
+  <tr><td>Red Principal</td><td>SSID y Contrasena de la red WiFi principal</td></tr>
+  <tr><td>Red de Respaldo</td><td>SSID2 y Contrasena2 (opcional, si la principal falla)</td></tr>
+  <tr><td>Config IP</td><td>DHCP (checkbox), IP estatica, Mascara de red, Puerta de enlace</td></tr>
+  <tr><td>Estado Conexion</td><td>Muestra el estado actual (Conectado, Desconectado, etc.)</td></tr>
+  <tr><td>Redes</td><td>Lista de redes WiFi disponibles con calidad de senal</td></tr>
+</table>
+<div class="tip">
+  <strong>Tip:</strong> Haz clic en el nombre de una red detectada para copiarla automaticamente al campo SSID.
+</div>
+
+<h3>9.3 Informacion del Sistema</h3>
+<p>Muestra el estado actual del dispositivo y permite acciones de mantenimiento.</p>
+<table>
+  <tr><th>Seccion</th><th>Informacion</th></tr>
+  <tr><td>Red</td><td>SSID conectado, IP, Mascara, Gateway, direccion MAC</td></tr>
+  <tr><td>Recursos</td><td>RAM libre, RAM fragmentada, tamano Flash, frecuencia CPU, tiempo encendido (uptime)</td></tr>
+</table>
+<p><strong>Acciones disponibles:</strong></p>
 <ul>
-  <li><strong>Red:</strong> SSID conectado, IP, Mascara, Gateway, MAC</li>
-  <li><strong>Recursos:</strong> RAM libre, Flash, CPU, Uptime</li>
-  <li><strong>Reiniciar ESP:</strong> Reinicia el dispositivo</li>
-  <li><strong>Borrar WiFi:</strong> Elimina credenciales y reinicia en modo AP</li>
+  <li><strong>Reiniciar ESP:</strong> Reinicia el dispositivo (equivale a desconectar y reconectar)</li>
+  <li><strong>Borrar WiFi:</strong> Elimina las credenciales WiFi guardadas y reinicia en modo AP para reconfigurar</li>
 </ul>
 
-<h3>Configuracion de Auto-Brillo</h3>
+<h3>9.4 Configuracion NTP</h3>
+<p>Configura la sincronizacion de hora por Internet.</p>
+<table>
+  <tr><th>Parametro</th><th>Descripcion</th></tr>
+  <tr><td>Servidor NTP</td><td>Direccion del servidor de tiempo (ej: <code>time.cloudflare.com</code>)</td></tr>
+  <tr><td>Intervalo (min)</td><td>Cada cuantos minutos sincronizar la hora (0=desactivado)</td></tr>
+  <tr><td>Zona Horaria</td><td>Selecciona tu zona horaria (GMT-12 a GMT+13)</td></tr>
+  <tr><td>Primer dia semana</td><td>Lunes o Domingo como primer dia de la semana</td></tr>
+  <tr><td>Horario de Verano</td><td>Activar si tu region usa horario de verano (DST)</td></tr>
+</table>
+
+<h3>9.5 Apps Script Config</h3>
+<p>Configura los IDs de los Google Apps Scripts para sincronizar calendarios.</p>
+<table>
+  <tr><th>Campo</th><th>Descripcion</th></tr>
+  <tr><td>Festivos</td><td>ID del script que devuelve los dias festivos</td></tr>
+  <tr><td>Aniversarios</td><td>ID del script que devuelve cumpleanos y aniversarios</td></tr>
+  <tr><td>Tareas</td><td>ID del script que devuelve tareas y eventos</td></tr>
+</table>
+<div class="tip">
+  <strong>Nota:</strong> Solo pega el ID de implementacion, no la URL completa. El ID tiene formato similar a: <code>AKfycbw...</code>
+</div>
+
+<h3>9.6 Ajuste Manual de Hora</h3>
+<p>Permite establecer la fecha y hora manualmente sin usar NTP.</p>
+<table>
+  <tr><th>Campo</th><th>Formato</th></tr>
+  <tr><td>Ano</td><td>4 digitos (ej: 2024)</td></tr>
+  <tr><td>Mes</td><td>1-12</td></tr>
+  <tr><td>Dia</td><td>1-31</td></tr>
+  <tr><td>Hora</td><td>0-23</td></tr>
+  <tr><td>Minuto</td><td>0-59</td></tr>
+  <tr><td>Segundo</td><td>0-59</td></tr>
+</table>
+
+<h3>9.7 Configuracion LEDs</h3>
+<p>Controla el brillo y permite probar los LEDs.</p>
 <table>
   <tr><th>Parametro</th><th>Descripcion</th><th>Rango</th></tr>
-  <tr><td>Brillo dia</td><td>Brillo durante horas diurnas</td><td>5-255</td></tr>
-  <tr><td>Brillo noche</td><td>Brillo durante horas nocturnas</td><td>0-255 (0=apagado)</td></tr>
-  <tr><td>Hora inicio dia</td><td>Cuando empieza modo dia</td><td>0-23</td></tr>
-  <tr><td>Hora inicio noche</td><td>Cuando empieza modo noche</td><td>0-23</td></tr>
+  <tr><td>Brillo</td><td>Control deslizante para ajustar intensidad</td><td>5-255</td></tr>
 </table>
+<p><strong>Botones:</strong></p>
+<ul>
+  <li><strong>Probar LEDs:</strong> Hace parpadear todos los LEDs 3 veces en blanco para verificar funcionamiento</li>
+  <li><strong>Actualizar Calendario:</strong> Fuerza una actualizacion inmediata de la visualizacion</li>
+</ul>
+
+<h3>9.8 Brillo Automatico</h3>
+<p>Configura el brillo segun la hora del dia para ahorrar energia y evitar molestias nocturnas.</p>
+<table>
+  <tr><th>Parametro</th><th>Descripcion</th><th>Rango</th></tr>
+  <tr><td>Activar</td><td>Habilita/deshabilita el brillo automatico</td><td>On/Off</td></tr>
+  <tr><td>Brillo de dia</td><td>Intensidad durante horas diurnas</td><td>5-255</td></tr>
+  <tr><td>Brillo de noche</td><td>Intensidad durante horas nocturnas</td><td>0-255 (0=apagado)</td></tr>
+  <tr><td>Dia inicia a las</td><td>Hora y minuto cuando comienza el modo dia</td><td>00:00-23:55</td></tr>
+  <tr><td>Noche inicia a las</td><td>Hora y minuto cuando comienza el modo noche</td><td>00:00-23:55</td></tr>
+</table>
+<p><strong>Estado Actual:</strong> Muestra la hora actual, si esta en modo dia o noche, y el brillo aplicado.</p>
+
+<h3>9.9 Configuracion Colores</h3>
+<p>Personaliza los colores de cada tipo de dia en el calendario.</p>
+<table>
+  <tr><th>Tipo de dia</th><th>Color por defecto</th></tr>
+  <tr><td>Dias laborales</td><td><span class="color-sample" style="background:#00ff00"></span> Verde</td></tr>
+  <tr><td>Fin de semana</td><td><span class="color-sample" style="background:#ff0000"></span> Rojo</td></tr>
+  <tr><td>Dia actual</td><td><span class="color-sample" style="background:#0000ff"></span> Azul</td></tr>
+  <tr><td>Mes actual</td><td><span class="color-sample" style="background:#c0c0c0"></span> Gris</td></tr>
+  <tr><td>Festivos</td><td><span class="color-sample" style="background:#ff00ff"></span> Magenta</td></tr>
+  <tr><td>Aniversarios</td><td><span class="color-sample" style="background:#00ffff"></span> Cyan</td></tr>
+  <tr><td>Tareas</td><td><span class="color-sample" style="background:#ffa500"></span> Naranja</td></tr>
+</table>
+<p><strong>Botones:</strong></p>
+<ul>
+  <li><strong>Vista Previa:</strong> Aplica los colores temporalmente para ver como quedan</li>
+  <li><strong>Guardar:</strong> Guarda los colores en memoria permanente</li>
+  <li><strong>Restablecer:</strong> Vuelve a los colores por defecto</li>
+</ul>
+<p><strong>Correccion Gamma:</strong> Ajusta el perfil de color y temperatura para mejorar la apariencia de los LEDs.</p>
+<table>
+  <tr><th>Opcion</th><th>Descripcion</th></tr>
+  <tr><td>Perfil color</td><td>Sin correccion, TypicalLEDStrip (recomendado), TypicalSMD5050</td></tr>
+  <tr><td>Temperatura</td><td>Sin ajuste, DirectSunlight (recomendado), Tungsten100W, ClearBlueSky</td></tr>
+</table>
+
+<h3>9.10 Actualizacion OTA</h3>
+<p>Permite actualizar el firmware sin cables, directamente por WiFi.</p>
+<table>
+  <tr><th>Informacion</th><th>Descripcion</th></tr>
+  <tr><td>Hostname</td><td>Nombre del dispositivo en la red (ej: <code>perpetualcalendar.local</code>)</td></tr>
+  <tr><td>Direccion IP</td><td>IP actual del dispositivo</td></tr>
+  <tr><td>Puerto</td><td>8266 (puerto estandar OTA)</td></tr>
+  <tr><td>Estado</td><td>Listo para recibir actualizaciones</td></tr>
+</table>
+<p><strong>Instrucciones para actualizar:</strong></p>
+<ol>
+  <li>Abrir Arduino IDE o PlatformIO</li>
+  <li>Ir a Tools > Port</li>
+  <li>Seleccionar el puerto de red (aparece como <code>perpetualcalendar at 192.168.x.x</code>)</li>
+  <li>Subir el sketch normalmente</li>
+</ol>
 
 <!-- ==================== PROBLEMAS ==================== -->
 <h2 id="problemas" class="page-break"><span class="step-number">10</span> Resolucion de Problemas</h2>
@@ -791,8 +908,8 @@ Decena   Unidad   Decena   Unidad   Decena   Unidad
 <ul>
   <li>Verifica que los IDs de scripts esten correctos</li>
   <li>Asegurate de que los scripts esten publicados como "Cualquier persona"</li>
-  <li>Los eventos deben ser de "todo el dia"</li>
-  <li>Prueba el script en el navegador: <code>https://script.google.com/macros/s/TU_ID/exec</code></li>
+  <li>Los eventos deben tener fecha dentro del mes actual</li>
+  <li>Prueba el script en el navegador: <code>https://script.google.com/macros/s/<strong>TU_ID</strong>/exec</code></li>
 </ul>
 
 <h3>Hora Incorrecta</h3>
@@ -832,9 +949,9 @@ Decena   Unidad   Decena   Unidad   Decena   Unidad
 <footer>
   <p><strong>Calendario Perpetuo con Google Calendar V2</strong></p>
   <p>Basado en el proyecto original de andrei.erdei en Instructables</p>
-  <p>Repositorio: <code>https://github.com/XE1E/Perpetual-Calendar-with-Google-Calendar-Connection-V2</code></p>
-  <p>Web Flasher: <code>https://XE1E.github.io/Perpetual-Calendar-with-Google-Calendar-Connection-V2/</code></p>
-  <p>Modelos 3D: <code>https://www.tinkercad.com/things/52D6lIWCsAP-3d-printed-perpetual-calendar</code></p>
+  <p>Repositorio: <a href="https://github.com/XE1E/Perpetual-Calendar-with-Google-Calendar-Connection-V2" target="_blank">https://github.com/XE1E/Perpetual-Calendar-with-Google-Calendar-Connection-V2</a></p>
+  <p>Web Flasher: <a href="https://XE1E.github.io/Perpetual-Calendar-with-Google-Calendar-Connection-V2/" target="_blank">https://XE1E.github.io/Perpetual-Calendar-with-Google-Calendar-Connection-V2/</a></p>
+  <p>Modelos 3D: <a href="https://www.tinkercad.com/things/52D6lIWCsAP-3d-printed-perpetual-calendar" target="_blank">https://www.tinkercad.com/things/52D6lIWCsAP-3d-printed-perpetual-calendar</a></p>
 </footer>
 
 </body>

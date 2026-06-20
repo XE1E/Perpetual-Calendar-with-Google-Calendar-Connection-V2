@@ -229,7 +229,7 @@ LED 35-23:  [   ][   ][   ][   ][   ][   ][   ]  ← Fila 4 (zigzag inverso)
 LED 10-22:  [   ][   ][   ][   ][   ][   ][   ]  ← Fila 5
 LED 9-0:    [   ][   ][   ][   ][   ][   ][   ]  ← Fila 6 (zigzag inverso)
 
-LED 62: Indicador de advertencia (sin WiFi)
+LEDs 62-67: Usados por el reloj (versión Color Coded Clock) o parte del calendario (versión Standard)
 ```
 
 ### Array de Mapeo
@@ -260,30 +260,30 @@ byte calendar_months[] = {19, 20, 21, 22, 7, 6, 5, 4, 3, 2, 1, 0};
 
 ### Paleta de Colores (HSV)
 
-| Color | HSV | Uso |
-|-------|-----|-----|
-| Gris oscuro | (0, 0, 64) | Índice 0 |
-| Rojo | (0, 255, 192) | Fines de semana |
-| Naranja | (32, 255, 255) | Tareas (Todos) |
-| Amarillo | (64, 255, 255) | Índice 3 |
-| Verde | (96, 255, 255) | Días laborables |
-| Cian | (138, 255, 255) | Aniversarios |
-| Azul | (160, 255, 255) | Día actual |
-| Púrpura | (180, 255, 255) | Festivos |
-| Magenta | (214, 255, 255) | Índice 8 |
-| Gris claro | (0, 0, 192) | Mes actual |
+| Índice | Color | HSV | Uso |
+|--------|-------|-----|-----|
+| 0 | Negro/Apagado | (0, 0, 0) | Reloj dígito 0 |
+| 1 | Rojo | (0, 255, 192) | Reloj dígito 1 |
+| 2 | Naranja | (32, 255, 192) | Reloj dígito 2 |
+| 3 | Amarillo | (64, 255, 192) | Reloj dígito 3 |
+| 4 | Verde | (96, 255, 192) | Reloj dígito 4 |
+| 5 | Cian | (128, 255, 192) | Reloj dígito 5 |
+| 6 | Azul | (160, 255, 192) | Reloj dígito 6 |
+| 7 | Púrpura | (192, 255, 192) | Reloj dígito 7 |
+| 8 | Rosa | (224, 255, 192) | Reloj dígito 8 |
+| 9 | Blanco/Gris | (0, 0, 192) | Reloj dígito 9 |
 
-### Asignación de Colores
+### Asignación de Colores del Calendario
 
 ```cpp
-// Archivo: *.ino, líneas 46-59
-CHSV weekday_color     = rainbow_colors[4];  // Verde - días laborables
-CHSV actualday_color   = rainbow_colors[6];  // Azul - día actual
-CHSV weekend_color     = rainbow_colors[1];  // Rojo - fines de semana
-CRGB month_color       = rainbow_colors[9];  // Gris - indicador de mes
-CHSV holidays_color    = rainbow_colors[7];  // Púrpura - festivos
-CHSV anniversaries_color = rainbow_colors[5]; // Cian - aniversarios
-CHSV todos_color       = rainbow_colors[2];  // Naranja - tareas
+// Archivo: *.ino, líneas 41-47
+CHSV weekday_color      = CHSV(96, 255, 192);   // Verde - días laborables
+CHSV actualday_color    = CHSV(160, 255, 192);  // Azul - día actual
+CHSV weekend_color      = CHSV(0, 255, 128);    // Rojo - fines de semana
+CHSV month_color        = CHSV(0, 0, 192);      // Gris - indicador de mes
+CHSV holidays_color     = CHSV(192, 255, 255);  // Púrpura - festivos
+CHSV anniversaries_color = CHSV(128, 255, 255); // Cian - aniversarios
+CHSV todos_color        = CHSV(32, 255, 192);   // Naranja - tareas
 ```
 
 ### Jerarquía de Prioridad de Colores
@@ -308,10 +308,15 @@ El color de fin de semana (`weekend_color`) aplica tanto a **sábados como domin
 
 ### Activación
 
-El modo reloj está **desactivado por defecto**. Para activarlo, descomentar la línea 10 del archivo `.ino`:
+El modo reloj viene en una **versión separada del firmware**. Al instalar mediante el Web Flasher, puedes elegir:
 
-```cpp
-#define COLOR_CODED_CLOCK  // Descomentar para activar
+- **Standard** - Calendario básico sin reloj
+- **Color Coded Clock** - Incluye reloj HH:MM:SS en LEDs 62-67
+
+Si compilas manualmente con PlatformIO:
+```bash
+pio run -e standard          # Sin reloj
+pio run -e color_coded_clock # Con reloj
 ```
 
 ### Layout del Reloj (6 LEDs)
@@ -330,16 +335,16 @@ Decena  Unidad  Decena   Unidad   Decena   Unidad
 
 | Dígito | Color | HSV |
 |--------|-------|-----|
-| 0 | Gris oscuro | (0, 0, 64) |
+| 0 | Negro/Apagado | (0, 0, 0) |
 | 1 | Rojo | (0, 255, 192) |
-| 2 | Naranja | (32, 255, 255) |
-| 3 | Amarillo | (64, 255, 255) |
-| 4 | Verde | (96, 255, 255) |
-| 5 | Cian | (138, 255, 255) |
-| 6 | Azul | (160, 255, 255) |
-| 7 | Púrpura | (180, 255, 255) |
-| 8 | Magenta | (214, 255, 255) |
-| 9 | Gris claro | (0, 0, 192) |
+| 2 | Naranja | (32, 255, 192) |
+| 3 | Amarillo | (64, 255, 192) |
+| 4 | Verde | (96, 255, 192) |
+| 5 | Cian | (128, 255, 192) |
+| 6 | Azul | (160, 255, 192) |
+| 7 | Púrpura | (192, 255, 192) |
+| 8 | Rosa | (224, 255, 192) |
+| 9 | Blanco/Gris | (0, 0, 192) |
 
 ### Ejemplo: Hora 14:35:27
 
@@ -358,10 +363,6 @@ LED 67 = 7 → Púrpura   (unidad segundo)
 LEDs 62-67: Reloj HH:MM:SS (6 dígitos)
 LEDs 68-74: Primera fila del calendario
 ```
-
-### Indicador de WiFi
-
-Cuando no hay conexión WiFi, los 6 LEDs del reloj **parpadean en rojo** como indicador visual.
 
 > **Nota:** El reloj se actualiza automáticamente cada segundo y se redibuja después de cada actualización del calendario para evitar sobrescrituras.
 
@@ -521,6 +522,9 @@ void initDatesArray(int (&Dates)[20], String calendarString) {
 | `/admin/previewcolors` | GET | Preview de colores |
 | `/admin/savecolors` | GET | Guardar colores |
 | `/admin/resetcolors` | GET | Restaurar colores por defecto |
+| `/admin/gammavalues` | GET | Configuración de corrección gamma |
+| `/admin/previewgamma` | GET | Preview corrección gamma |
+| `/admin/savegamma` | GET | Guardar corrección gamma |
 | `/admin/otavalues` | GET | Información OTA |
 | `/admin/testleds` | GET | Probar todos los LEDs |
 | `/admin/refreshcalendar` | GET | Forzar actualización calendario |
@@ -637,7 +641,7 @@ Inicio noche: 22:00
 
 > **Tip:** Configura brillo noche en **0** para apagar completamente los LEDs durante la noche.
 
-**EEPROM:** Direcciones 489-493
+**EEPROM:** Direcciones 489-495
 
 ---
 
@@ -654,18 +658,28 @@ Permite cambiar los colores de cada tipo de día mediante selectores visuales.
 | Días laborables | Verde | Lunes a viernes |
 | Fines de semana | Rojo | Sábados y domingos |
 | Día actual | Azul | Día de hoy |
+| Mes actual | Gris | LED indicador del mes actual |
 | Festivos | Púrpura | Eventos del calendario Holidays |
 | Aniversarios | Cian | Eventos del calendario Anniversaries |
 | Tareas | Naranja | Eventos del calendario Todos |
 
 **Funciones:**
-- **Preview:** Ver cambios en tiempo real sin guardar
-- **Save:** Guardar colores permanentemente
-- **Reset to Defaults:** Restaurar colores originales
+- **Vista Previa:** Ver cambios en tiempo real sin guardar
+- **Guardar:** Guardar colores permanentemente
+- **Restablecer:** Restaurar colores originales
 
-**EEPROM:** Direcciones 494-511
+**Corrección Gamma:**
 
-**Formato de almacenamiento:** HSV (Hue, Saturation, Value) - 3 bytes por color
+Permite ajustar el perfil de color y temperatura para mejorar la apariencia de los LEDs:
+
+| Opción | Valores |
+|--------|---------|
+| Perfil de color | Sin corrección, TypicalLEDStrip (recomendado), TypicalSMD5050 |
+| Temperatura | Sin ajuste, DirectSunlight (recomendado), Tungsten100W, ClearBlueSky |
+
+**EEPROM:** Direcciones 584-607
+
+**Formato de almacenamiento:** HSV (Hue, Saturation, Value) - 3 bytes por color, más 2 bytes para corrección gamma
 
 ---
 
@@ -752,15 +766,20 @@ El sistema monitorea constantemente la conexión WiFi y reconecta automáticamen
 | **491** | **1 byte** | **Brillo noche** |
 | **492** | **1 byte** | **Hora inicio día** |
 | **493** | **1 byte** | **Hora inicio noche** |
-| **494** | **1 byte** | **Colores personalizados habilitado** |
-| **495-497** | **3 bytes** | **Color días laborables (HSV)** |
-| **498-500** | **3 bytes** | **Color fines de semana (HSV)** |
-| **501-503** | **3 bytes** | **Color día actual (HSV)** |
-| **504-506** | **3 bytes** | **Color festivos (HSV)** |
-| **507-509** | **3 bytes** | **Color aniversarios (HSV)** |
-| **510-511** | **2 bytes** | **Color tareas (HS)** |
+| **494** | **1 byte** | **Minuto inicio día** |
+| **495** | **1 byte** | **Minuto inicio noche** |
 | **520-551** | **32 bytes** | **SSID WiFi (red respaldo)** |
 | **552-583** | **32 bytes** | **Contraseña WiFi (red respaldo)** |
+| **584** | **1 byte** | **Colores personalizados habilitado** |
+| **585-587** | **3 bytes** | **Color días laborables (HSV)** |
+| **588-590** | **3 bytes** | **Color fines de semana (HSV)** |
+| **591-593** | **3 bytes** | **Color día actual (HSV)** |
+| **594-596** | **3 bytes** | **Color festivos (HSV)** |
+| **597-599** | **3 bytes** | **Color aniversarios (HSV)** |
+| **600-602** | **3 bytes** | **Color tareas (HSV)** |
+| **603-605** | **3 bytes** | **Color mes (HSV)** |
+| **606** | **1 byte** | **Modo corrección color** |
+| **607** | **1 byte** | **Modo temperatura color** |
 
 ### Funciones de EEPROM
 
@@ -850,7 +869,7 @@ Si prefieres compilar el código tú mismo o necesitas hacer modificaciones:
 4. Configurar en orden:
    - **Red WiFi principal** (SSID y contraseña)
    - **Red WiFi respaldo** (opcional, recomendado)
-   - **Servidor NTP** (ej: `pool.ntp.org`)
+   - **Servidor NTP** (ej: `time.cloudflare.com`)
    - **Zona horaria**
    - **IDs de Google Apps Script**
 5. Configuración opcional avanzada:
@@ -895,15 +914,16 @@ function doGet() {
 
 ## Resolución de Problemas
 
-### LED 62 Encendido en Rojo
+### No Hay Conexión WiFi
 
-**Problema:** No hay conexión WiFi
+**Síntomas:** El calendario no muestra eventos, la hora no se sincroniza
 
 **Soluciones:**
-1. Verificar SSID y contraseña
+1. Verificar SSID y contraseña en `/config.html`
 2. Verificar que el router esté encendido
 3. Acercar el dispositivo al router
-4. Reiniciar el ESP8266
+4. Configurar una red de respaldo
+5. Reiniciar el ESP8266
 
 ### Animación Arcoíris Continua
 
@@ -911,7 +931,7 @@ function doGet() {
 
 **Soluciones:**
 1. Verificar conexión a Internet
-2. Cambiar servidor NTP (probar `pool.ntp.org`)
+2. Cambiar servidor NTP (probar `time.cloudflare.com` o `time.google.com`)
 3. Verificar que el puerto UDP 123 no esté bloqueado
 
 ### No se Muestran Eventos del Calendario
@@ -989,7 +1009,7 @@ function doGet() {
 **Problema:** El reloj (Color Coded Clock) no cambia o parpadea incorrectamente
 
 **Soluciones:**
-1. Verificar que `#define COLOR_CODED_CLOCK` esté descomentado
+1. Verificar que se instaló la versión "Color Coded Clock" del firmware (no la versión Standard)
 2. Verificar que NTP esté funcionando (hora correcta)
 3. Los LEDs del reloj (62-67) no deben estar dañados
 4. Reiniciar el dispositivo
@@ -1006,9 +1026,9 @@ function doGet() {
 | EEPROM emulada | 640 bytes |
 | LEDs soportados | 75 (WS2811/WS2812) |
 | LEDs calendario | 68 (días) + 12 (meses) |
-| LEDs reloj | 6 (HH:MM:SS) |
-| Indicador WiFi | Reloj parpadea rojo |
-| Brillo por defecto | 100/255 |
+| LEDs reloj | 6 (HH:MM:SS) - solo versión Color Coded Clock |
+| Indicador sin NTP | Animación arcoíris (pride) |
+| Brillo por defecto | 150/255 |
 | Brillo mínimo | 5/255 (0 = apagado en modo noche) |
 | Puerto web | 80 |
 | Puerto OTA | 8266 |
@@ -1036,6 +1056,14 @@ function doGet() {
 ---
 
 ## Historial de Versiones
+
+### Versión 2.2
+- Añadida corrección gamma y temperatura de color en página de colores
+- Añadido color personalizable para el indicador de mes
+- Añadidos minutos en configuración de auto-brillo (hora:minuto)
+- Separación de firmware en dos versiones: Standard y Color Coded Clock
+- Mejorada documentación y guía de construcción con imágenes
+- Soporte para Web Flasher con selección de versión
 
 ### Versión 2.1
 - Añadida página de información del sistema con recursos (RAM, Flash, CPU, Uptime)
@@ -1066,4 +1094,4 @@ function doGet() {
 
 ---
 
-*Manual generado para el proyecto Perpetual Calendar with Google Calendar Connection v2.1*
+*Manual generado para el proyecto Perpetual Calendar with Google Calendar Connection v2.2*
