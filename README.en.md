@@ -75,8 +75,13 @@ pio run -e standard -t upload
 ## Documentation
 
 - [Complete Build Guide](https://xe1e.github.io/Perpetual-Calendar-with-Google-Calendar-Connection-V2/GUIA_COMPLETA.html) - Step-by-step with images (Spanish)
-- [Google Calendar Setup](GOOGLE_CALENDAR_SETUP.md)
-- [Technical Manual](MANUAL.md)
+- [Bill of Materials (BOM)](BILL_OF_MATERIALS.en.md) - Components, 3D parts and tools
+- [Assembly & Wiring Guide](ASSEMBLY.en.md) - Step-by-step build
+- [Google Calendar Setup](GOOGLE_CALENDAR_SETUP.en.md)
+- [Technical Manual](MANUAL.en.md)
+- [Quick Reference](QUICK_REFERENCE.en.md) - Pinout, colors, endpoints at a glance
+- [Troubleshooting](TROUBLESHOOTING.en.md)
+- [Changelog](CHANGELOG.md) · [Contributing](CONTRIBUTING.md)
 - [Original Instructables Guide](https://www.instructables.com/Perpetual-Calendar-With-Google-Calendar-Connection/)
 
 ## License

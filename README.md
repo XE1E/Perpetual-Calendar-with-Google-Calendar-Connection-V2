@@ -24,12 +24,36 @@ Guía paso a paso con imágenes para construir tu propio calendario perpetuo.
 
 - 75 LEDs direccionables WS2811
 - Integración con Google Calendar (festivos, aniversarios, tareas)
-- Brillo automático según hora del día
-- Colores personalizables via interfaz web
+- **Colores personalizables** via interfaz web
+- **Reloj con colores** que muestra HH:MM:SS (6 LEDs)
+- **Brillo automático** con modo nocturno (puede apagar los LEDs por completo)
+- **Panel de información del sistema** (RAM, CPU, Uptime, reinicio/borrar WiFi)
 - Configuración WiFi via interfaz web
-- Panel de información del sistema (RAM, CPU, Uptime)
 - Actualizaciones OTA (Over-The-Air)
-- Reloj con colores opcional
+- Soporte mDNS (acceso via `http://perpetualcalendar.local`)
+
+### Reloj con Colores
+
+Cuando se activa, 6 LEDs muestran la hora usando dígitos codificados por color:
+
+| Dígito | Color |
+|--------|-------|
+| 0 | Gris oscuro |
+| 1 | Rojo |
+| 2 | Naranja |
+| 3 | Amarillo |
+| 4 | Verde |
+| 5 | Cian |
+| 6 | Azul |
+| 7 | Púrpura |
+| 8 | Magenta |
+| 9 | Gris claro |
+
+### Modo Nocturno
+
+Configura el brillo automático para atenuar o apagar los LEDs por la noche:
+- Brillo de día: 5-255
+- Brillo de noche: 0-255 (0 = apagado por completo)
 
 ## Compilar desde Código Fuente
 
@@ -51,8 +75,13 @@ pio run -e standard -t upload
 ## Documentación
 
 - [Guía Completa de Construcción](https://xe1e.github.io/Perpetual-Calendar-with-Google-Calendar-Connection-V2/GUIA_COMPLETA.html) - Con imágenes paso a paso
+- [Lista de Materiales (BOM)](BILL_OF_MATERIALS.md) - Componentes, piezas 3D y herramientas
+- [Guía de Ensamblaje y Cableado](ASSEMBLY.md) - Montaje paso a paso
 - [Configuración de Google Calendar](GOOGLE_CALENDAR_SETUP.md)
 - [Manual Técnico](MANUAL.md)
+- [Referencia Rápida](QUICK_REFERENCE.md) - Pinout, colores, endpoints de un vistazo
+- [Resolución de Problemas](TROUBLESHOOTING.md)
+- [Changelog](CHANGELOG.md) · [Cómo Contribuir](CONTRIBUTING.md)
 - [Guía Original en Instructables](https://www.instructables.com/Perpetual-Calendar-With-Google-Calendar-Connection/)
 
 ## Licencia

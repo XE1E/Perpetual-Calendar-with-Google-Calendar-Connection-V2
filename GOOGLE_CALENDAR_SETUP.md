@@ -19,6 +19,8 @@
 
 > **Para usuarios que quieren configurar todo rapidamente.** Si tienes problemas, consulta las secciones detalladas mas abajo.
 
+> 📷 **Nota sobre las imagenes:** Esta guia incluye marcadores de captura de pantalla (lineas que empiezan con 📷). Aun no hay imagenes; cada marcador indica que capturar y el nombre de archivo sugerido dentro de `docs/images/gcal/`. Para anadir una imagen, guardala con ese nombre y cambia la linea por `![descripcion](docs/images/gcal/nombre.png)`.
+
 ### Que necesitas
 
 - Una cuenta de Google (Gmail)
@@ -34,6 +36,8 @@
    - `Aniversarios` 
    - `Tareas`
 
+📷 *Captura: dialogo "Crear calendario" de Google Calendar* — `docs/images/gcal/01-crear-calendario.png`
+
 ### Paso 2: Obtén los IDs de tus calendarios
 
 Para **cada** calendario que creaste:
@@ -42,6 +46,8 @@ Para **cada** calendario que creaste:
 2. Selecciona **"Configuracion y uso compartido"**
 3. Baja hasta **"Integrar el calendario"**
 4. Copia el **"ID del calendario"** (algo como `abc123@group.calendar.google.com`)
+
+📷 *Captura: seccion "Integrar el calendario" mostrando el ID del calendario* — `docs/images/gcal/02-id-calendario.png`
 
 **Guarda los 3 IDs en un bloc de notas.**
 
@@ -75,6 +81,8 @@ function doGet() {
 5. Presiona **Ctrl+S** para guardar
 6. Nombra el proyecto: `Festivos`
 
+📷 *Captura: editor de Apps Script con el codigo pegado* — `docs/images/gcal/03-editor-script.png`
+
 ### Paso 4: Publica el script
 
 1. Haz clic en **"Implementar"** (boton azul arriba)
@@ -83,11 +91,19 @@ function doGet() {
 4. Configura:
    - Ejecutar como: **Yo**
    - Quien tiene acceso: **Cualquier usuario**
+
+📷 *Captura: dialogo "Nueva implementacion" con tipo "Aplicacion web" y permisos* — `docs/images/gcal/04-nueva-implementacion.png`
+
 5. Haz clic en **"Implementar"**
 6. Haz clic en **"Autorizar acceso"**
 7. Selecciona tu cuenta de Google
 8. Clic en **"Avanzado"** > **"Ir a Festivos (no seguro)"** > **"Permitir"**
+
+📷 *Captura: pantalla de advertencia "Google no ha verificado esta aplicacion" con el enlace "Avanzado"* — `docs/images/gcal/05-autorizar.png`
+
 9. **COPIA el "ID de implementacion"** (empieza con `AKfycb...`)
+
+📷 *Captura: dialogo final mostrando el "ID de implementacion"* — `docs/images/gcal/06-id-implementacion.png`
 
 **Guarda este ID. Es el primero de 3.**
 
@@ -119,6 +135,8 @@ Repite los pasos 3 y 4 dos veces mas:
    - **Anniversaries:** ID del script de Aniversarios
    - **To-dos:** ID del script de Tareas
 4. Haz clic en **"Save"**
+
+📷 *Captura: pagina `appsscript.html` del dispositivo con los 3 IDs pegados* — `docs/images/gcal/07-config-dispositivo.png`
 
 ### Paso 7: Prueba que funciona
 
