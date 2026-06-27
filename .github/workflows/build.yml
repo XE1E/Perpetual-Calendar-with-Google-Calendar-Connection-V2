@@ -14,7 +14,7 @@ jobs:
       contents: write
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -36,7 +36,7 @@ jobs:
           cp .pio/build/color_coded_clock/firmware.bin docs/firmware/perpetual-calendar-color-clock.bin
 
       - name: Upload firmware artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: firmware
           path: docs/firmware/*.bin
@@ -46,5 +46,23 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add docs/firmware/*.bin
-          git diff --staged --quiet || git commit -m "Update compiled firmware"
-          git push
+          if git diff --staged --quiet; then
+            echo "No firmware changes to commit."
+            exit 0
+          fi
+          git commit -m "Update compiled firmware"
+          # Retry push, rebasing onto any concurrent pushes.
+          # On a binary conflict, -X theirs keeps our freshly built artifacts
+          # (during rebase "theirs" = the commit being replayed, i.e. ours).
+          attempt=0
+          max=5
+          until git push; do
+            attempt=$((attempt + 1))
+            if [ "$attempt" -ge "$max" ]; then
+              echo "::error::Push failed after $max attempts."
+              exit 1
+            fi
+            echo "Push rejected; rebasing onto origin/main (attempt $attempt/$max)..."
+            git pull --rebase -X theirs origin main
+          done
+          echo "Firmware binaries pushed."
