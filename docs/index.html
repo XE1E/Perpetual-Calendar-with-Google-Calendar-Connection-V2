@@ -53,6 +53,22 @@
       font-size: 1.1rem;
     }
 
+    .version {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 0.75rem;
+      background: rgba(59, 130, 246, 0.12);
+      border: 1px solid rgba(59, 130, 246, 0.25);
+      color: var(--text-muted);
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+    }
+    .version strong { color: var(--text); font-weight: 600; }
+    .version a { color: var(--primary); text-decoration: none; }
+    .version a:hover { text-decoration: underline; }
+
     .lang-toggle {
       position: absolute;
       top: 1rem;
@@ -247,6 +263,10 @@
     <header>
       <h1 data-es="Calendario Perpetuo" data-en="Perpetual Calendar">Calendario Perpetuo</h1>
       <p class="subtitle" data-es="Calendario LED con integracion de Google Calendar" data-en="LED Calendar with Google Calendar Integration">Calendario LED con integracion de Google Calendar</p>
+      <p class="version">
+        Firmware <strong id="fw-version">…</strong>
+        <a id="fw-changelog" href="https://github.com/XE1E/Perpetual-Calendar-with-Google-Calendar-Connection-V2/blob/main/CHANGELOG.md" target="_blank" data-es="Novedades" data-en="What's new">Novedades</a>
+      </p>
     </header>
 
     <div class="cards">
@@ -352,6 +372,16 @@
       langSwitch.checked = true;
       setLanguage('en');
     }
+
+    // Show firmware version from the manifest (both variants share it).
+    fetch('manifest.json', { cache: 'no-store' })
+      .then(function (r) { return r.json(); })
+      .then(function (m) {
+        if (m && m.version) document.getElementById('fw-version').textContent = m.version;
+      })
+      .catch(function () {
+        document.getElementById('fw-version').textContent = '–';
+      });
   </script>
 </body>
 </html>
