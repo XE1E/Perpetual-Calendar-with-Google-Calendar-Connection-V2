@@ -86,8 +86,8 @@ pio run -e standard -t upload
 
 ## License
 
-This project is licensed under [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)](https://creativecommons.org/licenses/by-nc-sa/4.0/).
+This project is licensed under [Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)](https://creativecommons.org/licenses/by-sa/4.0/), the same license as the [original project by Andrei Erdei (ancalex)](https://www.instructables.com/Perpetual-Calendar-With-Google-Calendar-Connection/), of which this V2 is a modified version.
 
-[![CC BY-NC-SA 4.0](https://licensebuttons.net/l/by-nc-sa/4.0/88x31.png)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
+[![CC BY-SA 4.0](https://licensebuttons.net/l/by-sa/4.0/88x31.png)](https://creativecommons.org/licenses/by-sa/4.0/)
 
 Based on the original project from [Instructables](https://www.instructables.com/Perpetual-Calendar-With-Google-Calendar-Connection/).

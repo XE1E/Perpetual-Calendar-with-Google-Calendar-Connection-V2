@@ -49,7 +49,7 @@ Antes de abrir un issue, revisa la guía de [Resolución de Problemas](TROUBLESH
 
 ### Licencia
 
-Al contribuir, aceptas que tu trabajo se publique bajo la licencia del proyecto: **CC BY-NC-SA 4.0** (ver [LICENSE](LICENSE)).
+Al contribuir, aceptas que tu trabajo se publique bajo la licencia del proyecto: **CC BY-SA 4.0** (ver [LICENSE](LICENSE)).
 
 ---
 
@@ -98,4 +98,4 @@ Before opening an issue, check the [Troubleshooting](TROUBLESHOOTING.en.md) guid
 
 ### License
 
-By contributing, you agree that your work is published under the project's license: **CC BY-NC-SA 4.0** (see [LICENSE](LICENSE)).
+By contributing, you agree that your work is published under the project's license: **CC BY-SA 4.0** (see [LICENSE](LICENSE)).
