@@ -142,7 +142,7 @@ Repite los pasos 3 y 4 dos veces mas:
 
 1. Ve a Google Calendar
 2. Agrega un evento para **hoy** en el calendario de "Tareas"
-3. Espera 1-2 minutos
+3. Reinicia el ESP8266 (o guarda la pagina de colores) para recargar al momento; si no, se actualiza solo en la siguiente hora
 4. El LED del dia de hoy deberia cambiar a **naranja**
 
 ### Listo!
@@ -218,7 +218,7 @@ Antes de comenzar, asegurate de tener:
 
 | Calendario | Frecuencia | Razon |
 |------------|------------|-------|
-| Todos | Cada minuto | Las tareas pueden cambiar frecuentemente |
+| Todos | Cada hora | Se recarga tambien al reiniciar o al guardar colores/LED |
 | Holidays | Cada hora | Los festivos son relativamente estaticos |
 | Anniversaries | Cada hora | Los aniversarios son estaticos |
 
@@ -476,7 +476,7 @@ Para que los cambios surtan efecto inmediatamente:
 2. Espera 5 segundos
 3. Vuelve a conectar
 
-O espera aproximadamente 1 minuto para que se actualice automaticamente.
+O espera a la siguiente hora: los calendarios se recargan solos una vez por hora.
 
 ---
 
@@ -485,7 +485,7 @@ O espera aproximadamente 1 minuto para que se actualice automaticamente.
 ### Verificar que funciona
 
 1. Agrega un evento en uno de tus calendarios de Google para **hoy**
-2. Espera 1-2 minutos
+2. Reinicia el ESP8266 (o guarda la pagina de colores) para recargar al momento; si no, espera a la siguiente hora
 3. El LED correspondiente a hoy deberia cambiar de color:
    - **Naranja** si es una tarea (To-do)
    - **Purpura** si es un festivo (Holiday)

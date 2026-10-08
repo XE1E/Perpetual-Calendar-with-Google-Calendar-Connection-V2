@@ -177,8 +177,8 @@ loop() {
        └── Time OK → Show calendar
 
     4. If time is valid:
-       ├── Every MINUTE: Update "Todos" calendar
-       └── Every HOUR: Update "Holidays" and "Anniversaries"
+       └── Every HOUR (and when color or LED settings are saved):
+           update "Holidays", "Anniversaries" and "Todos"
            └── Redraw the entire display
 }
 ```
@@ -476,7 +476,7 @@ void initDatesArray(int (&Dates)[20], String calendarString) {
 
 | Calendar | Frequency | Reason |
 |----------|-----------|--------|
-| Todos | Every minute | To-dos can change frequently |
+| Todos | Every hour | Also reloaded on restart or when saving color/LED settings |
 | Holidays | Every hour | Holidays are static |
 | Anniversaries | Every hour | Anniversaries are static |
 

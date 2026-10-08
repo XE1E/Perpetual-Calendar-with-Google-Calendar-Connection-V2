@@ -145,7 +145,7 @@ Repeat steps 3 and 4 two more times:
 
 1. Go to Google Calendar
 2. Add an event for **today** in the "Todos" calendar
-3. Wait 1-2 minutes
+3. Restart the ESP8266 (or save the colors page) to reload right away; otherwise wait until the next hour
 4. Today's LED should change to **orange**
 
 ### Done!
@@ -221,7 +221,7 @@ Before you begin, make sure you have:
 
 | Calendar | Frequency | Reason |
 |----------|-----------|--------|
-| Todos | Every minute | To-dos can change frequently |
+| Todos | Every hour | Also reloaded on restart or when saving color/LED settings |
 | Holidays | Every hour | Holidays are relatively static |
 | Anniversaries | Every hour | Anniversaries are static |
 
@@ -479,7 +479,7 @@ For the changes to take effect immediately:
 2. Wait 5 seconds
 3. Reconnect
 
-Or wait about 1 minute for it to update automatically.
+Or wait until the next hour: calendars reload automatically once per hour.
 
 ---
 
@@ -488,7 +488,7 @@ Or wait about 1 minute for it to update automatically.
 ### Verify that it works
 
 1. Add an event to one of your Google calendars for **today**
-2. Wait 1-2 minutes
+2. Restart the ESP8266 (or save the colors page) to reload right away; otherwise wait until the next hour
 3. The LED for today should change color:
    - **Orange** if it is a task (To-do)
    - **Purple** if it is a holiday (Holiday)

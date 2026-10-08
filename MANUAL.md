@@ -174,8 +174,8 @@ loop() {
        └── Con hora → Mostrar calendario
     
     4. Si hay hora válida:
-       ├── Cada MINUTO: Actualizar calendario "Todos"
-       └── Cada HORA: Actualizar "Holidays" y "Anniversaries"
+       └── Cada HORA (y al guardar colores o ajustes de LED):
+           actualizar "Holidays", "Anniversaries" y "Todos"
            └── Redibujar display completo
 }
 ```
@@ -473,7 +473,7 @@ void initDatesArray(int (&Dates)[20], String calendarString) {
 
 | Calendario | Frecuencia | Razón |
 |------------|------------|-------|
-| Todos | Cada minuto | Tareas pueden cambiar frecuentemente |
+| Todos | Cada hora | También se recarga al reiniciar o al guardar colores/LED |
 | Holidays | Cada hora | Festivos son estáticos |
 | Anniversaries | Cada hora | Aniversarios son estáticos |
 
